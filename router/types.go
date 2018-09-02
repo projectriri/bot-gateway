@@ -1,4 +1,6 @@
-package model
+package router
+
+import "time"
 
 type Packet struct {
 	Head Head
@@ -23,8 +25,9 @@ type Format struct {
 type Buffer chan Packet
 
 type Channel struct {
-	UUID   string
-	Buffer *Buffer
+	UUID       string
+	Buffer     *Buffer
+	ExpireTime time.Time
 }
 
 type ProducerChannel struct {
@@ -42,4 +45,12 @@ type RoutingRule struct {
 	To      string
 	Level   int
 	Formats []Format
+}
+
+func getExpireTime() time.Time {
+	return time.Now().Local().Add(config.ChannelLifeTime)
+}
+
+func (ch Channel) renew() {
+	ch.ExpireTime = getExpireTime()
 }

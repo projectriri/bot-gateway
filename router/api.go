@@ -1,13 +1,8 @@
 package router
 
 import (
-	. "github.com/projectriri/bot-gateway/model"
 	"github.com/projectriri/bot-gateway/utils"
 )
-
-var producerBuffer = make(Buffer)
-var producerChannelPool = make(map[string]*ProducerChannel)
-var consumerChannelPool = make(map[string]*ConsumerChannel)
 
 func RegisterProducerChannel(uuid string, requireAck bool) *ProducerChannel {
 	uuid = utils.ValidateOrGenerateUUID(uuid)
@@ -18,7 +13,7 @@ func RegisterProducerChannel(uuid string, requireAck bool) *ProducerChannel {
 
 	var ackBuff *Buffer
 	if requireAck {
-		buff := make(Buffer)
+		buff := make(Buffer, config.BufferSize)
 		ackBuff = &buff
 	}
 
@@ -29,6 +24,8 @@ func RegisterProducerChannel(uuid string, requireAck bool) *ProducerChannel {
 		},
 		AcknowlegeBuffer: ackBuff,
 	}
+
+	pc.renew()
 
 	producerChannelPool[uuid] = pc
 	return pc
@@ -42,7 +39,7 @@ func RegisterConsumerChannel(uuid string, accept []RoutingRule) *ConsumerChannel
 		return cc
 	}
 
-	buff := make(Buffer)
+	buff := make(Buffer, config.BufferSize)
 
 	cc := &ConsumerChannel{
 		Channel: Channel{
@@ -52,10 +49,8 @@ func RegisterConsumerChannel(uuid string, accept []RoutingRule) *ConsumerChannel
 		Accept: accept,
 	}
 
+	cc.renew()
+
 	consumerChannelPool[uuid] = cc
 	return cc
-}
-
-func Start() {
-
 }
