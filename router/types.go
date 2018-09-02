@@ -8,12 +8,13 @@ type Packet struct {
 }
 
 type Head struct {
-	UUID      string
-	From      string
-	To        string
-	ReplyUUID string
-	Level     int
-	Format    Format
+	UUID                  string
+	From                  string
+	To                    string
+	ReplyToUUID           string
+	AcknowlegeChannelUUID string
+	Level                 int
+	Format                Format
 }
 
 type Format struct {

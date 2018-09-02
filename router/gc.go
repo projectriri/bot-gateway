@@ -27,8 +27,7 @@ func collectExpiredChannel() {
 
 func garbageCollection() {
 	for {
-		t := time.NewTimer(config.GCInterval)
-		<-t.C
+		<-time.After(config.GCInterval)
 		collectExpiredChannel()
 	}
 }

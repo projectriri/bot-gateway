@@ -4,7 +4,7 @@ import (
 	"github.com/projectriri/bot-gateway/utils"
 )
 
-func RegisterProducerChannel(uuid string, requireAck bool) *ProducerChannel {
+func RegisterProducerChannel(uuid string, acceptAck bool) *ProducerChannel {
 	uuid = utils.ValidateOrGenerateUUID(uuid)
 
 	if pc, ok := producerChannelPool[uuid]; ok {
@@ -12,7 +12,7 @@ func RegisterProducerChannel(uuid string, requireAck bool) *ProducerChannel {
 	}
 
 	var ackBuff *Buffer
-	if requireAck {
+	if acceptAck {
 		buff := make(Buffer, config.BufferSize)
 		ackBuff = &buff
 	}
