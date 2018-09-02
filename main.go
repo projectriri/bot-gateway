@@ -2,31 +2,44 @@ package main
 
 import (
 	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/router"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
 
-	// Load Global Config
+	// load global config
 	_, err := toml.DecodeFile("config.toml", &config)
 	if err != nil {
 		panic(err)
 	}
 
-	// Parse Router Config
-	gci, _ := time.ParseDuration(config.GCInterval)
+	// init logger
+	lv, err := log.ParseLevel(config.LogLevel)
+	if err != nil {
+		lv = log.InfoLevel
+	}
+	log.SetLevel(lv)
+
+	// parse router config
+	gci, err := time.ParseDuration(config.GCInterval)
+	if err != nil {
+		log.Error("fail to parse garbage collection interval", err)
+		gci = time.Minute * 5
+	}
 	clt, err := time.ParseDuration(config.ChannelLifeTime)
 	if err != nil {
-		// log.Error(err)
+		log.Error("fail to parse channel life time", err)
 		clt = time.Hour
 	}
-	routerCfg := router.RouterConfig {
-		BufferSize: config.BufferSize,
+	routerCfg := router.RouterConfig{
+		BufferSize:      config.BufferSize,
 		ChannelLifeTime: clt,
-		GCInterval: gci,
+		GCInterval:      gci,
 	}
 
-	// Start Router
+	// start router
 	router.Start(routerCfg)
 }

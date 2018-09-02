@@ -2,25 +2,27 @@ package router
 
 import (
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func collectExpiredChannel() {
-	//lb := len(ChannelPool)
+	lb := len(producerChannelPool)
 	for k, v := range producerChannelPool {
 		if v.ExpireTime.Before(time.Now()) {
 			delete(producerChannelPool, k)
 		}
 	}
-	//lc := len(ChannelPool)
-	//log.Debugf("[GC]: %v -> %v", lb, lc)
-	//lb := len(ChannelPool)
+	lc := len(producerChannelPool)
+	log.Debugf("[GC]: Producer %v -> %v", lb, lc)
+	lb = len(consumerChannelPool)
 	for k, v := range consumerChannelPool {
 		if v.ExpireTime.Before(time.Now()) {
 			delete(consumerChannelPool, k)
 		}
 	}
-	//lc := len(ChannelPool)
-	//log.Debugf("[GC]: %v -> %v", lb, lc)
+	lc = len(consumerChannelPool)
+	log.Debugf("[GC]: Consumer %v -> %v", lb, lc)
 }
 
 func garbageCollection() {
