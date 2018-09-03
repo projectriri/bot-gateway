@@ -13,7 +13,6 @@ type Head struct {
 	To                    string
 	ReplyToUUID           string
 	AcknowlegeChannelUUID string
-	Level                 int
 	Format                Format
 }
 
@@ -44,7 +43,6 @@ type ConsumerChannel struct {
 type RoutingRule struct {
 	From    string
 	To      string
-	Level   int
 	Formats []Format
 }
 
