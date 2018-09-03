@@ -20,7 +20,7 @@ type Plugin struct{}
 var manifest = plugin.Manifest{
 	BasicInfo: plugin.BasicInfo{
 		Name:    "longpolling-client-tgbot",
-		Author:  "Project Riri Stuff",
+		Author:  "Project Riri Staff",
 		Version: "v0.1",
 		License: "MIT",
 		URL:     "https://github.com/projectriri/bot-gateway/adapters/longpolling-client-tgbot",
@@ -53,7 +53,7 @@ func (p *Plugin) Start() {
 	log.Infof("[longpolling-client-tgbot] registered producer channel %v", pc.UUID)
 	log.Info("[longpolling-client-tgbot] start polling from Telegram-Bot-API via LongPolling")
 	for {
-		data := GetUpdates()
+		data := getUpdates()
 		if data != nil {
 			pc.Produce(router.Packet{
 				Head: router.Head{

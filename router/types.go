@@ -4,7 +4,7 @@ import "time"
 
 type Packet struct {
 	Head Head
-	Body []byte
+	Body interface{}
 }
 
 type Head struct {

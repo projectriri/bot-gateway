@@ -23,7 +23,7 @@ const (
 var client http.Client
 var updateConfig tgbotapi.UpdateConfig
 
-func GetUpdates() []byte {
+func getUpdates() []byte {
 	v := url.Values{}
 	if updateConfig.Offset != 0 {
 		v.Add("offset", strconv.Itoa(updateConfig.Offset))
