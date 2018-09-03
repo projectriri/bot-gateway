@@ -1,0 +1,1 @@
+github.com/projectriri/bot-gateway/adapters/longpolling-client-tgbot

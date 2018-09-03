@@ -1,0 +1,6 @@
+.idea
+*.so
+bot-gateway
+lib/
+config.toml
+conf.d/
