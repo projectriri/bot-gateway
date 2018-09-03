@@ -53,3 +53,25 @@ func getExpireTime() time.Time {
 func (ch Channel) renew() {
 	ch.ExpireTime = getExpireTime()
 }
+
+func (pc ProducerChannel) Produce(packet Packet) {
+	for {
+		pc.renew()
+		select {
+		case *pc.Buffer <- packet:
+			return
+		case <-time.After(config.ChannelLifeTime / 2):
+		}
+	}
+}
+
+func (cc ConsumerChannel) Consume() Packet {
+	for {
+		cc.renew()
+		select {
+		case packet := <-*cc.Buffer:
+			return packet
+		case <-time.After(config.ChannelLifeTime / 2):
+		}
+	}
+}

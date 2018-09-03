@@ -1,8 +1,11 @@
 package main
 
 import (
+	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/plugin"
-	"fmt"
+	"github.com/projectriri/bot-gateway/router"
+	"github.com/projectriri/bot-gateway/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -34,12 +37,38 @@ func (p *Plugin) GetManifest() plugin.Manifest {
 	return manifest
 }
 
-func (p *Plugin) Init(filename string) {
-	fmt.Printf("Hey let's init %v\n", filename)
+func (p *Plugin) Init(filename string, configPath string) {
+	// load toml config
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &config)
+	if err != nil {
+		panic(err)
+	}
+	updateConfig.Limit = config.Limit
+	updateConfig.Timeout = config.Timeout
 }
 
 func (p *Plugin) Start() {
-	fmt.Printf("Sudāto!!!!!\n")
+	log.Infof("[longpolling-client-tgbot] registering producer channel %v", config.ChannelUUID)
+	pc := router.RegisterProducerChannel(config.ChannelUUID, false)
+	log.Infof("[longpolling-client-tgbot] registered producer channel %v", pc.UUID)
+	log.Info("[longpolling-client-tgbot] start polling from Telegram-Bot-API via LongPolling")
+	for {
+		data := GetUpdates()
+		if data != nil {
+			pc.Produce(router.Packet{
+				Head: router.Head{
+					From: config.AdaptorName,
+					UUID: utils.GenerateUUID(),
+					Format: router.Format{
+						API:      "Telegram-Bot-API",
+						Version:  "latest",
+						Protocol: "LongPolling",
+					},
+				},
+				Body: data,
+			})
+		}
+	}
 }
 
 var PluginInstance plugin.Adapter = &Plugin{}

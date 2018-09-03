@@ -22,4 +22,5 @@ type Manifest struct {
 
 type BasePlugin interface {
 	GetManifest() Manifest
+	Init(filename string, configPath string)
 }

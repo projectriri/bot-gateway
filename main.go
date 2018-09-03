@@ -66,31 +66,35 @@ func main() {
 }
 
 func loadPlugin(path string) {
-	// Get filename without extension
+	// get filename without extension
 	filenameWithExtension := gopath.Base(path)
 	filename := strings.TrimSuffix(filenameWithExtension, gopath.Ext(filenameWithExtension))
 
-	// Load .so
+	// load .so
 	p, err := goplugin.Open(path)
 	if err != nil {
 		log.Fatalf("failed to load plugin %v: open file error", path)
+		return
 	}
-	// Get PluginInstance
+	// get PluginInstance
 	pi, err := p.Lookup("PluginInstance")
 	if err != nil {
-		log.Fatalf("failed to load plugin %v: PluginInstance not found", path)
+		log.Errorf("failed to load plugin %v: PluginInstance not found", path)
+		return
 	}
-	// Register and Start Plugin
+	// register and start plugin
 	switch x := pi.(type) {
 	case *plugin.Adapter:
 		adp := *x
 		log.Infof("initializing adapter plugin %v", filename)
-		adp.Init(filename)
+		adp.Init(filename, config.PluginConfDir)
 		log.Infof("starting adapter plugin %v", filename)
 		go adp.Start()
 		adaptors = append(adaptors, adp)
 	case *plugin.Converter:
 		cov := *x
 		converters = append(converters, cov)
+	default:
+		log.Errorf("plugin %v neither implements an adapter or a converter")
 	}
 }
