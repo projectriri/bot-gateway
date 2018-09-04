@@ -56,6 +56,7 @@ func (p *Plugin) Start() {
 				{
 					API:      "Telegram-Bot-API",
 					Version:  "latest",
+					Method:   "APIRequest",
 					Protocol: "HTTP",
 				},
 			},
@@ -71,7 +72,10 @@ func (p *Plugin) Start() {
 		if !ok {
 			log.Errorf("[http-client-tgbot] message %v has an incorrect body type", packet.Head.UUID)
 		}
-		data := makeRequest(req)
+		data, err := makeRequest(req)
+		if err != nil {
+			continue
+		}
 		pc.Produce(router.Packet{
 			Head: router.Head{
 				From:        config.AdaptorName,
@@ -80,6 +84,7 @@ func (p *Plugin) Start() {
 				Format: router.Format{
 					API:      "Telegram-Bot-API",
 					Version:  "latest",
+					Method:   "APIResponse",
 					Protocol: "HTTP",
 				},
 			},

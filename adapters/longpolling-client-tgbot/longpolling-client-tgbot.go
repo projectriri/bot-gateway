@@ -62,7 +62,8 @@ func (p *Plugin) Start() {
 					Format: router.Format{
 						API:      "Telegram-Bot-API",
 						Version:  "latest",
-						Protocol: "LongPolling",
+						Method:   "Update",
+						Protocol: "HTTP",
 					},
 				},
 				Body: data,
