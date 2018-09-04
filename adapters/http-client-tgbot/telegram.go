@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
-	"regexp"
-	"github.com/pkg/errors"
 	"net/url"
-	log "github.com/sirupsen/logrus"
+	"regexp"
 )
 
 // Telegram constants
