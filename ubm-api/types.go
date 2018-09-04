@@ -11,19 +11,22 @@ type UBM struct {
 }
 
 type Message struct {
-	ID       string    `json:"id,omitempty"`
-	From     *User     `json:"from,omitempty"`
-	Chat     *Chat     `json:"chat,omitempty"`
-	UID      *UID      `json:"uid,omitempty"`
-	CID      *CID      `json:"cid,omitempty"`
-	Type     string    `json:"type"`
-	ReplyID  string    `json:"reply_id,omitempty"`
-	EditID   string    `json:"edit_id,omitempty"`
-	DeleteID string    `json:"delete_id,omitempty"`
-	RichText *RichText `json:"rich_text,omitempty"`
-	Sticker  *Sticker  `json:"sticker,omitempty"`
-	Audio    *Audio    `json:"audio,omitempty"`
-	Location *Location `json:"location,omitempty"`
+	ID              string    `json:"id,omitempty"`
+	From            *User     `json:"from,omitempty"`
+	Chat            *Chat     `json:"chat,omitempty"`
+	UID             *UID      `json:"uid,omitempty"`
+	CID             *CID      `json:"cid,omitempty"`
+	Type            string    `json:"type"`
+	ReplyID         string    `json:"reply_id,omitempty"`
+	EditID          string    `json:"edit_id,omitempty"`
+	DeleteID        string    `json:"delete_id,omitempty"`
+	ForwardFromChat *Chat     `json:"forward_from_chat,omitempty"`
+	ForwardID       string    `json:"forward_id,omitempty"`
+	ForwardFrom     *User     `json:"forward_from"`
+	RichText        *RichText `json:"rich_text,omitempty"`
+	Sticker         *Sticker  `json:"sticker,omitempty"`
+	Audio           *Audio    `json:"audio,omitempty"`
+	Location        *Location `json:"location,omitempty"`
 }
 
 type CID struct {
@@ -33,8 +36,9 @@ type CID struct {
 }
 
 type Chat struct {
-	CID   CID    `json:"cid"`
-	Title string `json:"title"`
+	CID         CID    `json:"cid"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 type UID struct {
@@ -90,10 +94,10 @@ type Audio struct {
 }
 
 type Location struct {
-	Content   string `json:"content"`
-	Latitude  string `json:"latitude"`
-	Longitude string `json:"longitude"`
-	Title     string `json:"title"`
+	Content   string  `json:"content"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Title     string  `json:"title"`
 }
 
 type Notice struct {
