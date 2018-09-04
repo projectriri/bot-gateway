@@ -22,7 +22,7 @@ func RegisterProducerChannel(uuid string, acceptAck bool) *ProducerChannel {
 			UUID:   uuid,
 			Buffer: &producerBuffer,
 		},
-		AcknowlegeBuffer: ackBuff,
+		AcknowledgeBuffer: ackBuff,
 	}
 
 	pc.renew()

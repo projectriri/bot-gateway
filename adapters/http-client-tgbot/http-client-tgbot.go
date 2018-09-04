@@ -4,9 +4,9 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/plugin"
 	"github.com/projectriri/bot-gateway/router"
+	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	"github.com/projectriri/bot-gateway/utils"
 )
 
 var (
@@ -50,12 +50,12 @@ func (p *Plugin) Start() {
 	log.Infof("[http-client-tgbot] registering consumer channel %v", config.ChannelUUID)
 	cc := router.RegisterConsumerChannel(config.ChannelUUID, []router.RoutingRule{
 		{
-			From:".*",
-			To: config.AdaptorName,
+			From: ".*",
+			To:   config.AdaptorName,
 			Formats: []router.Format{
 				{
-					API: "Telegram-Bot-API",
-					Version: "latest",
+					API:      "Telegram-Bot-API",
+					Version:  "latest",
 					Protocol: "HTTP",
 				},
 			},
@@ -74,8 +74,8 @@ func (p *Plugin) Start() {
 		data := makeRequest(req)
 		pc.Produce(router.Packet{
 			Head: router.Head{
-				From: config.AdaptorName,
-				UUID: utils.GenerateUUID(),
+				From:        config.AdaptorName,
+				UUID:        utils.GenerateUUID(),
 				ReplyToUUID: packet.Head.UUID,
 				Format: router.Format{
 					API:      "Telegram-Bot-API",

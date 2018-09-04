@@ -8,17 +8,18 @@ type Packet struct {
 }
 
 type Head struct {
-	UUID                  string
-	From                  string
-	To                    string
-	ReplyToUUID           string
-	AcknowlegeChannelUUID string
-	Format                Format
+	UUID                   string
+	From                   string
+	To                     string
+	ReplyToUUID            string
+	AcknowledgeChannelUUID string
+	Format                 Format
 }
 
 type Format struct {
 	API      string
 	Version  string
+	Method   string
 	Protocol string
 }
 
@@ -32,7 +33,7 @@ type Channel struct {
 
 type ProducerChannel struct {
 	Channel
-	AcknowlegeBuffer *Buffer
+	AcknowledgeBuffer *Buffer
 }
 
 type ConsumerChannel struct {
