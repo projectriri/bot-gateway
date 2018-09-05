@@ -87,7 +87,7 @@ func (p *Plugin) Convert(packet router.Packet, to router.Format, ch router.Buffe
 		if strings.ToLower(from.Method) == "send" && strings.ToLower(to.Method) == "apirequest" {
 			switch strings.ToLower(from.Protocol) {
 			case "http":
-
+				return convertUbmSendToTgApiRequestHttp(packet, to, ch)
 			}
 		}
 	}

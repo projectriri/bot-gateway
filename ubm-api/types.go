@@ -58,8 +58,10 @@ type User struct {
 type RichText []RichTextElement
 
 type RichTextElement struct {
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
+	Type       string      `json:"type"`
+	Text       string      `json:"text"`
+	StyledText *StyledText `json:"styled_text"`
+	Image      *Image      `json:"image"`
 }
 
 type StyledText struct {
@@ -74,8 +76,8 @@ type At struct {
 
 type Image struct {
 	Format string   `json:"format"`
-	Width  uint     `json:"width"`
-	Height uint     `json:"height"`
+	Width  int      `json:"width"`
+	Height int      `json:"height"`
 	Data   *[]byte  `json:"data"`
 	URL    *url.URL `json:"url"`
 }
@@ -88,7 +90,7 @@ type Sticker struct {
 
 type Audio struct {
 	Format   string   `json:"format"`
-	Duration uint     `json:"duration"`
+	Duration int      `json:"duration"`
 	Data     *[]byte  `json:"data"`
 	URL      *url.URL `json:"url"`
 }
