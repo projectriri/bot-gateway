@@ -5,7 +5,6 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/ubm-api"
-	"net/http"
 	"net/url"
 	"strconv"
 )
@@ -85,7 +84,7 @@ func convertTgUpdateHttpToUbmReceive(packet router.Packet, to router.Format, ch 
 				ubm.Message.RichText = &ubm_api.RichText{
 					{
 						Type: "text",
-						Data: update.Message.Caption,
+						Text: update.Message.Text,
 					},
 				}
 			} else if update.Message.Text != "" {
@@ -93,7 +92,7 @@ func convertTgUpdateHttpToUbmReceive(packet router.Packet, to router.Format, ch 
 				ubm.Message.RichText = &ubm_api.RichText{
 					{
 						Type: "text",
-						Data: update.Message.Text,
+						Text: update.Message.Text,
 					},
 				}
 			}
@@ -192,4 +191,5 @@ func convertUbmSendToTgApiRequestHttp(packet router.Packet, to router.Format, ch
 		}
 
 	}
+	return false
 }

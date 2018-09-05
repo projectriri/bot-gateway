@@ -59,9 +59,10 @@ type RichText []RichTextElement
 
 type RichTextElement struct {
 	Type       string      `json:"type"`
-	Text       string      `json:"text"`
-	StyledText *StyledText `json:"styled_text"`
-	Image      *Image      `json:"image"`
+	Text       string      `json:"text,omitempty"`
+	StyledText *StyledText `json:"styled_text,omitempty"`
+	At         *At         `json:"at,omitempty"`
+	Image      *Image      `json:"image,omitempty"`
 }
 
 type StyledText struct {
