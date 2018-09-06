@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/orvice/utils/log"
+	log "github.com/sirupsen/logrus"
 )
 
 // Telegram constants
@@ -56,9 +56,9 @@ func getUpdates() []byte {
 
 	// update offset id
 	var apiResp tgbotapi.APIResponse
-	err = json.Unmarshal(data, apiResp)
+	err = json.Unmarshal(data, &apiResp)
 	if err != nil {
-		return data
+		return nil
 	}
 	var updates []tgbotapi.Update
 	json.Unmarshal(apiResp.Result, &updates)
@@ -68,5 +68,9 @@ func getUpdates() []byte {
 		}
 	}
 
-	return data
+	if len(updates) > 0 {
+		return data
+	} else {
+		return nil
+	}
 }

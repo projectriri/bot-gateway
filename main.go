@@ -31,6 +31,10 @@ func main() {
 		lv = log.InfoLevel
 	}
 	log.SetLevel(lv)
+	formatter := &log.TextFormatter{
+		FullTimestamp: true,
+	}
+	log.SetFormatter(formatter)
 
 	// parse router config
 	gci, err := time.ParseDuration(config.GCInterval)

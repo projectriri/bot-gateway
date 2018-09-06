@@ -10,6 +10,7 @@ func collectExpiredChannel() {
 	lb := len(producerChannelPool)
 	for k, v := range producerChannelPool {
 		if v.ExpireTime.Before(time.Now()) {
+			log.Warnf("[GC]: Producer %v expired at %v", v.ExpireTime)
 			delete(producerChannelPool, k)
 		}
 	}
@@ -18,6 +19,7 @@ func collectExpiredChannel() {
 	lb = len(consumerChannelPool)
 	for k, v := range consumerChannelPool {
 		if v.ExpireTime.Before(time.Now()) {
+			log.Warnf("[GC]: Consumer %v expired at %v", v.ExpireTime)
 			delete(consumerChannelPool, k)
 		}
 	}

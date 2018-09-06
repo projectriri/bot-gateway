@@ -15,8 +15,8 @@ func route() {
 		from := strings.ToLower(pkt.Head.From)
 		to := strings.ToLower(pkt.Head.To)
 
-		for _, cc := range consumerChannelPool {
-			go func() {
+		for _, pcc := range consumerChannelPool {
+			go func(cc *ConsumerChannel) {
 				log.Debugf("[router] pkt: %v cc: %+v", pkt.Head.UUID, cc)
 				var formats []Format
 				for _, ac := range cc.Accept {
@@ -53,7 +53,7 @@ func route() {
 						}
 					}
 				}
-			}()
+			}(pcc)
 		}
 	}
 }
