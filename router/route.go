@@ -9,10 +9,12 @@ import (
 func route() {
 	for {
 		pkt := <-producerBuffer
+
+		from := strings.ToLower(pkt.Head.From)
+		to := strings.ToLower(pkt.Head.To)
+
 		for _, cc := range consumerChannelPool {
 			go func() {
-				from := strings.ToLower(pkt.Head.From)
-				to := strings.ToLower(pkt.Head.To)
 
 				var formats []Format
 				for _, ac := range cc.Accept {
@@ -39,8 +41,11 @@ func route() {
 
 					for _, cvt := range converters {
 						if cvt.IsConvertible(pkt.Head.Format, format) {
-							try := cvt.Convert(pkt, format, *cc.Buffer)
-							if try {
+							ok, result := cvt.Convert(pkt, format)
+							if ok && result != nil {
+								for _, p := range result {
+									*cc.Buffer <- p
+								}
 								return
 							}
 						}

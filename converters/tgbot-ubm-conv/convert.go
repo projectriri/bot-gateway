@@ -9,19 +9,21 @@ import (
 	"strconv"
 )
 
-func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format, ch types.Buffer) bool {
+func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool, []types.Packet) {
 	data, ok := packet.Body.([]byte)
 	if !ok {
-		return false
+		return false, nil
 	}
 	var apiResp tgbotapi.APIResponse
 	err := json.Unmarshal(data, apiResp)
 	if err != nil {
-		return false
+		return false, nil
 	}
 	var updates []tgbotapi.Update
 	json.Unmarshal(apiResp.Result, &updates)
-	flag := false
+
+	result := make([]types.Packet, 0)
+
 	for _, update := range updates {
 		if update.EditedMessage != nil || update.Message != nil || update.ChannelPost != nil || update.EditedChannelPost != nil {
 			if update.EditedMessage != nil {
@@ -74,7 +76,7 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format, ch ty
 				}
 			} else if update.Message.Audio != nil {
 				// TODO
-				return false
+				return false, nil
 			} else if update.Message.Photo != nil {
 				ubm.Message.Type = "rich_text"
 				// TODO
@@ -101,26 +103,29 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format, ch ty
 				Body: ubm,
 			}
 			p.Head.Format = to
-			ch <- p
-			flag = true
+			result = append(result, p)
 		}
 	}
-	return flag
+
+	return len(result) > 0, result
 }
 
-func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format, ch types.Buffer) bool {
+func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (bool, []types.Packet) {
 	data, ok := packet.Body.(ubm_api.UBM)
 	if !ok {
-		return false
+		return false, nil
 	}
 	p := types.Packet{
 		Head: packet.Head,
 	}
 	p.Head.Format = to
+
+	result := make([]types.Packet, 0)
+
 	switch data.Type {
 	case "message":
 		if data.Message == nil {
-			return false
+			return false, nil
 		}
 		v := url.Values{}
 		v.Add("chat_id", data.Message.CID.ChatID)
@@ -131,28 +136,28 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format, ch t
 			v.Add("from_chat_id", data.Message.ForwardFromChat.CID.ChatID)
 			v.Add("message_id", data.Message.ForwardID)
 			p.Body = newMessageRequest("forwardMessage", v)
-			ch <- p
-			return true
+			result = append(result, p)
+			break
 		}
 		switch data.Message.Type {
 		case "audio":
 			// TODO
-			return false
+			return false, nil
 		case "location":
 			v.Add("latitude", strconv.FormatFloat(data.Message.Location.Latitude, 'f', 6, 64))
 			v.Add("longitude", strconv.FormatFloat(data.Message.Location.Longitude, 'f', 6, 64))
 			p.Body = newMessageRequest("sendLocation", v)
-			ch <- p
-			return true
+			result = append(result, p)
+			break
 		case "sticker":
 			if data.Message.Sticker.ID != "" {
 				v.Add("sticker", data.Message.Sticker.ID)
 				p.Body = newMessageRequest("sendSticker", v)
-				ch <- p
-				return true
+				result = append(result, p)
+				break
 			} else {
 				// TODO
-				return false
+				return false, nil
 			}
 		case "rich_text":
 			photoTmp := false
@@ -169,7 +174,7 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format, ch t
 							v.Add("text", elem.Text)
 						}
 						p.Body = newMessageRequest("sendMessage", v)
-						ch <- p
+						result = append(result, p)
 					} else {
 						if elem.Type == "styled_text" {
 							v.Add("caption", elem.StyledText.Text)
@@ -177,7 +182,7 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format, ch t
 							v.Add("caption", elem.Text)
 						}
 						p.Body = newMessageRequest("sendPhoto", v)
-						ch <- p
+						result = append(result, p)
 						photoTmp = false
 					}
 				case "image":
@@ -187,9 +192,9 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format, ch t
 			if photoTmp {
 				// TODO
 			}
-			return true
+			break
 		}
 
 	}
-	return false
+	return len(result) > 0, result
 }

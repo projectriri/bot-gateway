@@ -66,13 +66,13 @@ func (p *Plugin) IsConvertible(from types.Format, to types.Format) bool {
 	return false
 }
 
-func (p *Plugin) Convert(packet types.Packet, to types.Format, ch types.Buffer) bool {
+func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Packet) {
 	from := packet.Head.Format
 	if strings.ToLower(from.API) == "telegram-bot-api" && strings.ToLower(to.API) == "ubm-api" {
 		if strings.ToLower(from.Method) == "update" && strings.ToLower(to.Method) == "receive" {
 			switch strings.ToLower(from.Protocol) {
 			case "http":
-				return convertTgUpdateHttpToUbmReceive(packet, to, ch)
+				return convertTgUpdateHttpToUbmReceive(packet, to)
 			}
 		}
 		if strings.ToLower(from.Method) == "apiresponse" && strings.ToLower(to.Method) == "response" {
@@ -86,11 +86,11 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format, ch types.Buffer) 
 		if strings.ToLower(from.Method) == "send" && strings.ToLower(to.Method) == "apirequest" {
 			switch strings.ToLower(from.Protocol) {
 			case "http":
-				return convertUbmSendToTgApiRequestHttp(packet, to, ch)
+				return convertUbmSendToTgApiRequestHttp(packet, to)
 			}
 		}
 	}
-	return false
+	return false, nil
 }
 
 var PluginInstance types.Converter = &Plugin{}
