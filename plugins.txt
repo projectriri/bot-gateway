@@ -1,4 +1,4 @@
 github.com/projectriri/bot-gateway/adapters/longpolling-client-tgbot
 github.com/projectriri/bot-gateway/adapters/http-client-tgbot
-github.com/projectriri/bot-gateway/adapter/commander
+github.com/projectriri/bot-gateway/adapters/commander
 github.com/projectriri/bot-gateway/converters/tgbot-ubm-conv
