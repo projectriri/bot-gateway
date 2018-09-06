@@ -8,7 +8,7 @@ import (
 func ValidateOrGenerateUUID(uuid string) string {
 	_, err := gouuid.FromString(uuid)
 	if err != nil {
-		log.Warn("[uuid] %s", err)
+		log.Warnf("[uuid] %s", err)
 		uuid = GenerateUUID()
 	}
 	return uuid

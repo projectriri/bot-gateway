@@ -4,6 +4,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/types"
 	"strings"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -67,11 +68,14 @@ func (p *Plugin) IsConvertible(from types.Format, to types.Format) bool {
 }
 
 func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Packet) {
+	log.Debugf("[tgbot-ubm-conv] try convert pkt %v", packet.Head.UUID)
+
 	from := packet.Head.Format
 	if strings.ToLower(from.API) == "telegram-bot-api" && strings.ToLower(to.API) == "ubm-api" {
 		if strings.ToLower(from.Method) == "update" && strings.ToLower(to.Method) == "receive" {
 			switch strings.ToLower(from.Protocol) {
 			case "http":
+				log.Debugf("[tgbot-ubm-conv] pkt %v: convertTgUpdateHttpToUbmReceive", packet.Head.UUID)
 				return convertTgUpdateHttpToUbmReceive(packet, to)
 			}
 		}
@@ -86,6 +90,7 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 		if strings.ToLower(from.Method) == "send" && strings.ToLower(to.Method) == "apirequest" {
 			switch strings.ToLower(from.Protocol) {
 			case "http":
+				log.Debugf("[tgbot-ubm-conv] pkt %v: convertUbmSendToTgApiRequestHttp", packet.Head.UUID)
 				return convertUbmSendToTgApiRequestHttp(packet, to)
 			}
 		}

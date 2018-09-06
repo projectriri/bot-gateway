@@ -15,7 +15,7 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 		return false, nil
 	}
 	var apiResp tgbotapi.APIResponse
-	err := json.Unmarshal(data, apiResp)
+	err := json.Unmarshal(data, &apiResp)
 	if err != nil {
 		return false, nil
 	}
@@ -100,7 +100,7 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 			}
 			p := types.Packet{
 				Head: packet.Head,
-				Body: ubm,
+				Body: &ubm,
 			}
 			p.Head.Format = to
 			result = append(result, p)
@@ -111,7 +111,7 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 }
 
 func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (bool, []types.Packet) {
-	data, ok := packet.Body.(ubm_api.UBM)
+	data, ok := packet.Body.(*ubm_api.UBM)
 	if !ok {
 		return false, nil
 	}

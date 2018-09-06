@@ -17,7 +17,7 @@ func route() {
 
 		for _, pcc := range consumerChannelPool {
 			go func(cc *ConsumerChannel) {
-				log.Debugf("[router] pkt: %v cc: %+v", pkt.Head.UUID, cc)
+				log.Debugf("[router] pkt: %v TRYING cc: %+v", pkt.Head.UUID, cc)
 				var formats []Format
 				for _, ac := range cc.Accept {
 					f, _ := regexp.MatchString(ac.From, from)
@@ -31,6 +31,8 @@ func route() {
 				if formats == nil {
 					return
 				}
+
+				log.Debugf("[router] pkt: %v ACCEPTED BY cc: %+v", pkt.Head.UUID, cc)
 
 				for _, format := range formats {
 
