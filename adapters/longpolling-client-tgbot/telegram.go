@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/orvice/utils/log"
 )
 
 // Telegram constants
@@ -24,6 +25,9 @@ var client http.Client
 var updateConfig tgbotapi.UpdateConfig
 
 func getUpdates() []byte {
+
+	log.Debug("[longpolling-client-tgbot] pulling updates")
+
 	v := url.Values{}
 	if updateConfig.Offset != 0 {
 		v.Add("offset", strconv.Itoa(updateConfig.Offset))
@@ -47,6 +51,8 @@ func getUpdates() []byte {
 	if err != nil {
 		return nil
 	}
+
+	log.Debugf("[longpolling-client-tgbot] %v", string(data))
 
 	// update offset id
 	var apiResp tgbotapi.APIResponse

@@ -12,16 +12,16 @@ func RegisterProducerChannel(uuid string, acceptAck bool) *ProducerChannel {
 		return pc
 	}
 
-	var ackBuff *Buffer
+	var ackBuff Buffer
 	if acceptAck {
 		buff := make(Buffer, config.BufferSize)
-		ackBuff = &buff
+		ackBuff = buff
 	}
 
 	pc := &ProducerChannel{
 		Channel: Channel{
 			UUID:   uuid,
-			Buffer: &producerBuffer,
+			Buffer: producerBuffer,
 		},
 		AcknowledgeBuffer: ackBuff,
 	}
@@ -45,7 +45,7 @@ func RegisterConsumerChannel(uuid string, accept []RoutingRule) *ConsumerChannel
 	cc := &ConsumerChannel{
 		Channel: Channel{
 			UUID:   uuid,
-			Buffer: &buff,
+			Buffer: buff,
 		},
 		Accept: accept,
 	}

@@ -1,15 +1,14 @@
 package utils
 
 import (
-	"fmt"
-
 	gouuid "github.com/satori/go.uuid"
+	log "github.com/sirupsen/logrus"
 )
 
 func ValidateOrGenerateUUID(uuid string) string {
 	_, err := gouuid.FromString(uuid)
 	if err != nil {
-		fmt.Printf("Something went wrong: %s", err)
+		log.Warn("[uuid] %s", err)
 		uuid = GenerateUUID()
 	}
 	return uuid

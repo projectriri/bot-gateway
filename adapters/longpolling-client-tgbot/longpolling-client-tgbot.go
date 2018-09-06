@@ -52,9 +52,11 @@ func (p *Plugin) Start() {
 	pc := router.RegisterProducerChannel(config.ChannelUUID, false)
 	log.Infof("[longpolling-client-tgbot] registered producer channel %v", pc.UUID)
 	log.Info("[longpolling-client-tgbot] start polling from Telegram-Bot-API via LongPolling")
+	var data []byte
 	for {
-		data := getUpdates()
+		data = getUpdates()
 		if data != nil {
+			log.Debug("[longpolling-client-tgbot] producing packet")
 			pc.Produce(types.Packet{
 				Head: types.Head{
 					From: config.AdaptorName,
