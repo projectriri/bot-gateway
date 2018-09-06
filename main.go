@@ -49,6 +49,9 @@ func main() {
 		GCInterval:      gci,
 	}
 
+	// init router
+	router.Init(routerCfg)
+
 	// load plugins
 	ps, err := ioutil.ReadDir(config.PluginDir)
 	if err != nil {
@@ -62,7 +65,7 @@ func main() {
 	}
 
 	// start router
-	router.Start(routerCfg, converters)
+	router.Start(converters)
 }
 
 func loadPlugin(path string) {

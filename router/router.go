@@ -8,10 +8,13 @@ var producerChannelPool = make(map[string]*ProducerChannel)
 var consumerChannelPool = make(map[string]*ConsumerChannel)
 var converters []Converter
 
-func Start(cfg RouterConfig, cvts []Converter) {
+func Init(cfg RouterConfig)  {
 	config = cfg
-	converters = cvts
 	producerBuffer = make(Buffer, config.BufferSize)
+}
+
+func Start(cvts []Converter) {
+	converters = cvts
 	go garbageCollection()
 	route()
 }
