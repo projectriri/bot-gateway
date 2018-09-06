@@ -7,6 +7,8 @@ import (
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/ubm-api"
 	log "github.com/sirupsen/logrus"
+	"encoding/json"
+	"github.com/projectriri/bot-gateway/utils"
 )
 
 var (
@@ -71,7 +73,36 @@ func (p *Plugin) Start() {
 		if !ok {
 			log.Errorf("[commander] message %v has an incorrect body type", packet.Head.UUID)
 		}
-		fmt.Printf("%+v\n", req)
+		b, _ := json.Marshal(req)
+		fmt.Printf("%+v\n", b)
+		if req.Message != nil {
+			pc.Produce(types.Packet{
+				Head:types.Head{
+					From: config.AdaptorName,
+					UUID: utils.GenerateUUID(),
+					To: packet.Head.From,
+					ReplyToUUID: packet.Head.UUID,
+					Format: types.Format{
+						API: "UBM-API",
+						Method: "Send",
+						Version: "1.0",
+						Protocol: "",
+					},
+				},
+				Body: &ubm_api.UBM{
+					Type: "message",
+					Message: &ubm_api.Message{
+						CID: &req.Message.Chat.CID,
+						Type: req.Message.Type,
+						ReplyID: req.Message.ID,
+						RichText: req.Message.RichText,
+						Location: req.Message.Location,
+						Sticker: req.Message.Sticker,
+						Audio: req.Message.Audio,
+					},
+				},
+			})
+		}
 	}
 }
 
