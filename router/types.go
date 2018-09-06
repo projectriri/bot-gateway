@@ -32,7 +32,7 @@ func getExpireTime() time.Time {
 	return time.Now().Local().Add(config.ChannelLifeTime)
 }
 
-func (ch Channel) renew() {
+func (ch *Channel) renew() {
 	ch.ExpireTime = getExpireTime()
 	log.Debugf("[core] renewed channel %v to %v", ch.UUID, ch.ExpireTime)
 }

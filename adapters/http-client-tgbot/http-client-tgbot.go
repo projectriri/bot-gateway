@@ -54,10 +54,10 @@ func (p *Plugin) Start() {
 			To:   config.AdaptorName,
 			Formats: []types.Format{
 				{
-					API:      "Telegram-Bot-API",
+					API:      "telegram-bot-api",
 					Version:  "latest",
-					Method:   "APIRequest",
-					Protocol: "HTTP",
+					Method:   "apirequest",
+					Protocol: "http",
 				},
 			},
 		},
@@ -82,10 +82,10 @@ func (p *Plugin) Start() {
 				UUID:        utils.GenerateUUID(),
 				ReplyToUUID: packet.Head.UUID,
 				Format: types.Format{
-					API:      "Telegram-Bot-API",
+					API:      "telegram-bot-api",
 					Version:  "latest",
-					Method:   "APIResponse",
-					Protocol: "HTTP",
+					Method:   "apiresponse",
+					Protocol: "http",
 				},
 			},
 			Body: data,

@@ -56,9 +56,9 @@ func (p *Plugin) Start() {
 			To:   ".*",
 			Formats: []types.Format{
 				{
-					API:     "UBM-API",
+					API:     "ubm-api",
 					Version: "1.0",
-					Method:  "Receive",
+					Method:  "receive",
 				},
 			},
 		},
@@ -74,7 +74,7 @@ func (p *Plugin) Start() {
 			log.Errorf("[commander] message %v has an incorrect body type", packet.Head.UUID)
 		}
 		b, _ := json.Marshal(req)
-		fmt.Printf("%+v\n", b)
+		fmt.Printf("%s\n", string(b))
 		if req.Message != nil {
 			pc.Produce(types.Packet{
 				Head:types.Head{
@@ -83,8 +83,8 @@ func (p *Plugin) Start() {
 					To: packet.Head.From,
 					ReplyToUUID: packet.Head.UUID,
 					Format: types.Format{
-						API: "UBM-API",
-						Method: "Send",
+						API: "ubm-api",
+						Method: "send",
 						Version: "1.0",
 						Protocol: "",
 					},

@@ -12,16 +12,13 @@ func route() {
 		pkt := <-producerBuffer
 		log.Debugf("[router] pkt: %+v", pkt.Head)
 
-		from := strings.ToLower(pkt.Head.From)
-		to := strings.ToLower(pkt.Head.To)
-
 		for _, pcc := range consumerChannelPool {
 			go func(cc *ConsumerChannel) {
 				log.Debugf("[router] pkt: %v TRYING cc: %+v", pkt.Head.UUID, cc)
 				var formats []Format
 				for _, ac := range cc.Accept {
-					f, _ := regexp.MatchString(ac.From, from)
-					t, _ := regexp.MatchString(ac.To, to)
+					f, _ := regexp.MatchString(ac.From, pkt.Head.From)
+					t, _ := regexp.MatchString(ac.To, pkt.Head.To)
 					if f && t {
 						formats = ac.Formats
 						break

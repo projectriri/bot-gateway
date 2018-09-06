@@ -88,7 +88,7 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 	}
 	if strings.ToLower(from.API) == "ubm-api" && strings.ToLower(to.API) == "telegram-bot-api" {
 		if strings.ToLower(from.Method) == "send" && strings.ToLower(to.Method) == "apirequest" {
-			switch strings.ToLower(from.Protocol) {
+			switch strings.ToLower(to.Protocol) {
 			case "http":
 				log.Debugf("[tgbot-ubm-conv] pkt %v: convertUbmSendToTgApiRequestHttp", packet.Head.UUID)
 				return convertUbmSendToTgApiRequestHttp(packet, to)
