@@ -23,17 +23,18 @@ var client http.Client
 
 func makeRequest(req *http.Request) ([]byte, error) {
 
-	// DEBUG
-	fmt.Printf("%+v", req)
+	log.Debugf("[http-client-tgbot] %+v", req)
 
 	reg := regexp.MustCompile(`^/(file/)?bot[0-9]+:[a-zA-Z\d_]+/(.*)$`)
 	match := reg.FindStringSubmatch(req.URL.EscapedPath())
 	var endpoint string
 	switch len(match) {
 	case 3:
-		endpoint = fmt.Sprintf(FileEndpoint, config.Token, match[2])
-	case 2:
-		endpoint = fmt.Sprintf(APIEndpoint, config.Token, match[1])
+		if match[1] == "" {
+			endpoint = fmt.Sprintf(APIEndpoint, config.Token, match[2])
+		} else {
+			endpoint = fmt.Sprintf(FileEndpoint, config.Token, match[2])
+		}
 	default:
 		log.Errorf("[http-client-tgbot] bad url endpoint: %v", req.URL.EscapedPath())
 		return nil, errors.New("unknown url scheme")
@@ -46,7 +47,7 @@ func makeRequest(req *http.Request) ([]byte, error) {
 		log.Errorf("[http-client-tgbot] fail to parse url : %v", endpoint)
 		return nil, errors.New("fail to parse url")
 	}
-
+	fmt.Println(req.URL)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -57,6 +58,7 @@ func makeRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Debugf("[http-client-tgbot] %s", string(data))
 
 	return data, nil
 }
