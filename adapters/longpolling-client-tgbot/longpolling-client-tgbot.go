@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/BurntSushi/toml"
-	"github.com/projectriri/bot-gateway/plugin"
 	"github.com/projectriri/bot-gateway/router"
+	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,15 +17,15 @@ var (
 
 type Plugin struct{}
 
-var manifest = plugin.Manifest{
-	BasicInfo: plugin.BasicInfo{
+var manifest = types.Manifest{
+	BasicInfo: types.BasicInfo{
 		Name:    "longpolling-client-tgbot",
 		Author:  "Project Riri Staff",
 		Version: "v0.1",
 		License: "MIT",
 		URL:     "https://github.com/projectriri/bot-gateway/adapters/longpolling-client-tgbot",
 	},
-	BuildInfo: plugin.BuildInfo{
+	BuildInfo: types.BuildInfo{
 		BuildTag:      BuildTag,
 		BuildDate:     BuildDate,
 		GitCommitSHA1: GitCommitSHA1,
@@ -33,7 +33,7 @@ var manifest = plugin.Manifest{
 	},
 }
 
-func (p *Plugin) GetManifest() plugin.Manifest {
+func (p *Plugin) GetManifest() types.Manifest {
 	return manifest
 }
 
@@ -55,11 +55,11 @@ func (p *Plugin) Start() {
 	for {
 		data := getUpdates()
 		if data != nil {
-			pc.Produce(router.Packet{
-				Head: router.Head{
+			pc.Produce(types.Packet{
+				Head: types.Head{
 					From: config.AdaptorName,
 					UUID: utils.GenerateUUID(),
-					Format: router.Format{
+					Format: types.Format{
 						API:      "Telegram-Bot-API",
 						Version:  "latest",
 						Method:   "Update",
@@ -72,4 +72,4 @@ func (p *Plugin) Start() {
 	}
 }
 
-var PluginInstance plugin.Adapter = &Plugin{}
+var PluginInstance types.Adapter = &Plugin{}

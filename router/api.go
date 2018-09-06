@@ -1,6 +1,7 @@
 package router
 
 import (
+	. "github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"
 )
 

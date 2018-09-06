@@ -1,4 +1,4 @@
-package plugin
+package types
 
 type BasicInfo struct {
 	Name    string

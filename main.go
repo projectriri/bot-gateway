@@ -9,13 +9,13 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/projectriri/bot-gateway/plugin"
 	"github.com/projectriri/bot-gateway/router"
+	"github.com/projectriri/bot-gateway/types"
 	log "github.com/sirupsen/logrus"
 )
 
-var adaptors = make([]plugin.Adapter, 0)
-var converters = make([]plugin.Converter, 0)
+var adaptors = make([]types.Adapter, 0)
+var converters = make([]types.Converter, 0)
 
 func main() {
 
@@ -52,7 +52,7 @@ func main() {
 	// load plugins
 	ps, err := ioutil.ReadDir(config.PluginDir)
 	if err != nil {
-		log.Errorf("failed to open plugin dir %v", config.PluginDir)
+		log.Errorf("failed to open types dir %v", config.PluginDir)
 	} else {
 		for _, p := range ps {
 			if gopath.Ext(p.Name()) == ".so" {
@@ -62,7 +62,7 @@ func main() {
 	}
 
 	// start router
-	router.Start(routerCfg)
+	router.Start(routerCfg, converters)
 }
 
 func loadPlugin(path string) {
@@ -73,28 +73,28 @@ func loadPlugin(path string) {
 	// load .so
 	p, err := goplugin.Open(path)
 	if err != nil {
-		log.Fatalf("failed to load plugin %v: open file error", path)
+		log.Fatalf("failed to load types %v: open file error", path)
 		return
 	}
 	// get PluginInstance
 	pi, err := p.Lookup("PluginInstance")
 	if err != nil {
-		log.Errorf("failed to load plugin %v: PluginInstance not found", path)
+		log.Errorf("failed to load types %v: PluginInstance not found", path)
 		return
 	}
-	// register and start plugin
+	// register and start types
 	switch x := pi.(type) {
-	case *plugin.Adapter:
+	case *types.Adapter:
 		adp := *x
-		log.Infof("initializing adapter plugin %v", filename)
+		log.Infof("initializing adapter types %v", filename)
 		adp.Init(filename, config.PluginConfDir)
-		log.Infof("starting adapter plugin %v", filename)
+		log.Infof("starting adapter types %v", filename)
 		go adp.Start()
 		adaptors = append(adaptors, adp)
-	case *plugin.Converter:
+	case *types.Converter:
 		cov := *x
 		converters = append(converters, cov)
 	default:
-		log.Errorf("plugin %v neither implements an adapter or a converter")
+		log.Errorf("types %v neither implements an adapter or a converter")
 	}
 }

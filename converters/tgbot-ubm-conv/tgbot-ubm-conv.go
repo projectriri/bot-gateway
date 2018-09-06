@@ -2,8 +2,7 @@ package main
 
 import (
 	"github.com/BurntSushi/toml"
-	"github.com/projectriri/bot-gateway/plugin"
-	"github.com/projectriri/bot-gateway/router"
+	"github.com/projectriri/bot-gateway/types"
 	"strings"
 )
 
@@ -16,15 +15,15 @@ var (
 
 type Plugin struct{}
 
-var manifest = plugin.Manifest{
-	BasicInfo: plugin.BasicInfo{
+var manifest = types.Manifest{
+	BasicInfo: types.BasicInfo{
 		Name:    "tgbot-ubm-conv",
 		Author:  "Project Riri Staff",
 		Version: "v0.1",
 		License: "MIT",
 		URL:     "https://github.com/projectriri/bot-gateway/converters/tgbot-ubm-conv",
 	},
-	BuildInfo: plugin.BuildInfo{
+	BuildInfo: types.BuildInfo{
 		BuildTag:      BuildTag,
 		BuildDate:     BuildDate,
 		GitCommitSHA1: GitCommitSHA1,
@@ -32,7 +31,7 @@ var manifest = plugin.Manifest{
 	},
 }
 
-func (p *Plugin) GetManifest() plugin.Manifest {
+func (p *Plugin) GetManifest() types.Manifest {
 	return manifest
 }
 
@@ -44,7 +43,7 @@ func (p *Plugin) Init(filename string, configPath string) {
 	}
 }
 
-func (p *Plugin) IsConvertible(from router.Format, to router.Format) bool {
+func (p *Plugin) IsConvertible(from types.Format, to types.Format) bool {
 	if strings.ToLower(from.API) == "telegram-bot-api" && strings.ToLower(to.API) == "ubm-api" {
 		if strings.ToLower(from.Method) == "update" && strings.ToLower(to.Method) == "receive" {
 			if strings.ToLower(from.Protocol) == "http" {
@@ -67,7 +66,7 @@ func (p *Plugin) IsConvertible(from router.Format, to router.Format) bool {
 	return false
 }
 
-func (p *Plugin) Convert(packet router.Packet, to router.Format, ch router.Buffer) bool {
+func (p *Plugin) Convert(packet types.Packet, to types.Format, ch types.Buffer) bool {
 	from := packet.Head.Format
 	if strings.ToLower(from.API) == "telegram-bot-api" && strings.ToLower(to.API) == "ubm-api" {
 		if strings.ToLower(from.Method) == "update" && strings.ToLower(to.Method) == "receive" {
@@ -94,4 +93,4 @@ func (p *Plugin) Convert(packet router.Packet, to router.Format, ch router.Buffe
 	return false
 }
 
-var PluginInstance plugin.Converter = &Plugin{}
+var PluginInstance types.Converter = &Plugin{}

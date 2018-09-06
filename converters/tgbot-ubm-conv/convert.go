@@ -3,13 +3,13 @@ package main
 import (
 	"encoding/json"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/projectriri/bot-gateway/router"
+	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/ubm-api"
 	"net/url"
 	"strconv"
 )
 
-func convertTgUpdateHttpToUbmReceive(packet router.Packet, to router.Format, ch router.Buffer) bool {
+func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format, ch types.Buffer) bool {
 	data, ok := packet.Body.([]byte)
 	if !ok {
 		return false
@@ -96,7 +96,7 @@ func convertTgUpdateHttpToUbmReceive(packet router.Packet, to router.Format, ch 
 					},
 				}
 			}
-			p := router.Packet{
+			p := types.Packet{
 				Head: packet.Head,
 				Body: ubm,
 			}
@@ -108,12 +108,12 @@ func convertTgUpdateHttpToUbmReceive(packet router.Packet, to router.Format, ch 
 	return flag
 }
 
-func convertUbmSendToTgApiRequestHttp(packet router.Packet, to router.Format, ch router.Buffer) bool {
+func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format, ch types.Buffer) bool {
 	data, ok := packet.Body.(ubm_api.UBM)
 	if !ok {
 		return false
 	}
-	p := router.Packet{
+	p := types.Packet{
 		Head: packet.Head,
 	}
 	p.Head.Format = to
