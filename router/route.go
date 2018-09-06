@@ -7,46 +7,46 @@ import (
 )
 
 func route() {
-PacketLoop:
 	for {
 		pkt := <-producerBuffer
 		for _, cc := range consumerChannelPool {
+			go func() {
+				from := strings.ToLower(pkt.Head.From)
+				to := strings.ToLower(pkt.Head.To)
 
-			from := strings.ToLower(pkt.Head.From)
-			to := strings.ToLower(pkt.Head.To)
-
-			var formats []Format
-			for _, ac := range cc.Accept {
-				f, _ := regexp.MatchString(ac.From, from)
-				t, _ := regexp.MatchString(ac.To, to)
-				if f && t {
-					formats = ac.Formats
-					break
-				}
-			}
-
-			if formats == nil {
-				continue
-			}
-
-			for _, format := range formats {
-
-				if strings.ToLower(pkt.Head.Format.API) == strings.ToLower(format.API) &&
-					strings.ToLower(pkt.Head.Format.Method) == strings.ToLower(format.Method) &&
-					strings.ToLower(pkt.Head.Format.Protocol) == strings.ToLower(format.Protocol) {
-					*cc.Buffer <- pkt
-					continue PacketLoop
+				var formats []Format
+				for _, ac := range cc.Accept {
+					f, _ := regexp.MatchString(ac.From, from)
+					t, _ := regexp.MatchString(ac.To, to)
+					if f && t {
+						formats = ac.Formats
+						break
+					}
 				}
 
-				for _, cvt := range converters {
-					if cvt.IsConvertible(pkt.Head.Format, format) {
-						try := cvt.Convert(pkt, format, *cc.Buffer)
-						if try {
-							continue PacketLoop
+				if formats == nil {
+					return
+				}
+
+				for _, format := range formats {
+
+					if strings.ToLower(pkt.Head.Format.API) == strings.ToLower(format.API) &&
+						strings.ToLower(pkt.Head.Format.Method) == strings.ToLower(format.Method) &&
+						strings.ToLower(pkt.Head.Format.Protocol) == strings.ToLower(format.Protocol) {
+						*cc.Buffer <- pkt
+						return
+					}
+
+					for _, cvt := range converters {
+						if cvt.IsConvertible(pkt.Head.Format, format) {
+							try := cvt.Convert(pkt, format, *cc.Buffer)
+							if try {
+								return
+							}
 						}
 					}
 				}
-			}
+			}()
 		}
 	}
 }
