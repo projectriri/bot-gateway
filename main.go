@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"io/ioutil"
 	gopath "path"
 	goplugin "plugin"
@@ -36,21 +34,8 @@ func main() {
 	}
 	log.SetFormatter(formatter)
 
-	// parse router config
-	gci, err := time.ParseDuration(config.GCInterval)
-	if err != nil {
-		log.Error("fail to parse garbage collection interval", err)
-		gci = time.Minute * 5
-	}
-	clt, err := time.ParseDuration(config.ChannelLifeTime)
-	if err != nil {
-		log.Error("fail to parse channel life time", err)
-		clt = time.Hour
-	}
 	routerCfg := router.RouterConfig{
-		BufferSize:      config.BufferSize,
-		ChannelLifeTime: clt,
-		GCInterval:      gci,
+		BufferSize: config.BufferSize,
 	}
 
 	// init router

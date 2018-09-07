@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"net/url"
 	"strconv"
 
@@ -21,26 +20,23 @@ const (
 	FileEndpoint = "https://api.telegram.org/file/bot%s/%s"
 )
 
-var client http.Client
-var updateConfig tgbotapi.UpdateConfig
-
-func getUpdates() []byte {
+func (p *Plugin) getUpdates() []byte {
 
 	log.Debug("[longpolling-client-tgbot] pulling updates")
 
 	v := url.Values{}
-	if updateConfig.Offset != 0 {
-		v.Add("offset", strconv.Itoa(updateConfig.Offset))
+	if p.updateConfig.Offset != 0 {
+		v.Add("offset", strconv.Itoa(p.updateConfig.Offset))
 	}
-	if updateConfig.Limit > 0 {
-		v.Add("limit", strconv.Itoa(updateConfig.Limit))
+	if p.updateConfig.Limit > 0 {
+		v.Add("limit", strconv.Itoa(p.updateConfig.Limit))
 	}
-	if updateConfig.Timeout > 0 {
-		v.Add("timeout", strconv.Itoa(updateConfig.Timeout))
+	if p.updateConfig.Timeout > 0 {
+		v.Add("timeout", strconv.Itoa(p.updateConfig.Timeout))
 	}
-	method := fmt.Sprintf(APIEndpoint, config.Token, "getUpdates")
+	method := fmt.Sprintf(APIEndpoint, p.config.Token, "getUpdates")
 
-	resp, err := client.PostForm(method, v)
+	resp, err := p.client.PostForm(method, v)
 	defer resp.Body.Close()
 	if err != nil {
 		return nil
@@ -63,8 +59,8 @@ func getUpdates() []byte {
 	var updates []tgbotapi.Update
 	json.Unmarshal(apiResp.Result, &updates)
 	for _, update := range updates {
-		if update.UpdateID >= updateConfig.Offset {
-			updateConfig.Offset = update.UpdateID + 1
+		if update.UpdateID >= p.updateConfig.Offset {
+			p.updateConfig.Offset = update.UpdateID + 1
 		}
 	}
 

@@ -63,9 +63,11 @@ func (p *Plugin) Start() {
 			},
 		},
 	})
+	defer cc.Close()
 	log.Infof("[commander] registered consumer channel %v", cc.UUID)
 	log.Infof("[commander] registering producer channel %v", config.ChannelUUID)
 	pc := router.RegisterProducerChannel(config.ChannelUUID, false)
+	defer pc.Close()
 	log.Infof("[commander] registered producer channel %v", pc.UUID)
 	for {
 		packet := cc.Consume()

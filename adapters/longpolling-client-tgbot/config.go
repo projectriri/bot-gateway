@@ -1,7 +1,5 @@
 package main
 
-var config = Config{}
-
 type Config struct {
 	Token       string `toml:"token"`
 	Limit       int    `toml:"limit"`

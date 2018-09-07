@@ -1,24 +1,24 @@
 package types
 
 type Packet struct {
-	Head Head
-	Body interface{}
+	Head Head        `json:"head"`
+	Body interface{} `json:"body"`
 }
 
 type Head struct {
-	UUID                   string
-	From                   string
-	To                     string
-	ReplyToUUID            string
-	AcknowledgeChannelUUID string
-	Format                 Format
+	UUID                   string `json:"uuid"`
+	From                   string `json:"from"`
+	To                     string `json:"to"`
+	ReplyToUUID            string `json:"reply_to_uuid"`
+	AcknowledgeChannelUUID string `json:"acknowledge_channel_uuid"`
+	Format                 Format `json:"format"`
 }
 
 type Format struct {
-	API      string
-	Version  string
-	Method   string
-	Protocol string
+	API      string `json:"api"`
+	Version  string `json:"version"`
+	Method   string `json:"method"`
+	Protocol string `json:"protocol"`
 }
 
 type Buffer chan Packet

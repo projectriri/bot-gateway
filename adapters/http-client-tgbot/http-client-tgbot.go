@@ -16,7 +16,10 @@ var (
 	GitTag        string
 )
 
-type Plugin struct{}
+type Plugin struct {
+	client http.Client
+	config Config
+}
 
 var manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
@@ -40,18 +43,18 @@ func (p *Plugin) GetManifest() types.Manifest {
 
 func (p *Plugin) Init(filename string, configPath string) {
 	// load toml config
-	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &config)
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func (p *Plugin) Start() {
-	log.Infof("[http-client-tgbot] registering consumer channel %v", config.ChannelUUID)
-	cc := router.RegisterConsumerChannel(config.ChannelUUID, []router.RoutingRule{
+	log.Infof("[http-client-tgbot] registering consumer channel %v", p.config.ChannelUUID)
+	cc := router.RegisterConsumerChannel(p.config.ChannelUUID, []router.RoutingRule{
 		{
 			From: ".*",
-			To:   config.AdaptorName,
+			To:   p.config.AdaptorName,
 			Formats: []types.Format{
 				{
 					API:      "telegram-bot-api",
@@ -62,9 +65,11 @@ func (p *Plugin) Start() {
 			},
 		},
 	})
+	defer cc.Close()
 	log.Infof("[http-client-tgbot] registered consumer channel %v", cc.UUID)
-	log.Infof("[http-client-tgbot] registering producer channel %v", config.ChannelUUID)
-	pc := router.RegisterProducerChannel(config.ChannelUUID, false)
+	log.Infof("[http-client-tgbot] registering producer channel %v", p.config.ChannelUUID)
+	pc := router.RegisterProducerChannel(p.config.ChannelUUID, false)
+	defer pc.Close()
 	log.Infof("[http-client-tgbot] registered producer channel %v", pc.UUID)
 	for {
 		packet := cc.Consume()
@@ -72,13 +77,13 @@ func (p *Plugin) Start() {
 		if !ok {
 			log.Errorf("[http-client-tgbot] message %v has an incorrect body type", packet.Head.UUID)
 		}
-		data, err := makeRequest(req)
+		data, err := p.makeRequest(req)
 		if err != nil {
 			continue
 		}
 		pc.Produce(types.Packet{
 			Head: types.Head{
-				From:        config.AdaptorName,
+				From:        p.config.AdaptorName,
 				UUID:        utils.GenerateUUID(),
 				ReplyToUUID: packet.Head.UUID,
 				Format: types.Format{

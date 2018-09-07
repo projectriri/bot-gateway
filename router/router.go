@@ -15,6 +15,5 @@ func Init(cfg RouterConfig) {
 
 func Start(cvts []Converter) {
 	converters = cvts
-	go garbageCollection()
 	route()
 }

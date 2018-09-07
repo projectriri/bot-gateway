@@ -26,8 +26,6 @@ func RegisterProducerChannel(uuid string, acceptAck bool) *ProducerChannel {
 		AcknowledgeBuffer: ackBuff,
 	}
 
-	pc.renew()
-
 	producerChannelPool[uuid] = pc
 	return pc
 
@@ -50,8 +48,25 @@ func RegisterConsumerChannel(uuid string, accept []RoutingRule) *ConsumerChannel
 		Accept: accept,
 	}
 
-	cc.renew()
-
 	consumerChannelPool[uuid] = cc
 	return cc
+}
+
+func (pc *ProducerChannel) Produce(packet Packet) {
+	pc.Buffer <- packet
+}
+
+func (cc *ConsumerChannel) Consume() Packet {
+	packet := <-cc.Buffer
+	return packet
+}
+
+func (pc *ProducerChannel) Close() {
+	delete(producerChannelPool, pc.UUID)
+	pc = nil
+}
+
+func (cc *ConsumerChannel) Close() {
+	delete(consumerChannelPool, cc.UUID)
+	cc = nil
 }

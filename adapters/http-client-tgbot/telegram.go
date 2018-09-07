@@ -19,9 +19,7 @@ const (
 	FileEndpoint = "https://api.telegram.org/file/bot%s/%s"
 )
 
-var client http.Client
-
-func makeRequest(req *http.Request) ([]byte, error) {
+func (p *Plugin) makeRequest(req *http.Request) ([]byte, error) {
 
 	log.Debugf("[http-client-tgbot] %+v", req)
 
@@ -31,9 +29,9 @@ func makeRequest(req *http.Request) ([]byte, error) {
 	switch len(match) {
 	case 3:
 		if match[1] == "" {
-			endpoint = fmt.Sprintf(APIEndpoint, config.Token, match[2])
+			endpoint = fmt.Sprintf(APIEndpoint, p.config.Token, match[2])
 		} else {
-			endpoint = fmt.Sprintf(FileEndpoint, config.Token, match[2])
+			endpoint = fmt.Sprintf(FileEndpoint, p.config.Token, match[2])
 		}
 	default:
 		log.Errorf("[http-client-tgbot] bad url endpoint: %v", req.URL.EscapedPath())
@@ -48,7 +46,7 @@ func makeRequest(req *http.Request) ([]byte, error) {
 		return nil, errors.New("fail to parse url")
 	}
 	fmt.Println(req.URL)
-	resp, err := client.Do(req)
+	resp, err := p.client.Do(req)
 	if err != nil {
 		return nil, err
 	}

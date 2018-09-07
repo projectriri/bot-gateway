@@ -1,6 +1,4 @@
 buffer_size = 65536
-channel_lifetime = "2h"
-garbage_collection_interval = "5m"
 log_level = "debug"
 plugin_dir = "lib"
 plugin_conf_dir = "conf.d"
