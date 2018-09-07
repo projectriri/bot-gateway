@@ -1,14 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/ubm-api"
-	log "github.com/sirupsen/logrus"
-	"encoding/json"
 	"github.com/projectriri/bot-gateway/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -77,28 +77,28 @@ func (p *Plugin) Start() {
 		fmt.Printf("%s\n", string(b))
 		if req.Message != nil {
 			pc.Produce(types.Packet{
-				Head:types.Head{
-					From: config.AdaptorName,
-					UUID: utils.GenerateUUID(),
-					To: packet.Head.From,
+				Head: types.Head{
+					From:        config.AdaptorName,
+					UUID:        utils.GenerateUUID(),
+					To:          packet.Head.From,
 					ReplyToUUID: packet.Head.UUID,
 					Format: types.Format{
-						API: "ubm-api",
-						Method: "send",
-						Version: "1.0",
+						API:      "ubm-api",
+						Method:   "send",
+						Version:  "1.0",
 						Protocol: "",
 					},
 				},
 				Body: &ubm_api.UBM{
 					Type: "message",
 					Message: &ubm_api.Message{
-						CID: &req.Message.Chat.CID,
-						Type: req.Message.Type,
-						ReplyID: req.Message.ID,
+						CID:      &req.Message.Chat.CID,
+						Type:     req.Message.Type,
+						ReplyID:  req.Message.ID,
 						RichText: req.Message.RichText,
 						Location: req.Message.Location,
-						Sticker: req.Message.Sticker,
-						Audio: req.Message.Audio,
+						Sticker:  req.Message.Sticker,
+						Record:   req.Message.Record,
 					},
 				},
 			})

@@ -25,7 +25,7 @@ type Message struct {
 	ForwardFrom     *User     `json:"forward_from"`
 	RichText        *RichText `json:"rich_text,omitempty"`
 	Sticker         *Sticker  `json:"sticker,omitempty"`
-	Audio           *Audio    `json:"audio,omitempty"`
+	Record          *Record   `json:"record,omitempty"`
 	Location        *Location `json:"location,omitempty"`
 }
 
@@ -89,7 +89,7 @@ type Sticker struct {
 	Image  *Image `json:"image"`
 }
 
-type Audio struct {
+type Record struct {
 	Format   string   `json:"format"`
 	Duration int      `json:"duration"`
 	Data     *[]byte  `json:"data"`

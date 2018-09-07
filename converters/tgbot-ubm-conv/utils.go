@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strings"
@@ -16,6 +18,11 @@ const (
 	// FileEndpoint is the endpoint for downloading a file from Telegram.
 	FileEndpoint = "https://api.telegram.org/file/bot%s/%s"
 )
+
+type PhotoConfig struct {
+	Type  string `json:"type"`
+	Media string `json:"media"`
+}
 
 func getTelegramChatType(chat *tgbotapi.Chat) string {
 	if chat.IsSuperGroup() {
@@ -31,9 +38,37 @@ func getTelegramChatType(chat *tgbotapi.Chat) string {
 	}
 }
 
-func newMessageRequest(endpoint string, params url.Values) *http.Request {
+func newMessageRequest(endpoint string, params map[string]string) *http.Request {
 	endpoint = fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", endpoint)
-	req, _ := http.NewRequest("POST", endpoint, strings.NewReader(params.Encode()))
+	values := url.Values{}
+	for k, v := range params {
+		values.Add(k, v)
+	}
+	req, _ := http.NewRequest("POST", endpoint, strings.NewReader(values.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	return req
+}
+
+func newFileRequest(endpoint string, params map[string]string, files map[string][]byte) *http.Request {
+	if len(files) == 0 {
+		return newMessageRequest(endpoint, params)
+	}
+	endpoint = fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", endpoint)
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	ct := "multipart/form-data; boundary=" + writer.Boundary()
+	for key, val := range params {
+		_ = writer.WriteField(key, val)
+	}
+	for k, v := range files {
+		part, err := writer.CreateFormFile(k, k)
+		if err != nil {
+			fmt.Println(err)
+		}
+		part.Write(v)
+	}
+	writer.Close()
+	req, _ := http.NewRequest("POST", endpoint, body)
+	req.Header.Add("Content-Type", ct)
 	return req
 }

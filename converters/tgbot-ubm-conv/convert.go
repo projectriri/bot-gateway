@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/ubm-api"
-	"net/url"
 	"strconv"
 )
 
@@ -83,12 +83,7 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 				// for _, photo := range *update.Message.Photo {
 				//
 				// }
-				ubm.Message.RichText = &ubm_api.RichText{
-					{
-						Type: "text",
-						Text: update.Message.Text,
-					},
-				}
+				return false, nil
 			} else if update.Message.Text != "" {
 				ubm.Message.Type = "rich_text"
 				ubm.Message.RichText = &ubm_api.RichText{
@@ -127,70 +122,159 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 		if data.Message == nil {
 			return false, nil
 		}
-		v := url.Values{}
-		v.Add("chat_id", data.Message.CID.ChatID)
+		v := make(map[string]string)
+		v["chat_id"] = data.Message.CID.ChatID
 		if data.Message.ReplyID != "" {
-			v.Add("reply_to_message_id", data.Message.ReplyID)
+			v["reply_to_message_id"] = data.Message.ReplyID
 		}
 		if data.Message.ForwardID != "" {
-			v.Add("from_chat_id", data.Message.ForwardFromChat.CID.ChatID)
-			v.Add("message_id", data.Message.ForwardID)
+			v["from_chat_id"] = data.Message.ForwardFromChat.CID.ChatID
+			v["message_id"] = data.Message.ForwardID
 			p.Body = newMessageRequest("forwardMessage", v)
 			result = append(result, p)
 			break
 		}
 		switch data.Message.Type {
-		case "audio":
-			// TODO
+		case "record":
+			if data.Message.Record == nil {
+				return false, nil
+			}
+			if data.Message.Record.URL != nil {
+				v["voice"] = data.Message.Record.URL.String()
+				p.Body = newMessageRequest("sendVoice", v)
+				result = append(result, p)
+				break
+			}
+			if data.Message.Record.Data != nil {
+				p.Body = newFileRequest("sendVoice", v, map[string][]byte{
+					"voice": *data.Message.Record.Data,
+				})
+				result = append(result, p)
+				break
+			}
 			return false, nil
 		case "location":
-			v.Add("latitude", strconv.FormatFloat(data.Message.Location.Latitude, 'f', 6, 64))
-			v.Add("longitude", strconv.FormatFloat(data.Message.Location.Longitude, 'f', 6, 64))
+			if data.Message.Location == nil {
+				return false, nil
+			}
+			v["latitude"] = strconv.FormatFloat(data.Message.Location.Latitude, 'f', 6, 64)
+			v["longitude"] = strconv.FormatFloat(data.Message.Location.Longitude, 'f', 6, 64)
 			p.Body = newMessageRequest("sendLocation", v)
 			result = append(result, p)
 			break
 		case "sticker":
+			if data.Message.Sticker == nil {
+				return false, nil
+			}
 			if data.Message.Sticker.ID != "" {
-				v.Add("sticker", data.Message.Sticker.ID)
+				v["sticker"] = data.Message.Sticker.ID
 				p.Body = newMessageRequest("sendSticker", v)
 				result = append(result, p)
 				break
-			} else {
-				// TODO
+			}
+			if data.Message.Sticker.Image != nil {
+				if data.Message.Sticker.Image.URL != nil {
+					v["sticker"] = data.Message.Sticker.Image.URL.String()
+					p.Body = newMessageRequest("sendSticker", v)
+					result = append(result, p)
+					break
+				}
+				if data.Message.Sticker.Image.Data != nil {
+					p.Body = newFileRequest("sendSticker", v, map[string][]byte{
+						"sticker": *data.Message.Sticker.Image.Data,
+					})
+					result = append(result, p)
+					break
+				}
 				return false, nil
 			}
+			return false, nil
 		case "rich_text":
-			photoTmp := false
+			v2 := v
+			photos := make(map[string][]byte)
+			photoParams := make([]PhotoConfig, 0)
 			for _, elem := range *data.Message.RichText {
 				switch elem.Type {
 				case "styled_text":
 					fallthrough
 				case "text":
-					if !photoTmp {
+					if len(photoParams) == 1 {
 						if elem.Type == "styled_text" {
-							v.Add("text", elem.StyledText.Text)
-							v.Add("parse_mode", elem.StyledText.Format)
+							if elem.StyledText == nil {
+								continue
+							}
+							v["caption"] = elem.StyledText.Text
 						} else {
-							v.Add("text", elem.Text)
+							v["caption"] = elem.Text
+						}
+						if len(photos) == 0 {
+							v["photo"] = photoParams[0].Media
+							p.Body = newMessageRequest("sendPhoto", v)
+						} else {
+							p.Body = newFileRequest("sendPhoto", v, photos)
+						}
+						result = append(result, p)
+						v = v2
+						photos = make(map[string][]byte)
+						photoParams = make([]PhotoConfig, 0)
+					} else if len(photoParams) == 0 {
+						if elem.Type == "styled_text" {
+							v["text"] = elem.StyledText.Text
+							v["parse_mode"] = elem.StyledText.Format
+						} else {
+							v["text"] = elem.Text
 						}
 						p.Body = newMessageRequest("sendMessage", v)
 						result = append(result, p)
+						v = v2
 					} else {
-						if elem.Type == "styled_text" {
-							v.Add("caption", elem.StyledText.Text)
-						} else {
-							v.Add("caption", elem.Text)
-						}
-						p.Body = newMessageRequest("sendPhoto", v)
+						b, _ := json.Marshal(photoParams)
+						v["media"] = string(b)
+						p.Body = newFileRequest("sendmediagroup", v, photos)
 						result = append(result, p)
-						photoTmp = false
+						v = v2
+						photos = make(map[string][]byte)
+						photoParams = make([]PhotoConfig, 0)
 					}
 				case "image":
-					// TODO
+					if elem.Image == nil {
+						continue
+					}
+					var field string
+					if len(photoParams) == 0 {
+						field = "photo"
+					} else {
+						field = fmt.Sprintf("photo%d", len(photoParams))
+					}
+					if elem.Image.URL != nil {
+						photoParams = append(photoParams, PhotoConfig{
+							Type:  "photo",
+							Media: elem.Image.URL.String(),
+						})
+						break
+					}
+					if elem.Image.Data != nil {
+						photoParams = append(photoParams, PhotoConfig{
+							Type:  "photo",
+							Media: fmt.Sprintf("attach://%s", field),
+						})
+						photos[field] = *elem.Image.Data
+					}
 				}
 			}
-			if photoTmp {
-				// TODO
+			if len(photoParams) == 1 {
+				if len(photos) == 0 {
+					v["photo"] = photoParams[0].Media
+					p.Body = newMessageRequest("sendPhoto", v)
+				} else {
+					p.Body = newFileRequest("sendPhoto", v, photos)
+				}
+				result = append(result, p)
+			} else if len(photoParams) > 1 {
+				b, _ := json.Marshal(photoParams)
+				v["media"] = string(b)
+				p.Body = newFileRequest("sendmediagroup", v, photos)
+				result = append(result, p)
 			}
 			break
 		}

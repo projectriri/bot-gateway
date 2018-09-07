@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/types"
-	"strings"
 	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
 var (

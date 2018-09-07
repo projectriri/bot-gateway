@@ -8,7 +8,7 @@ var producerChannelPool = make(map[string]*ProducerChannel)
 var consumerChannelPool = make(map[string]*ConsumerChannel)
 var converters []Converter
 
-func Init(cfg RouterConfig)  {
+func Init(cfg RouterConfig) {
 	config = cfg
 	producerBuffer = make(Buffer, config.BufferSize)
 }
