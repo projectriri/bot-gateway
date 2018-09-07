@@ -3,6 +3,7 @@ package router
 import (
 	. "github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 func RegisterProducerChannel(uuid string, acceptAck bool) *ProducerChannel {
@@ -53,7 +54,16 @@ func RegisterConsumerChannel(uuid string, accept []RoutingRule) *ConsumerChannel
 }
 
 func (pc *ProducerChannel) Produce(packet Packet) {
-	pc.Buffer <- packet
+	select {
+	case pc.Buffer <- packet:
+	default:
+		select {
+		case <-pc.Buffer:
+			log.Warnf("[router] cache overflowed, popped the oldest message of producer buffer, messages in buffer: %v", len(pc.Buffer))
+			pc.Buffer <- packet
+		case pc.Buffer <- packet:
+		}
+	}
 }
 
 func (cc *ConsumerChannel) Consume() Packet {

@@ -52,12 +52,12 @@ func (p *Plugin) Init(filename string, configPath string) {
 	// parse config
 	gci, err := time.ParseDuration(p.config.GCInterval)
 	if err != nil {
-		log.Error("fail to parse garbage collection interval", err)
+		log.Error("[jsonrpc-server-any] fail to parse garbage collection interval", err)
 		gci = time.Minute * 5
 	}
 	clt, err := time.ParseDuration(p.config.ChannelLifeTime)
 	if err != nil {
-		log.Error("fail to parse channel life time", err)
+		log.Error("[jsonrpc-server-any] fail to parse channel life time", err)
 		clt = time.Hour
 	}
 	b := new(Broker)

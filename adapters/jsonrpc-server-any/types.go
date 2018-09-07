@@ -37,8 +37,8 @@ type ChannelConsumeResponse struct {
 }
 
 type ChannelProduceRequest struct {
-	UUID    string       `json:"uuid"`
-	Packets types.Packet `json:"packet"`
+	UUID   string       `json:"uuid"`
+	Packet types.Packet `json:"packet"`
 }
 
 type ChannelProduceResponse struct {

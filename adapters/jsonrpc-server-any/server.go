@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/projectriri/bot-gateway/router"
+	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -41,13 +43,76 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 		UUID: uuid,
 		Code: 201,
 	}
-	return nil
+	return
 }
 
 func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse) (err error) {
-	return nil
+	ch, ok := b.channelPool[args.UUID]
+	if !ok {
+		reply = &ChannelProduceResponse{
+			Code: 404,
+		}
+		return
+	}
+	b.renewChannel(ch)
+	if ch.P == nil {
+		reply = &ChannelProduceResponse{
+			Code: 418,
+		}
+		return
+	}
+	ch.P.Produce(args.Packet)
+	reply = &ChannelProduceResponse{
+		Code: 200,
+	}
+	return
 }
 
 func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeResponse) (err error) {
-	return nil
+	log.Debugf("[jsonrpc-server-any] preparing to get updates")
+	ch, ok := b.channelPool[args.UUID]
+	if !ok {
+		reply = &ChannelConsumeResponse{
+			Code: 404,
+		}
+		return
+	}
+	b.renewChannel(ch)
+	log.Infof("[jsonrpc-server-any] preparing updates for channel %v", ch.UUID)
+	if args.Limit <= 0 || args.Limit > 100 {
+		args.Limit = 100
+	}
+	t := time.NewTimer(args.Timeout)
+	for {
+		select {
+		case <-t.C:
+			reply = &ChannelConsumeResponse{
+				Code: 204,
+			}
+			log.Infof("[jsonrpc-server-any] timeout")
+			return
+		case x := <-ch.C.Buffer:
+			var packets []types.Packet
+			packets = append(packets, x)
+		More:
+			for {
+				if len(packets) >= args.Limit {
+					break
+				}
+				select {
+				case x = <-ch.C.Buffer:
+					packets = append(packets, x)
+				default:
+					break More
+				}
+			}
+			log.Debugf("[jsonrpc-server-any] %v", packets)
+			reply = &ChannelConsumeResponse{
+				Code:    200,
+				Packets: packets,
+			}
+			return
+		}
+	}
+	return
 }
