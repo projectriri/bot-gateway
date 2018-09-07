@@ -58,16 +58,10 @@ type User struct {
 type RichText []RichTextElement
 
 type RichTextElement struct {
-	Type       string      `json:"type"`
-	Text       string      `json:"text,omitempty"`
-	StyledText *StyledText `json:"styled_text,omitempty"`
-	At         *At         `json:"at,omitempty"`
-	Image      *Image      `json:"image,omitempty"`
-}
-
-type StyledText struct {
-	Text   string `json:"text"`
-	Format string `json:"format"`
+	Type  string `json:"type"`
+	Text  string `json:"text,omitempty"`
+	At    *At    `json:"at,omitempty"`
+	Image *Image `json:"image,omitempty"`
 }
 
 type At struct {

@@ -72,3 +72,11 @@ func newFileRequest(endpoint string, params map[string]string, files map[string]
 	req.Header.Add("Content-Type", ct)
 	return req
 }
+
+func plainToMarkdown(from string) (to string) {
+	from = strings.Replace(from, `\`, `\\`, -1)
+	from = strings.Replace(from, `_`, `\_`, -1)
+	from = strings.Replace(from, `*`, `\*`, -1)
+	from = strings.Replace(from, "`", "\\`", -1)
+	return from
+}

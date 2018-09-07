@@ -7,6 +7,7 @@ import (
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/ubm-api"
 	"strconv"
+	"strings"
 )
 
 func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool, []types.Packet) {
@@ -137,16 +138,10 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 		if data.Message.EditID != "" && data.Message.RichText != nil {
 			v["message_id"] = data.Message.EditID
 			var text string
-			var parseMode string
 			for _, elem := range *data.Message.RichText {
 				text += elem.Text
-				if elem.StyledText != nil {
-					text += elem.StyledText.Text
-					parseMode = elem.StyledText.Format
-				}
 			}
 			v["text"] = text
-			v["parse_mode"] = parseMode
 			p.Body = newMessageRequest("editMessageText", v)
 			result = append(result, p)
 			break
@@ -214,23 +209,52 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 			return false, nil
 		case "rich_text":
 			v2 := v
-			photos := make(map[string][]byte)
-			photoParams := make([]PhotoConfig, 0)
+
+			// format ats and concat neighbor texts
+			txtTmp := make([]string, 0)
+			rtxArr := make(ubm_api.RichText, 0)
 			for _, elem := range *data.Message.RichText {
 				switch elem.Type {
-				case "styled_text":
-					fallthrough
+				case "image":
+					if len(txtTmp) != 0 {
+						rtxArr = append(rtxArr, ubm_api.RichTextElement{
+							Type: "text",
+							Text: strings.Join(txtTmp, " "),
+						})
+					}
+					txtTmp = make([]string, 0)
+					rtxArr = append(rtxArr, elem)
+				case "text":
+					t := plainToMarkdown(elem.Text)
+					if t != "" {
+						txtTmp = append(txtTmp, t)
+					}
+				case "at":
+					if elem.At == nil {
+						continue
+					}
+					if elem.At.UID.Username != "" {
+						txtTmp = append(txtTmp, fmt.Sprintf("@%s", plainToMarkdown(elem.At.UID.Username)))
+					} else {
+						txtTmp = append(txtTmp, fmt.Sprintf("[%s](tg://user?id=%s)", elem.At.DisplayName, elem.At.UID.ID))
+					}
+				}
+			}
+			if len(txtTmp) != 0 {
+				rtxArr = append(rtxArr, ubm_api.RichTextElement{
+					Type: "text",
+					Text: strings.Join(txtTmp, " "),
+				})
+			}
+
+			photos := make(map[string][]byte)
+			photoParams := make([]PhotoConfig, 0)
+			for _, elem := range rtxArr {
+				switch elem.Type {
 				case "text":
 					if len(photoParams) == 1 {
-						if elem.Type == "styled_text" {
-							if elem.StyledText == nil {
-								continue
-							}
-							v["caption"] = elem.StyledText.Text
-							v["parse_mode"] = elem.StyledText.Format
-						} else {
-							v["caption"] = elem.Text
-						}
+						v["caption"] = elem.Text
+						v["parse_mode"] = "Markdown"
 						if len(photos) == 0 {
 							v["photo"] = photoParams[0].Media
 							p.Body = newMessageRequest("sendPhoto", v)
@@ -242,12 +266,8 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 						photos = make(map[string][]byte)
 						photoParams = make([]PhotoConfig, 0)
 					} else if len(photoParams) == 0 {
-						if elem.Type == "styled_text" {
-							v["text"] = elem.StyledText.Text
-							v["parse_mode"] = elem.StyledText.Format
-						} else {
-							v["text"] = elem.Text
-						}
+						v["text"] = elem.Text
+						v["parse_mode"] = "Markdown"
 						p.Body = newMessageRequest("sendMessage", v)
 						result = append(result, p)
 						v = v2
