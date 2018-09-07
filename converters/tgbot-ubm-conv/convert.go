@@ -134,6 +134,29 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 			result = append(result, p)
 			break
 		}
+		if data.Message.EditID != "" && data.Message.RichText != nil {
+			v["message_id"] = data.Message.EditID
+			var text string
+			var parseMode string
+			for _, elem := range *data.Message.RichText {
+				text += elem.Text
+				if elem.StyledText != nil {
+					text += elem.StyledText.Text
+					parseMode = elem.StyledText.Format
+				}
+			}
+			v["text"] = text
+			v["parse_mode"] = parseMode
+			p.Body = newMessageRequest("editMessageText", v)
+			result = append(result, p)
+			break
+		}
+		if data.Message.DeleteID != "" {
+			v["message_id"] = data.Message.DeleteID
+			p.Body = newMessageRequest("deleteMessage", v)
+			result = append(result, p)
+			break
+		}
 		switch data.Message.Type {
 		case "record":
 			if data.Message.Record == nil {
@@ -204,6 +227,7 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 								continue
 							}
 							v["caption"] = elem.StyledText.Text
+							v["parse_mode"] = elem.StyledText.Format
 						} else {
 							v["caption"] = elem.Text
 						}
