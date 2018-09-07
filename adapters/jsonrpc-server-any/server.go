@@ -1,6 +1,7 @@
 package main
 
 import (
+	. "github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/jsonrpc-any"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"

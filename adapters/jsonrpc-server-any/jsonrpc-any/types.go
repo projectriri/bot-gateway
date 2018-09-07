@@ -1,10 +1,12 @@
-package main
+package jsonrpc_any
 
 import (
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	"time"
 )
+
+type UpdatesChannel <-chan *types.Packet
 
 type Channel struct {
 	UUID       string

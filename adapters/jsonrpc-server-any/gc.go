@@ -1,6 +1,7 @@
 package main
 
 import (
+	. "github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/jsonrpc-any"
 	log "github.com/sirupsen/logrus"
 	"time"
 )

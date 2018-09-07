@@ -1,0 +1,3 @@
+port = 4700
+channel_lifetime = "2h"
+garbage_collection_interval = "5m"
