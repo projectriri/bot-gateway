@@ -6,9 +6,7 @@ import (
 )
 
 func ValidateOrGenerateUUID(uuid string) string {
-	_, err := gouuid.FromString(uuid)
-	if err != nil {
-		log.Warnf("[uuid] %s", err)
+	if !ValidateUUID(uuid) {
 		uuid = GenerateUUID()
 	}
 	return uuid
@@ -18,4 +16,13 @@ func GenerateUUID() string {
 	u := gouuid.Must(gouuid.NewV4())
 	uuid := u.String()
 	return uuid
+}
+
+func ValidateUUID(uuid string) bool {
+	_, err := gouuid.FromString(uuid)
+	if err != nil {
+		log.Warnf("[uuid] %s", err)
+		return false
+	}
+	return true
 }

@@ -2,6 +2,7 @@ package router
 
 import (
 	. "github.com/projectriri/bot-gateway/types"
+	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
@@ -10,6 +11,10 @@ import (
 func route() {
 	for {
 		pkt := <-producerBuffer
+		if !utils.ValidateUUID(pkt.Head.UUID) {
+			log.Warnf("[router] pkt with invalid uuid, dropped: %+v BODY: %s", pkt.Head, string(pkt.Body))
+			continue
+		}
 		log.Debugf("[router] pkt: %+v", pkt.Head)
 		log.Debugf("[router] pkt: %s BODY: %s", pkt.Head.UUID, string(pkt.Body))
 

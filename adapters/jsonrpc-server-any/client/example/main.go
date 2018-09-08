@@ -9,6 +9,7 @@ import (
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/types/common"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
+	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
@@ -71,6 +72,7 @@ func main() {
 			b, _ := json.Marshal(req)
 			packet := types.Packet{
 				Head: types.Head{
+					UUID: utils.GenerateUUID(),
 					From: "Test",
 					To:   "Telegram",
 					Format: types.Format{
@@ -95,9 +97,10 @@ func main() {
 						Messenger: "Telegram",
 						ChatID:    data.Message.Chat.CID.ChatID,
 					},
-					Type: "text",
+					Type: "rich_text",
 					RichText: &ubm_api.RichText{
 						{
+							Type: "text",
 							Text: "Test Send in UBM-API Passed!",
 						},
 					},
@@ -106,6 +109,7 @@ func main() {
 			b, _ = json.Marshal(ubm)
 			packet = types.Packet{
 				Head: types.Head{
+					UUID: utils.GenerateUUID(),
 					From: "Test",
 					To:   "Telegram",
 					Format: types.Format{
