@@ -1,17 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/client"
 	"github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/jsonrpc-any"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
-	"github.com/projectriri/bot-gateway/ubm-api"
+	"github.com/projectriri/bot-gateway/types/common"
+	"github.com/projectriri/bot-gateway/types/ubm-api"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
-	"strings"
-	"encoding/json"
 )
 
 // Telegram constants
@@ -60,9 +60,15 @@ func main() {
 			v.Add("chat_id", data.Message.Chat.CID.ChatID)
 			v.Add("text", "Test Send in Telegram-Bot-API Passed!")
 			endpoint := fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", "sendMessage")
-			req, _ := http.NewRequest("POST", endpoint, strings.NewReader(v.Encode()))
-			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-			b, _ := json.Marshal(*req)
+			header := http.Header{}
+			header.Set("Content-Type", "application/x-www-form-urlencoded")
+			req := common.HTTPRequest{
+				Method: "POST",
+				URL:    endpoint,
+				Header: header,
+				Body:   v.Encode(),
+			}
+			b, _ := json.Marshal(req)
 			packet := types.Packet{
 				Head: types.Head{
 					From: "Test",

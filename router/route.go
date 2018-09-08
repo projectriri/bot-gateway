@@ -11,6 +11,7 @@ func route() {
 	for {
 		pkt := <-producerBuffer
 		log.Debugf("[router] pkt: %+v", pkt.Head)
+		log.Debugf("[router] pkt: %s BODY: %s", pkt.Head.UUID, string(pkt.Body))
 
 		for _, cc := range consumerChannelPool {
 			go pushMessage(cc, &pkt)
@@ -50,6 +51,7 @@ func pushMessage(cc *ConsumerChannel, pkt *Packet) {
 				ok, result := cvt.Convert(*pkt, format)
 				if ok && result != nil {
 					for _, p := range result {
+						log.Debugf("[route] converted: %+v", string(p.Body))
 						select {
 						case cc.Buffer <- p:
 						default:

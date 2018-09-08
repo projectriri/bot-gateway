@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/projectriri/bot-gateway/types"
-	"github.com/projectriri/bot-gateway/ubm-api"
+	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"strconv"
 	"strings"
 )

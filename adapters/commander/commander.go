@@ -6,7 +6,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
-	"github.com/projectriri/bot-gateway/ubm-api"
+	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 )
@@ -74,7 +74,7 @@ func (p *Plugin) Start() {
 		req := ubm_api.UBM{}
 		err := json.Unmarshal(packet.Body, &req)
 		if err != nil {
-			log.Errorf("[commander] message %v has an incorrect body type", packet.Head.UUID)
+			log.Errorf("[commander] message %v has an incorrect body type %v", packet.Head.UUID, err)
 		}
 		fmt.Printf("%s\n", string(packet.Body))
 		ubm := ubm_api.UBM{

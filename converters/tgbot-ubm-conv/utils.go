@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/projectriri/bot-gateway/types/common"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -38,18 +39,24 @@ func getTelegramChatType(chat *tgbotapi.Chat) string {
 	}
 }
 
-func newMessageRequest(endpoint string, params map[string]string) http.Request {
+func newMessageRequest(endpoint string, params map[string]string) common.HTTPRequest {
 	endpoint = fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", endpoint)
 	values := url.Values{}
 	for k, v := range params {
 		values.Add(k, v)
 	}
-	req, _ := http.NewRequest("POST", endpoint, strings.NewReader(values.Encode()))
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	return *req
+	header := http.Header{}
+	header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req := common.HTTPRequest{
+		Method: "POST",
+		URL:    endpoint,
+		Body:   values.Encode(),
+		Header: header,
+	}
+	return req
 }
 
-func newFileRequest(endpoint string, params map[string]string, files map[string][]byte) http.Request {
+func newFileRequest(endpoint string, params map[string]string, files map[string][]byte) common.HTTPRequest {
 	if len(files) == 0 {
 		return newMessageRequest(endpoint, params)
 	}
@@ -68,9 +75,15 @@ func newFileRequest(endpoint string, params map[string]string, files map[string]
 		part.Write(v)
 	}
 	writer.Close()
-	req, _ := http.NewRequest("POST", endpoint, body)
-	req.Header.Add("Content-Type", ct)
-	return *req
+	header := http.Header{}
+	header.Add("Content-Type", ct)
+	req := common.HTTPRequest{
+		Method: "POST",
+		URL:    endpoint,
+		Body:   body.String(),
+		Header: header,
+	}
+	return req
 }
 
 func plainToMarkdown(from string) (to string) {

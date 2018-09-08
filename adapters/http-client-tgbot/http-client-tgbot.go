@@ -5,9 +5,11 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
+	"github.com/projectriri/bot-gateway/types/common"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -74,11 +76,18 @@ func (p *Plugin) Start() {
 	log.Infof("[http-client-tgbot] registered producer channel %v", pc.UUID)
 	for {
 		packet := cc.Consume()
-		req := &http.Request{}
-		err := json.Unmarshal(packet.Body, req)
+		r := common.HTTPRequest{}
+		err := json.Unmarshal(packet.Body, &r)
 		if err != nil {
-			log.Errorf("[http-client-tgbot] message %v has an incorrect body type", packet.Head.UUID)
+			log.Errorf("[http-client-tgbot] message %v has an incorrect body type %v", packet.Head.UUID, err)
+			continue
 		}
+		req, err := http.NewRequest(r.Method, r.URL, strings.NewReader(r.Body))
+		if err != nil {
+			log.Errorf("[http-client-tgbot] message %v has an incorrect body type %v", packet.Head.UUID, err)
+			continue
+		}
+		req.Header = r.Header
 		data, err := p.makeRequest(req)
 		if err != nil {
 			continue
