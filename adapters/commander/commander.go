@@ -71,12 +71,25 @@ func (p *Plugin) Start() {
 	log.Infof("[commander] registered producer channel %v", pc.UUID)
 	for {
 		packet := cc.Consume()
-		req, ok := packet.Body.(*ubm_api.UBM)
-		if !ok {
+		req := ubm_api.UBM{}
+		err := json.Unmarshal(packet.Body, &req)
+		if err != nil {
 			log.Errorf("[commander] message %v has an incorrect body type", packet.Head.UUID)
 		}
-		b, _ := json.Marshal(req)
-		fmt.Printf("%s\n", string(b))
+		fmt.Printf("%s\n", string(packet.Body))
+		ubm := ubm_api.UBM{
+			Type: "message",
+			Message: &ubm_api.Message{
+				CID:      &req.Message.Chat.CID,
+				Type:     req.Message.Type,
+				ReplyID:  req.Message.ID,
+				RichText: req.Message.RichText,
+				Location: req.Message.Location,
+				Sticker:  req.Message.Sticker,
+				Record:   req.Message.Record,
+			},
+		}
+		b, _ := json.Marshal(ubm)
 		if req.Message != nil {
 			pc.Produce(types.Packet{
 				Head: types.Head{
@@ -91,18 +104,7 @@ func (p *Plugin) Start() {
 						Protocol: "",
 					},
 				},
-				Body: &ubm_api.UBM{
-					Type: "message",
-					Message: &ubm_api.Message{
-						CID:      &req.Message.Chat.CID,
-						Type:     req.Message.Type,
-						ReplyID:  req.Message.ID,
-						RichText: req.Message.RichText,
-						Location: req.Message.Location,
-						Sticker:  req.Message.Sticker,
-						Record:   req.Message.Record,
-					},
-				},
+				Body: b,
 			})
 		}
 	}

@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"encoding/json"
 )
 
 // Telegram constants
@@ -52,7 +53,8 @@ func main() {
 		fmt.Printf("%+v\n", *pkt)
 		switch pkt.Head.Format.API {
 		case "ubm-api":
-			data := pkt.Body.(*ubm_api.UBM)
+			data := ubm_api.UBM{}
+			json.Unmarshal(pkt.Body, &data)
 			// Send message in format telegram-bot-api
 			v := url.Values{}
 			v.Add("chat_id", data.Message.Chat.CID.ChatID)
@@ -60,6 +62,7 @@ func main() {
 			endpoint := fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", "sendMessage")
 			req, _ := http.NewRequest("POST", endpoint, strings.NewReader(v.Encode()))
 			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			b, _ := json.Marshal(req)
 			packet := types.Packet{
 				Head: types.Head{
 					From: "Test",
@@ -71,7 +74,7 @@ func main() {
 						Method:   "apirequest",
 					},
 				},
-				Body: req,
+				Body: b,
 			}
 			c.MakeRequest(jsonrpc_any.ChannelProduceRequest{
 				c.UUID,
@@ -94,6 +97,7 @@ func main() {
 					},
 				},
 			}
+			b, _ = json.Marshal(ubm)
 			packet = types.Packet{
 				Head: types.Head{
 					From: "Test",
@@ -105,7 +109,7 @@ func main() {
 						Method:   "send",
 					},
 				},
-				Body: &ubm,
+				Body: b,
 			}
 			c.MakeRequest(jsonrpc_any.ChannelProduceRequest{
 				c.UUID,

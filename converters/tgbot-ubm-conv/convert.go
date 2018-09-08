@@ -11,10 +11,8 @@ import (
 )
 
 func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool, []types.Packet) {
-	data, ok := packet.Body.([]byte)
-	if !ok {
-		return false, nil
-	}
+	data := packet.Body
+
 	var apiResp tgbotapi.APIResponse
 	err := json.Unmarshal(data, &apiResp)
 	if err != nil {
@@ -94,9 +92,10 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 					},
 				}
 			}
+			b, _ := json.Marshal(ubm)
 			p := types.Packet{
 				Head: packet.Head,
-				Body: &ubm,
+				Body: b,
 			}
 			p.Head.Format = to
 			result = append(result, p)
@@ -107,8 +106,9 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 }
 
 func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (bool, []types.Packet) {
-	data, ok := packet.Body.(*ubm_api.UBM)
-	if !ok {
+	data := ubm_api.UBM{}
+	err := json.Unmarshal(packet.Body, &data)
+	if err != nil {
 		return false, nil
 	}
 	p := types.Packet{
@@ -131,7 +131,7 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 		if data.Message.ForwardID != "" {
 			v["from_chat_id"] = data.Message.ForwardFromChat.CID.ChatID
 			v["message_id"] = data.Message.ForwardID
-			p.Body = newMessageRequest("forwardMessage", v)
+			p.Body, _ = json.Marshal(newMessageRequest("forwardMessage", v))
 			result = append(result, p)
 			break
 		}
@@ -142,13 +142,13 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 				text += elem.Text
 			}
 			v["text"] = text
-			p.Body = newMessageRequest("editMessageText", v)
+			p.Body, _ = json.Marshal(newMessageRequest("editMessageText", v))
 			result = append(result, p)
 			break
 		}
 		if data.Message.DeleteID != "" {
 			v["message_id"] = data.Message.DeleteID
-			p.Body = newMessageRequest("deleteMessage", v)
+			p.Body, _ = json.Marshal(newMessageRequest("deleteMessage", v))
 			result = append(result, p)
 			break
 		}
@@ -159,14 +159,14 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 			}
 			if data.Message.Record.URL != nil {
 				v["voice"] = data.Message.Record.URL.String()
-				p.Body = newMessageRequest("sendVoice", v)
+				p.Body, _ = json.Marshal(newMessageRequest("sendVoice", v))
 				result = append(result, p)
 				break
 			}
 			if data.Message.Record.Data != nil {
-				p.Body = newFileRequest("sendVoice", v, map[string][]byte{
+				p.Body, _ = json.Marshal(newFileRequest("sendVoice", v, map[string][]byte{
 					"voice": *data.Message.Record.Data,
-				})
+				}))
 				result = append(result, p)
 				break
 			}
@@ -177,7 +177,7 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 			}
 			v["latitude"] = strconv.FormatFloat(data.Message.Location.Latitude, 'f', 6, 64)
 			v["longitude"] = strconv.FormatFloat(data.Message.Location.Longitude, 'f', 6, 64)
-			p.Body = newMessageRequest("sendLocation", v)
+			p.Body, _ = json.Marshal(newMessageRequest("sendLocation", v))
 			result = append(result, p)
 			break
 		case "sticker":
@@ -186,21 +186,21 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 			}
 			if data.Message.Sticker.ID != "" {
 				v["sticker"] = data.Message.Sticker.ID
-				p.Body = newMessageRequest("sendSticker", v)
+				p.Body, _ = json.Marshal(newMessageRequest("sendSticker", v))
 				result = append(result, p)
 				break
 			}
 			if data.Message.Sticker.Image != nil {
 				if data.Message.Sticker.Image.URL != nil {
 					v["sticker"] = data.Message.Sticker.Image.URL.String()
-					p.Body = newMessageRequest("sendSticker", v)
+					p.Body, _ = json.Marshal(newMessageRequest("sendSticker", v))
 					result = append(result, p)
 					break
 				}
 				if data.Message.Sticker.Image.Data != nil {
-					p.Body = newFileRequest("sendSticker", v, map[string][]byte{
+					p.Body, _ = json.Marshal(newFileRequest("sendSticker", v, map[string][]byte{
 						"sticker": *data.Message.Sticker.Image.Data,
-					})
+					}))
 					result = append(result, p)
 					break
 				}
@@ -257,9 +257,9 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 						v["parse_mode"] = "Markdown"
 						if len(photos) == 0 {
 							v["photo"] = photoParams[0].Media
-							p.Body = newMessageRequest("sendPhoto", v)
+							p.Body, _ = json.Marshal(newMessageRequest("sendPhoto", v))
 						} else {
-							p.Body = newFileRequest("sendPhoto", v, photos)
+							p.Body, _ = json.Marshal(newFileRequest("sendPhoto", v, photos))
 						}
 						result = append(result, p)
 						v = v2
@@ -268,13 +268,13 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 					} else if len(photoParams) == 0 {
 						v["text"] = elem.Text
 						v["parse_mode"] = "Markdown"
-						p.Body = newMessageRequest("sendMessage", v)
+						p.Body, _ = json.Marshal(newMessageRequest("sendMessage", v))
 						result = append(result, p)
 						v = v2
 					} else {
 						b, _ := json.Marshal(photoParams)
 						v["media"] = string(b)
-						p.Body = newFileRequest("sendmediagroup", v, photos)
+						p.Body, _ = json.Marshal(newFileRequest("sendmediagroup", v, photos))
 						result = append(result, p)
 						v = v2
 						photos = make(map[string][]byte)
@@ -309,15 +309,15 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 			if len(photoParams) == 1 {
 				if len(photos) == 0 {
 					v["photo"] = photoParams[0].Media
-					p.Body = newMessageRequest("sendPhoto", v)
+					p.Body, _ = json.Marshal(newMessageRequest("sendPhoto", v))
 				} else {
-					p.Body = newFileRequest("sendPhoto", v, photos)
+					p.Body, _ = json.Marshal(newFileRequest("sendPhoto", v, photos))
 				}
 				result = append(result, p)
 			} else if len(photoParams) > 1 {
 				b, _ := json.Marshal(photoParams)
 				v["media"] = string(b)
-				p.Body = newFileRequest("sendmediagroup", v, photos)
+				p.Body, _ = json.Marshal(newFileRequest("sendmediagroup", v, photos))
 				result = append(result, p)
 			}
 			break

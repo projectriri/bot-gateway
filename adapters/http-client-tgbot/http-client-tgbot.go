@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
@@ -73,8 +74,9 @@ func (p *Plugin) Start() {
 	log.Infof("[http-client-tgbot] registered producer channel %v", pc.UUID)
 	for {
 		packet := cc.Consume()
-		req, ok := packet.Body.(*http.Request)
-		if !ok {
+		req := &http.Request{}
+		err := json.Unmarshal(packet.Body, req)
+		if err != nil {
 			log.Errorf("[http-client-tgbot] message %v has an incorrect body type", packet.Head.UUID)
 		}
 		data, err := p.makeRequest(req)

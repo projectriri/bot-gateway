@@ -1,8 +1,10 @@
 package types
 
+import "encoding/json"
+
 type Packet struct {
-	Head Head        `json:"head"`
-	Body interface{} `json:"body"`
+	Head Head            `json:"head"`
+	Body json.RawMessage `json:"body"`
 }
 
 type Head struct {
