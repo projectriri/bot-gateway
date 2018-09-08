@@ -38,7 +38,7 @@ func getTelegramChatType(chat *tgbotapi.Chat) string {
 	}
 }
 
-func newMessageRequest(endpoint string, params map[string]string) *http.Request {
+func newMessageRequest(endpoint string, params map[string]string) http.Request {
 	endpoint = fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", endpoint)
 	values := url.Values{}
 	for k, v := range params {
@@ -46,10 +46,10 @@ func newMessageRequest(endpoint string, params map[string]string) *http.Request 
 	}
 	req, _ := http.NewRequest("POST", endpoint, strings.NewReader(values.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	return req
+	return *req
 }
 
-func newFileRequest(endpoint string, params map[string]string, files map[string][]byte) *http.Request {
+func newFileRequest(endpoint string, params map[string]string, files map[string][]byte) http.Request {
 	if len(files) == 0 {
 		return newMessageRequest(endpoint, params)
 	}
@@ -70,7 +70,7 @@ func newFileRequest(endpoint string, params map[string]string, files map[string]
 	writer.Close()
 	req, _ := http.NewRequest("POST", endpoint, body)
 	req.Header.Add("Content-Type", ct)
-	return req
+	return *req
 }
 
 func plainToMarkdown(from string) (to string) {

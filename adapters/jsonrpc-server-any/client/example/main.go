@@ -62,7 +62,7 @@ func main() {
 			endpoint := fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", "sendMessage")
 			req, _ := http.NewRequest("POST", endpoint, strings.NewReader(v.Encode()))
 			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-			b, _ := json.Marshal(req)
+			b, _ := json.Marshal(*req)
 			packet := types.Packet{
 				Head: types.Head{
 					From: "Test",
