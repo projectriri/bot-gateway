@@ -60,7 +60,6 @@ func pushMessage(cc *ConsumerChannel, pkt *Packet) {
 							case cc.Buffer <- p:
 							}
 						}
-						cc.Buffer <- p
 					}
 					return
 				}

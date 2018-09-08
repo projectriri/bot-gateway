@@ -20,7 +20,7 @@ var (
 
 type Plugin struct {
 	config Config
-	b      Broker
+	b      *Broker
 }
 
 var manifest = types.Manifest{
@@ -62,6 +62,7 @@ func (p *Plugin) Init(filename string, configPath string) {
 	}
 	b := new(Broker)
 	b.init(gci, clt)
+	p.b = b
 }
 
 func (p *Plugin) Start() {

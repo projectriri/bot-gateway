@@ -24,7 +24,7 @@ func (b *Broker) init(gci time.Duration, clt time.Duration) {
 func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitResponse) (err error) {
 	uuid := utils.ValidateOrGenerateUUID(args.UUID)
 	if !args.Producer && !args.Consumer {
-		reply = &ChannelInitResponse{
+		*reply = ChannelInitResponse{
 			UUID: uuid,
 			Code: 204,
 		}
@@ -40,7 +40,7 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 	}
 	b.renewChannel(ch)
 	b.channelPool[uuid] = ch
-	reply = &ChannelInitResponse{
+	*reply = ChannelInitResponse{
 		UUID: uuid,
 		Code: 201,
 	}
@@ -50,20 +50,20 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse) (err error) {
 	ch, ok := b.channelPool[args.UUID]
 	if !ok {
-		reply = &ChannelProduceResponse{
+		*reply = ChannelProduceResponse{
 			Code: 404,
 		}
 		return
 	}
 	b.renewChannel(ch)
 	if ch.P == nil {
-		reply = &ChannelProduceResponse{
+		*reply = ChannelProduceResponse{
 			Code: 418,
 		}
 		return
 	}
 	ch.P.Produce(args.Packet)
-	reply = &ChannelProduceResponse{
+	*reply = ChannelProduceResponse{
 		Code: 200,
 	}
 	return
@@ -73,7 +73,7 @@ func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeRe
 	log.Debugf("[jsonrpc-server-any] preparing to get updates")
 	ch, ok := b.channelPool[args.UUID]
 	if !ok {
-		reply = &ChannelConsumeResponse{
+		*reply = ChannelConsumeResponse{
 			Code: 404,
 		}
 		return
@@ -87,7 +87,7 @@ func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeRe
 	for {
 		select {
 		case <-t.C:
-			reply = &ChannelConsumeResponse{
+			*reply = ChannelConsumeResponse{
 				Code: 204,
 			}
 			log.Infof("[jsonrpc-server-any] timeout")
@@ -108,7 +108,7 @@ func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeRe
 				}
 			}
 			log.Debugf("[jsonrpc-server-any] %v", packets)
-			reply = &ChannelConsumeResponse{
+			*reply = ChannelConsumeResponse{
 				Code:    200,
 				Packets: packets,
 			}

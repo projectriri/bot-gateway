@@ -2,6 +2,7 @@ package client
 
 import (
 	. "github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/jsonrpc-any"
+	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	log "github.com/sirupsen/logrus"
 	"net"
@@ -17,6 +18,7 @@ type Client struct {
 	Limit            int
 	Addr             string
 	MaxRetryInterval time.Duration
+	Accept           []router.RoutingRule
 
 	r       *rpc.Client
 	conn    net.Conn
@@ -33,7 +35,6 @@ func (c *Client) Init(addr string, uuid string) {
 	c.UUID = uuid
 	c.ready = false
 	c.timer = time.Second
-	c.Dial()
 }
 
 func (c *Client) Dial() {
@@ -112,6 +113,7 @@ func (c *Client) InitChannel(key string) (msg string, err error) {
 		UUID:     key,
 		Producer: true,
 		Consumer: true,
+		Accept:   c.Accept,
 	}
 	reply := ChannelInitResponse{}
 
