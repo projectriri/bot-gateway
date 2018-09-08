@@ -2,6 +2,7 @@ package router
 
 import (
 	. "github.com/projectriri/bot-gateway/types"
+	"regexp"
 )
 
 type Channel struct {
@@ -20,7 +21,9 @@ type ConsumerChannel struct {
 }
 
 type RoutingRule struct {
-	From    string   `json:"from"`
-	To      string   `json:"to"`
-	Formats []Format `json:"formats"`
+	From       string         `json:"from"`
+	FromRegexp *regexp.Regexp `json:"-"`
+	To         string         `json:"to"`
+	ToRegexp   *regexp.Regexp `json:"-"`
+	Formats    []Format       `json:"formats"`
 }

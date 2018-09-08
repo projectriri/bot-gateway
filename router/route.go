@@ -4,7 +4,6 @@ import (
 	. "github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
-	"regexp"
 	"strings"
 )
 
@@ -28,8 +27,8 @@ func pushMessage(cc *ConsumerChannel, pkt *Packet) {
 	log.Debugf("[router] pkt: %v TRYING cc: %+v", pkt.Head.UUID, cc)
 	var formats []Format
 	for _, ac := range cc.Accept {
-		f, _ := regexp.MatchString(ac.From, pkt.Head.From)
-		t, _ := regexp.MatchString(ac.To, pkt.Head.To)
+		f := ac.FromRegexp.MatchString(pkt.Head.From)
+		t := ac.ToRegexp.MatchString(pkt.Head.To)
 		if f && t {
 			formats = ac.Formats
 			break

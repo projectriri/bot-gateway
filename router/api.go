@@ -4,6 +4,7 @@ import (
 	. "github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
+	"regexp"
 )
 
 func RegisterProducerChannel(uuid string, acceptAck bool) *ProducerChannel {
@@ -40,6 +41,11 @@ func RegisterConsumerChannel(uuid string, accept []RoutingRule) *ConsumerChannel
 	}
 
 	buff := make(Buffer, config.BufferSize)
+
+	for k, ac := range accept {
+		accept[k].FromRegexp = regexp.MustCompile(ac.From)
+		accept[k].ToRegexp = regexp.MustCompile(ac.To)
+	}
 
 	cc := &ConsumerChannel{
 		Channel: Channel{
