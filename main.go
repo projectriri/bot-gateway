@@ -75,21 +75,23 @@ func loadPlugin(path string) {
 		return
 	}
 	// register and start types
-	covp, ok1 := pi.(*types.Converter)
-	if ok1 {
-		cov := *covp
-		converters = append(converters, cov)
-	}
-	adpp, ok2 := pi.(*types.Adapter)
-	if ok2 {
-		adp := *adpp
+	switch x := pi.(type) {
+	case *types.Adapter:
+		adp := *x
 		log.Infof("initializing adapter types %v", filename)
 		adp.Init(filename, config.PluginConfDir)
 		log.Infof("starting adapter types %v", filename)
 		go adp.Start()
 		adaptors = append(adaptors, adp)
-	}
-	if !ok1 && !ok2 {
+	case *types.Converter:
+		cov := *x
+		converters = append(converters, cov)
+		log.Infof("initializing adapter types %v", filename)
+		cov.Init(filename, config.PluginConfDir)
+		log.Infof("starting adapter types %v", filename)
+		go cov.Start()
+		adaptors = append(adaptors, cov)
+	default:
 		log.Errorf("types %v neither implements an adapter or a converter")
 	}
 }

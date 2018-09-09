@@ -1,7 +1,7 @@
 package types
 
 type Converter interface {
-	BasePlugin
+	Adapter
 	IsConvertible(from Format, to Format) bool
 	Convert(packet Packet, to Format) (bool, []Packet)
 }
