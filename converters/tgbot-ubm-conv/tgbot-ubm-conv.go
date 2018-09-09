@@ -128,9 +128,10 @@ func (p *Plugin) Start() {
 			To:   p.config.AdaptorName,
 			Formats: []types.Format{
 				{
-					API:     "telegram",
-					Version: "latest",
-					Method:  "apiresponse",
+					API:      "telegram-bot-api",
+					Version:  "latest",
+					Method:   "apiresponse",
+					Protocol: "http",
 				},
 			},
 		},

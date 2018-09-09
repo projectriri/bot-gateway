@@ -95,6 +95,7 @@ func (p *Plugin) Start() {
 		pc.Produce(types.Packet{
 			Head: types.Head{
 				From:        p.config.AdaptorName,
+				To:          packet.Head.From,
 				UUID:        utils.GenerateUUID(),
 				ReplyToUUID: packet.Head.UUID,
 				Format: types.Format{

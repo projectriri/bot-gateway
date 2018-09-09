@@ -16,7 +16,7 @@ func (p *Plugin) getFileURL(fileid string, adapter string) string {
 	if !p.config.FetchFile {
 		return ""
 	}
-	endpoint := fmt.Sprintf(FileEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", "getFile")
+	endpoint := fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", "getFile")
 	v := url.Values{}
 	v.Add("file_id", fileid)
 	header := http.Header{}
