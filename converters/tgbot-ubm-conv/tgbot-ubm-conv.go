@@ -4,6 +4,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
+	"github.com/projectriri/bot-gateway/types/ubm-api"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"sync"
@@ -24,6 +25,7 @@ type Plugin struct {
 	pc              *router.ProducerChannel
 	cc              *router.ConsumerChannel
 	timeout         time.Duration
+	me              map[string]*ubm_api.User
 }
 
 var manifest = types.Manifest{
@@ -61,6 +63,7 @@ func (p *Plugin) Init(filename string, configPath string) {
 			p.timeout = time.Minute * 5
 		}
 	}
+	p.me = make(map[string]*ubm_api.User)
 }
 
 func (p *Plugin) IsConvertible(from types.Format, to types.Format) bool {

@@ -12,6 +12,8 @@ type Message struct {
 	ID              string    `json:"id,omitempty"`
 	From            *User     `json:"from,omitempty"`
 	Chat            *Chat     `json:"chat,omitempty"`
+	Self            *User     `json:"self,omitempty"`
+	IsMessageToMe   bool      `json:"is_message_to_me"`
 	UID             *UID      `json:"uid,omitempty"`
 	CID             *CID      `json:"cid,omitempty"`
 	Type            string    `json:"type"`

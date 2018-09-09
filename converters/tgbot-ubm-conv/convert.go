@@ -32,6 +32,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 			} else if update.EditedMessage != nil {
 				update.Message = update.ChannelPost
 			}
+			self := plugin.getMe(packet.Head.From)
 			ubm := ubm_api.UBM{
 				Type: "message",
 				Message: &ubm_api.Message{
@@ -60,7 +61,13 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 							ChatType:  getTelegramChatType(update.Message.Chat),
 						},
 					},
+					Self: self,
 				},
+			}
+			if update.Message.ReplyToMessage != nil {
+				if self != nil && strconv.Itoa(update.Message.ReplyToMessage.From.ID) == self.UID.ID {
+					ubm.Message.IsMessageToMe = true
+				}
 			}
 			if update.Message.Sticker != nil {
 				ubm.Message.Type = "sticker"
@@ -110,12 +117,18 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 					})
 				}
 				if update.Message.Caption != "" {
+					if self != nil && strings.Contains(update.Message.Caption, "@"+self.UID.Username) {
+						ubm.Message.IsMessageToMe = true
+					}
 					richText = append(richText, ubm_api.RichTextElement{
 						Type: "text",
 						Text: update.Message.Caption,
 					})
 				}
 			} else if update.Message.Text != "" {
+				if self != nil && strings.Contains(update.Message.Text, "@"+self.UID.Username) {
+					ubm.Message.IsMessageToMe = true
+				}
 				ubm.Message.Type = "rich_text"
 				ubm.Message.RichText = &ubm_api.RichText{
 					{
