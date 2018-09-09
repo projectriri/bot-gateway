@@ -1,7 +1,5 @@
 package ubm_api
 
-import "net/url"
-
 type UBM struct {
 	Type     string    `json:"type"`
 	Message  *Message  `json:"message,omitempty"`
@@ -70,11 +68,12 @@ type At struct {
 }
 
 type Image struct {
-	Format string   `json:"format"`
-	Width  int      `json:"width"`
-	Height int      `json:"height"`
-	Data   *[]byte  `json:"data"`
-	URL    *url.URL `json:"url"`
+	Format   string  `json:"format,omitempty"`
+	Width    int     `json:"width,omitempty"`
+	Height   int     `json:"height,omitempty"`
+	Data     *[]byte `json:"data,omitempty"`
+	URL      string  `json:"url,omitempty"`
+	FileSize int     `json:"file_size,omitempty"`
 }
 
 type Sticker struct {
@@ -84,10 +83,11 @@ type Sticker struct {
 }
 
 type Record struct {
-	Format   string   `json:"format"`
-	Duration int      `json:"duration"`
-	Data     *[]byte  `json:"data"`
-	URL      *url.URL `json:"url"`
+	Format   string  `json:"format,omitempty"`
+	Duration int     `json:"duration,omitempty"`
+	Data     *[]byte `json:"data,omitempty"`
+	URL      string  `json:"url,omitempty"`
+	FileSize int     `json:"file_size,omitempty"`
 }
 
 type Location struct {

@@ -7,7 +7,6 @@ import (
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
-	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -77,7 +76,7 @@ func (p *Plugin) Start() {
 			log.Errorf("[commander] message %v has an incorrect body type %v", packet.Head.UUID, err)
 		}
 		fmt.Printf("%s\n", string(packet.Body))
-		ubm := ubm_api.UBM{
+		/*ubm := ubm_api.UBM{
 			Type: "message",
 			Message: &ubm_api.Message{
 				CID:      &req.Message.Chat.CID,
@@ -106,7 +105,7 @@ func (p *Plugin) Start() {
 				},
 				Body: b,
 			})
-		}
+		}*/
 	}
 }
 

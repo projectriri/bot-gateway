@@ -1,0 +1,5 @@
+telegram_adaptors = "Telegram"
+adaptor_name = "TGBot-UBM-Converter"
+channel_uuid = ""
+fetch_file = true
+fetch_file_timeout = "5m"

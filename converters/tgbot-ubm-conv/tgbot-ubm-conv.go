@@ -2,9 +2,12 @@ package main
 
 import (
 	"github.com/BurntSushi/toml"
+	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	log "github.com/sirupsen/logrus"
 	"strings"
+	"sync"
+	"time"
 )
 
 var (
@@ -14,7 +17,14 @@ var (
 	GitTag        string
 )
 
-type Plugin struct{}
+type Plugin struct {
+	pendingRequests map[string]chan types.Packet
+	mux             sync.Mutex
+	config          Config
+	pc              *router.ProducerChannel
+	cc              *router.ConsumerChannel
+	timeout         time.Duration
+}
 
 var manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
@@ -38,9 +48,18 @@ func (p *Plugin) GetManifest() types.Manifest {
 
 func (p *Plugin) Init(filename string, configPath string) {
 	// load toml config
-	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &config)
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
 	if err != nil {
 		panic(err)
+	}
+	if p.config.FetchFile {
+		p.pendingRequests = make(map[string]chan types.Packet)
+		p.mux = sync.Mutex{}
+		p.timeout, err = time.ParseDuration(p.config.FetchFileTimeout)
+		if err != nil {
+			log.Error("[tgbot-ubm-conv] fail to parse fetch file timeout", err)
+			p.timeout = time.Minute * 5
+		}
 	}
 }
 
@@ -76,7 +95,7 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 			switch strings.ToLower(from.Protocol) {
 			case "http":
 				log.Debugf("[tgbot-ubm-conv] pkt %v: convertTgUpdateHttpToUbmReceive", packet.Head.UUID)
-				return convertTgUpdateHttpToUbmReceive(packet, to)
+				return p.convertTgUpdateHttpToUbmReceive(packet, to)
 			}
 		}
 		if strings.ToLower(from.Method) == "apiresponse" && strings.ToLower(to.Method) == "response" {
@@ -91,11 +110,46 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 			switch strings.ToLower(to.Protocol) {
 			case "http":
 				log.Debugf("[tgbot-ubm-conv] pkt %v: convertUbmSendToTgApiRequestHttp", packet.Head.UUID)
-				return convertUbmSendToTgApiRequestHttp(packet, to)
+				return p.convertUbmSendToTgApiRequestHttp(packet, to)
 			}
 		}
 	}
 	return false, nil
+}
+
+func (p *Plugin) Start() {
+	if !p.config.FetchFile {
+		return
+	}
+	log.Infof("[tgbot-ubm-conv] registering consumer channel %v", p.config.ChannelUUID)
+	p.cc = router.RegisterConsumerChannel(p.config.ChannelUUID, []router.RoutingRule{
+		{
+			From: p.config.TelegramAdaptors,
+			To:   p.config.AdaptorName,
+			Formats: []types.Format{
+				{
+					API:     "telegram",
+					Version: "latest",
+					Method:  "apiresponse",
+				},
+			},
+		},
+	})
+	defer p.cc.Close()
+	log.Infof("[tgbot-ubm-conv] registered consumer channel %v", p.cc.UUID)
+	log.Infof("[tgbot-ubm-conv] registering producer channel %v", p.config.ChannelUUID)
+	p.pc = router.RegisterProducerChannel(p.config.ChannelUUID, false)
+	defer p.pc.Close()
+	for pkt := range p.cc.Buffer {
+		p.mux.Lock()
+		ch, ok := p.pendingRequests[pkt.Head.ReplyToUUID]
+		if ok {
+			ch <- pkt
+			close(ch)
+			delete(p.pendingRequests, pkt.Head.ReplyToUUID)
+		}
+		p.mux.Unlock()
+	}
 }
 
 var PluginInstance types.Converter = &Plugin{}

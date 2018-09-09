@@ -89,7 +89,7 @@ func main() {
 				packet,
 			})
 
-			// Send Message in format ubm-api
+			// Send message in format ubm-api
 			ubm := ubm_api.UBM{
 				Type: "message",
 				Message: &ubm_api.Message{

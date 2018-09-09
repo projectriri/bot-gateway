@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool, []types.Packet) {
+func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool, []types.Packet) {
 	data := packet.Body
 
 	var apiResp tgbotapi.APIResponse
@@ -66,6 +66,12 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 				ubm.Message.Type = "sticker"
 				ubm.Message.Sticker = &ubm_api.Sticker{
 					ID: update.Message.Sticker.FileID,
+					Image: &ubm_api.Image{
+						Width:    update.Message.Sticker.Width,
+						Height:   update.Message.Sticker.Height,
+						URL:      plugin.getFileURL(update.Message.Sticker.FileID, packet.Head.From),
+						FileSize: update.Message.Sticker.FileSize,
+					},
 				}
 			} else if update.Message.Location != nil {
 				ubm.Message.Type = "location"
@@ -74,15 +80,41 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 					Longitude: update.Message.Location.Longitude,
 				}
 			} else if update.Message.Audio != nil {
-				// TODO
-				return false, nil
+				ubm.Message.Type = "record"
+				ubm.Message.Record = &ubm_api.Record{
+					Format:   update.Message.Audio.MimeType,
+					Duration: update.Message.Audio.Duration,
+					URL:      plugin.getFileURL(update.Message.Audio.FileID, packet.Head.From),
+					FileSize: update.Message.Audio.FileSize,
+				}
+			} else if update.Message.Voice != nil {
+				ubm.Message.Type = "record"
+				ubm.Message.Record = &ubm_api.Record{
+					Format:   update.Message.Voice.MimeType,
+					Duration: update.Message.Voice.Duration,
+					URL:      plugin.getFileURL(update.Message.Voice.FileID, packet.Head.From),
+					FileSize: update.Message.Voice.FileSize,
+				}
 			} else if update.Message.Photo != nil {
 				ubm.Message.Type = "rich_text"
-				// TODO
-				// for _, photo := range *update.Message.Photo {
-				//
-				// }
-				return false, nil
+				richText := make(ubm_api.RichText, 0)
+				for _, photo := range *update.Message.Photo {
+					richText = append(richText, ubm_api.RichTextElement{
+						Type: "image",
+						Image: &ubm_api.Image{
+							Width:    photo.Width,
+							Height:   photo.Height,
+							URL:      plugin.getFileURL(photo.FileID, packet.Head.From),
+							FileSize: photo.FileSize,
+						},
+					})
+				}
+				if update.Message.Caption != "" {
+					richText = append(richText, ubm_api.RichTextElement{
+						Type: "text",
+						Text: update.Message.Caption,
+					})
+				}
 			} else if update.Message.Text != "" {
 				ubm.Message.Type = "rich_text"
 				ubm.Message.RichText = &ubm_api.RichText{
@@ -105,7 +137,7 @@ func convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool
 	return len(result) > 0, result
 }
 
-func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (bool, []types.Packet) {
+func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (bool, []types.Packet) {
 	data := ubm_api.UBM{}
 	err := json.Unmarshal(packet.Body, &data)
 	if err != nil {
@@ -157,8 +189,8 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 			if data.Message.Record == nil {
 				return false, nil
 			}
-			if data.Message.Record.URL != nil {
-				v["voice"] = data.Message.Record.URL.String()
+			if data.Message.Record.URL != "" {
+				v["voice"] = data.Message.Record.URL
 				p.Body, _ = json.Marshal(newMessageRequest("sendVoice", v))
 				result = append(result, p)
 				break
@@ -191,8 +223,8 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 				break
 			}
 			if data.Message.Sticker.Image != nil {
-				if data.Message.Sticker.Image.URL != nil {
-					v["sticker"] = data.Message.Sticker.Image.URL.String()
+				if data.Message.Sticker.Image.URL != "" {
+					v["sticker"] = data.Message.Sticker.Image.URL
 					p.Body, _ = json.Marshal(newMessageRequest("sendSticker", v))
 					result = append(result, p)
 					break
@@ -290,10 +322,10 @@ func convertUbmSendToTgApiRequestHttp(packet types.Packet, to types.Format) (boo
 					} else {
 						field = fmt.Sprintf("photo%d", len(photoParams))
 					}
-					if elem.Image.URL != nil {
+					if elem.Image.URL != "" {
 						photoParams = append(photoParams, PhotoConfig{
 							Type:  "photo",
-							Media: elem.Image.URL.String(),
+							Media: elem.Image.URL,
 						})
 						break
 					}
