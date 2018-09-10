@@ -11,8 +11,10 @@ import (
 	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 // Telegram constants
@@ -27,7 +29,9 @@ const (
 func main() {
 	log.SetLevel(log.DebugLevel)
 	c := client.Client{}
-	c.Init("127.0.0.1:4700", "")
+	// in an actual fly, place a legal uuid here
+	uuid := ""
+	c.Init("127.0.0.1:4700", uuid)
 	c.Accept = []router.RoutingRule{
 		{
 			From: ".*",
@@ -56,10 +60,12 @@ func main() {
 		case "ubm-api":
 			data := ubm_api.UBM{}
 			json.Unmarshal(pkt.Body, &data)
+
 			// Send message in format telegram-bot-api
 			v := url.Values{}
 			v.Add("chat_id", data.Message.Chat.CID.ChatID)
 			v.Add("text", "Test Send in Telegram-Bot-API Passed!")
+			// keep the token as the placeholder, this will be handled by the Telegram adapter
 			endpoint := fmt.Sprintf(APIEndpoint, "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX", "sendMessage")
 			header := http.Header{}
 			header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -90,6 +96,16 @@ func main() {
 			})
 
 			// Send message in format ubm-api
+
+			file, err := os.Open("projectriri.jpg")
+			if err != nil {
+				fmt.Println(err)
+			}
+			fileContents, err := ioutil.ReadAll(file)
+			if err != nil {
+				fmt.Println(err)
+			}
+
 			ubm := ubm_api.UBM{
 				Type: "message",
 				Message: &ubm_api.Message{
@@ -102,6 +118,51 @@ func main() {
 						{
 							Type: "text",
 							Text: "Test Send in UBM-API Passed!",
+						},
+						{
+							Type: "at",
+							At: &ubm_api.At{
+								DisplayName: "梨子",
+								UID: ubm_api.UID{
+									Messenger: "Telegram",
+									ID:        "8964",
+								},
+							},
+						},
+						{
+							Type: "text",
+							Text: "Text 2: There is an at and an image before this text.",
+						},
+						{
+							Type: "text",
+							Text: "Text 2: There is an image before this text.",
+						},
+						{
+							Type: "image",
+							Image: &ubm_api.Image{
+								Data: &fileContents,
+							},
+						},
+						{
+							Type: "image",
+							Image: &ubm_api.Image{
+								Data: &fileContents,
+							},
+						},
+						{
+							Type: "at",
+							At: &ubm_api.At{
+								DisplayName: "梨子",
+								UID: ubm_api.UID{
+									Messenger: "Telegram",
+									ID:        "8964",
+									Username:  "example_user",
+								},
+							},
+						},
+						{
+							Type: "text",
+							Text: "Text 3: There is an at and 2 images before this text.",
 						},
 					},
 				},
