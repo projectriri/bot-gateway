@@ -56,6 +56,12 @@ func newMessageRequest(endpoint string, params map[string]string) common.HTTPReq
 	return req
 }
 
+func generateFileName(file []byte) string {
+	filetype := http.DetectContentType(file)
+	strs := strings.Split(filetype, "/")
+	return fmt.Sprintf("file.%s", strs[len(strs)-1])
+}
+
 func newFileRequest(endpoint string, params map[string]string, files map[string][]byte) common.HTTPRequest {
 	if len(files) == 0 {
 		return newMessageRequest(endpoint, params)
@@ -68,7 +74,7 @@ func newFileRequest(endpoint string, params map[string]string, files map[string]
 		_ = writer.WriteField(key, val)
 	}
 	for k, v := range files {
-		part, err := writer.CreateFormFile(k, k)
+		part, err := writer.CreateFormFile(k, generateFileName(v))
 		if err != nil {
 			fmt.Println(err)
 		}
