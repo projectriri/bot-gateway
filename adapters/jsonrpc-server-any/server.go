@@ -48,6 +48,7 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 }
 
 func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse) (err error) {
+	log.Debugf("[jsonrpc-server-any] preparing to send packet")
 	ch, ok := b.channelPool[args.UUID]
 	if !ok {
 		*reply = ChannelProduceResponse{
@@ -55,17 +56,20 @@ func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse
 		}
 		return
 	}
+	log.Debugf("[jsonrpc-server-any] sending packet for channel %v", ch.UUID)
 	b.renewChannel(ch)
 	if ch.P == nil {
 		*reply = ChannelProduceResponse{
 			Code: 418,
 		}
+		log.Warnf("[jsonrpc-server-any] sending packet for channel %v 418", ch.UUID)
 		return
 	}
 	ch.P.Produce(args.Packet)
 	*reply = ChannelProduceResponse{
-		Code: 200,
+		Code: 202,
 	}
+	log.Debugf("[jsonrpc-server-any] sending packet for channel %v 202", ch.UUID)
 	return
 }
 
