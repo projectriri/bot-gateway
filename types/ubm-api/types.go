@@ -75,6 +75,7 @@ type Image struct {
 	Height   int     `json:"height,omitempty"`
 	Data     *[]byte `json:"data,omitempty"`
 	URL      string  `json:"url,omitempty"`
+	FileID   string  `json:"file_id,omitempty"`
 	FileSize int     `json:"file_size,omitempty"`
 }
 
@@ -89,6 +90,7 @@ type Record struct {
 	Duration int     `json:"duration,omitempty"`
 	Data     *[]byte `json:"data,omitempty"`
 	URL      string  `json:"url,omitempty"`
+	FileID   string  `json:"file_id,omitempty"`
 	FileSize int     `json:"file_size,omitempty"`
 }
 

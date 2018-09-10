@@ -76,6 +76,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 					Image: &ubm_api.Image{
 						Width:    update.Message.Sticker.Width,
 						Height:   update.Message.Sticker.Height,
+						FileID:   update.Message.Sticker.FileID,
 						URL:      plugin.getFileURL(update.Message.Sticker.FileID, packet.Head.From),
 						FileSize: update.Message.Sticker.FileSize,
 					},
@@ -91,6 +92,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				ubm.Message.Record = &ubm_api.Record{
 					Format:   update.Message.Audio.MimeType,
 					Duration: update.Message.Audio.Duration,
+					FileID:   update.Message.Audio.FileID,
 					URL:      plugin.getFileURL(update.Message.Audio.FileID, packet.Head.From),
 					FileSize: update.Message.Audio.FileSize,
 				}
@@ -99,6 +101,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				ubm.Message.Record = &ubm_api.Record{
 					Format:   update.Message.Voice.MimeType,
 					Duration: update.Message.Voice.Duration,
+					FileID:   update.Message.Voice.FileID,
 					URL:      plugin.getFileURL(update.Message.Voice.FileID, packet.Head.From),
 					FileSize: update.Message.Voice.FileSize,
 				}
@@ -111,6 +114,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 						Image: &ubm_api.Image{
 							Width:    photo.Width,
 							Height:   photo.Height,
+							FileID:   photo.FileID,
 							URL:      plugin.getFileURL(photo.FileID, packet.Head.From),
 							FileSize: photo.FileSize,
 						},
@@ -334,6 +338,13 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 						field = "photo"
 					} else {
 						field = fmt.Sprintf("photo%d", len(photoParams))
+					}
+					if elem.Image.FileID != "" {
+						photoParams = append(photoParams, PhotoConfig{
+							Type:  "photo",
+							Media: elem.Image.FileID,
+						})
+						break
 					}
 					if elem.Image.URL != "" {
 						photoParams = append(photoParams, PhotoConfig{
