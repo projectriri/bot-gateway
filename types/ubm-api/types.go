@@ -1,5 +1,7 @@
 package ubm_api
 
+import "fmt"
+
 type UBM struct {
 	Type     string    `json:"type"`
 	Message  *Message  `json:"message,omitempty"`
@@ -35,6 +37,10 @@ type CID struct {
 	ChatType  string `json:"chat_type"`
 }
 
+func (cid CID) String() string {
+	return fmt.Sprintf("%s://%s:%s", cid.Messenger, cid.ChatType, cid.ChatID)
+}
+
 type Chat struct {
 	CID         CID    `json:"cid"`
 	Title       string `json:"title"`
@@ -45,6 +51,10 @@ type UID struct {
 	Messenger string `json:"messenger"`
 	ID        string `json:"id"`
 	Username  string `json:"username"`
+}
+
+func (uid UID) String() string {
+	return fmt.Sprintf("%s://%s", uid.Messenger, uid.ID)
 }
 
 type User struct {

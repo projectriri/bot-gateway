@@ -1,6 +1,10 @@
 package types
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"strings"
+)
 
 type Packet struct {
 	Head Head            `json:"head"`
@@ -21,6 +25,10 @@ type Format struct {
 	Version  string `json:"version"`
 	Method   string `json:"method"`
 	Protocol string `json:"protocol"`
+}
+
+func (f Format) String() string {
+	return fmt.Sprintf("%s://%s@%s:%s", strings.ToLower(f.Protocol), strings.ToLower(f.API), strings.ToLower(f.Version), strings.ToLower(f.Method))
 }
 
 type Buffer chan Packet
