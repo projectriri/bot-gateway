@@ -214,7 +214,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 			}
 			if data.Message.Record.Data != nil {
 				p.Body, _ = json.Marshal(newFileRequest("sendVoice", v, map[string][]byte{
-					"voice": *data.Message.Record.Data,
+					"voice": data.Message.Record.Data,
 				}))
 				result = append(result, p)
 				break
@@ -248,7 +248,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 				}
 				if data.Message.Sticker.Image.Data != nil {
 					p.Body, _ = json.Marshal(newFileRequest("sendSticker", v, map[string][]byte{
-						"sticker": *data.Message.Sticker.Image.Data,
+						"sticker": data.Message.Sticker.Image.Data,
 					}))
 					result = append(result, p)
 					break
@@ -302,6 +302,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 				switch elem.Type {
 				case "text":
 					if len(photoParams) == 1 {
+						// send one image with caption
 						v["caption"] = elem.Text
 						v["parse_mode"] = "Markdown"
 						if len(photos) == 0 {
@@ -315,12 +316,14 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 						photos = make(map[string][]byte)
 						photoParams = make([]PhotoConfig, 0)
 					} else if len(photoParams) == 0 {
+						// send a text message
 						v["text"] = elem.Text
 						v["parse_mode"] = "Markdown"
 						p.Body, _ = json.Marshal(newMessageRequest("sendMessage", v))
 						result = append(result, p)
 						v = v2
 					} else {
+						// send images
 						b, _ := json.Marshal(photoParams)
 						v["media"] = string(b)
 						p.Body, _ = json.Marshal(newFileRequest("sendmediagroup", v, photos))
@@ -328,6 +331,12 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 						v = v2
 						photos = make(map[string][]byte)
 						photoParams = make([]PhotoConfig, 0)
+						// send text message
+						v["text"] = elem.Text
+						v["parse_mode"] = "Markdown"
+						p.Body, _ = json.Marshal(newMessageRequest("sendMessage", v))
+						result = append(result, p)
+						v = v2
 					}
 				case "image":
 					if elem.Image == nil {
@@ -358,7 +367,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 							Type:  "photo",
 							Media: fmt.Sprintf("attach://%s", field),
 						})
-						photos[field] = *elem.Image.Data
+						photos[field] = elem.Image.Data
 					}
 				}
 			}

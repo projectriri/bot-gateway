@@ -120,12 +120,19 @@ func main() {
 							Text: "Test Send in UBM-API Passed!",
 						},
 						{
+							Type: "image",
+							Image: &ubm_api.Image{
+								Data: fileContents,
+							},
+						},
+						{
 							Type: "at",
 							At: &ubm_api.At{
 								DisplayName: "梨子",
 								UID: ubm_api.UID{
 									Messenger: "Telegram",
-									ID:        "8964",
+									ID:        "565533972",
+									Username:  "riri_the_little_daemon_bot",
 								},
 							},
 						},
@@ -134,19 +141,15 @@ func main() {
 							Text: "Text 2: There is an at and an image before this text.",
 						},
 						{
-							Type: "text",
-							Text: "Text 2: There is an image before this text.",
-						},
-						{
 							Type: "image",
 							Image: &ubm_api.Image{
-								Data: &fileContents,
+								Data: fileContents,
 							},
 						},
 						{
 							Type: "image",
 							Image: &ubm_api.Image{
-								Data: &fileContents,
+								Data: fileContents,
 							},
 						},
 						{
@@ -155,8 +158,7 @@ func main() {
 								DisplayName: "梨子",
 								UID: ubm_api.UID{
 									Messenger: "Telegram",
-									ID:        "8964",
-									Username:  "example_user",
+									ID:        "565533972",
 								},
 							},
 						},
