@@ -99,3 +99,11 @@ func plainToMarkdown(from string) (to string) {
 	from = strings.Replace(from, "`", "\\`", -1)
 	return from
 }
+
+func mapCopy(originalMap map[string]string) map[string]string {
+	newMap := make(map[string]string)
+	for key, value := range originalMap {
+		newMap[key] = value
+	}
+	return newMap
+}

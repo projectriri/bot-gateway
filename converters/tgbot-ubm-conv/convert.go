@@ -257,7 +257,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 			}
 			return false, nil
 		case "rich_text":
-			v2 := v
+			v2 := mapCopy(v)
 
 			// format ats and concat neighbor texts
 			txtTmp := make([]string, 0)
@@ -312,7 +312,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 							p.Body, _ = json.Marshal(newFileRequest("sendPhoto", v, photos))
 						}
 						result = append(result, p)
-						v = v2
+						v = mapCopy(v2)
 						photos = make(map[string][]byte)
 						photoParams = make([]PhotoConfig, 0)
 					} else if len(photoParams) == 0 {
@@ -321,14 +321,14 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 						v["parse_mode"] = "Markdown"
 						p.Body, _ = json.Marshal(newMessageRequest("sendMessage", v))
 						result = append(result, p)
-						v = v2
+						v = mapCopy(v2)
 					} else {
 						// send images
 						b, _ := json.Marshal(photoParams)
 						v["media"] = string(b)
 						p.Body, _ = json.Marshal(newFileRequest("sendmediagroup", v, photos))
 						result = append(result, p)
-						v = v2
+						v = mapCopy(v2)
 						photos = make(map[string][]byte)
 						photoParams = make([]PhotoConfig, 0)
 						// send text message
@@ -336,7 +336,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 						v["parse_mode"] = "Markdown"
 						p.Body, _ = json.Marshal(newMessageRequest("sendMessage", v))
 						result = append(result, p)
-						v = v2
+						v = mapCopy(v2)
 					}
 				case "image":
 					if elem.Image == nil {
