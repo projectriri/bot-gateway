@@ -389,8 +389,5 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 		}
 
 	}
-	for _, a := range result {
-		fmt.Println(string(a.Body))
-	}
 	return len(result) > 0, result
 }

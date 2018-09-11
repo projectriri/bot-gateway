@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/projectriri/bot-gateway/types/common"
+	log "github.com/sirupsen/logrus"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -76,7 +77,7 @@ func newFileRequest(endpoint string, params map[string]string, files map[string]
 	for k, v := range files {
 		part, err := writer.CreateFormFile(k, generateFileName(v))
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err)
 		}
 		part.Write(v)
 	}

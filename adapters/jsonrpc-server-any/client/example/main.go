@@ -10,7 +10,6 @@ import (
 	"github.com/projectriri/bot-gateway/types/common"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"github.com/projectriri/bot-gateway/utils"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -27,7 +26,6 @@ const (
 )
 
 func main() {
-	log.SetLevel(log.DebugLevel)
 	c := client.Client{}
 	// in an actual fly, place a legal uuid here
 	uuid := ""
