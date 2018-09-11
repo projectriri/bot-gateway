@@ -45,7 +45,7 @@ func (p *Plugin) makeRequest(req *http.Request) ([]byte, error) {
 		log.Errorf("[http-client-tgbot] fail to parse url : %v", endpoint)
 		return nil, errors.New("fail to parse url")
 	}
-	fmt.Println(req.URL)
+	log.Debugf("[http-client-tgbot] %s", req.URL)
 	resp, err := p.client.Do(req)
 	if err != nil {
 		return nil, err

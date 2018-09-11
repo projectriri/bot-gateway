@@ -80,13 +80,13 @@ type At struct {
 }
 
 type Image struct {
-	Format   string  `json:"format,omitempty"`
-	Width    int     `json:"width,omitempty"`
-	Height   int     `json:"height,omitempty"`
+	Format   string `json:"format,omitempty"`
+	Width    int    `json:"width,omitempty"`
+	Height   int    `json:"height,omitempty"`
 	Data     []byte `json:"data,omitempty"`
-	URL      string  `json:"url,omitempty"`
-	FileID   string  `json:"file_id,omitempty"`
-	FileSize int     `json:"file_size,omitempty"`
+	URL      string `json:"url,omitempty"`
+	FileID   string `json:"file_id,omitempty"`
+	FileSize int    `json:"file_size,omitempty"`
 }
 
 type Sticker struct {
@@ -96,12 +96,12 @@ type Sticker struct {
 }
 
 type Record struct {
-	Format   string  `json:"format,omitempty"`
-	Duration int     `json:"duration,omitempty"`
+	Format   string `json:"format,omitempty"`
+	Duration int    `json:"duration,omitempty"`
 	Data     []byte `json:"data,omitempty"`
-	URL      string  `json:"url,omitempty"`
-	FileID   string  `json:"file_id,omitempty"`
-	FileSize int     `json:"file_size,omitempty"`
+	URL      string `json:"url,omitempty"`
+	FileID   string `json:"file_id,omitempty"`
+	FileSize int    `json:"file_size,omitempty"`
 }
 
 type Location struct {
