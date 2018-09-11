@@ -50,7 +50,7 @@ func newMessageRequest(endpoint string, params map[string]string) common.HTTPReq
 	req := common.HTTPRequest{
 		Method: "POST",
 		URL:    endpoint,
-		Body:   values.Encode(),
+		Body:   []byte(values.Encode()),
 		Header: header,
 	}
 	return req
@@ -86,7 +86,7 @@ func newFileRequest(endpoint string, params map[string]string, files map[string]
 	req := common.HTTPRequest{
 		Method: "POST",
 		URL:    endpoint,
-		Body:   body.String(),
+		Body:   body.Bytes(),
 		Header: header,
 	}
 	return req

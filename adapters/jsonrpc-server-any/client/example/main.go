@@ -73,7 +73,7 @@ func main() {
 				Method: "POST",
 				URL:    endpoint,
 				Header: header,
-				Body:   v.Encode(),
+				Body:   []byte(v.Encode()),
 			}
 			b, _ := json.Marshal(req)
 			packet := types.Packet{

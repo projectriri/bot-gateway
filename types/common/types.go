@@ -7,6 +7,6 @@ import (
 type HTTPRequest struct {
 	Method string      `json:"method"`
 	URL    string      `json:"url"`
-	Body   string      `json:"body"`
+	Body   []byte      `json:"body"`
 	Header http.Header `json:"header"`
 }

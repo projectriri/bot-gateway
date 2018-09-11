@@ -21,7 +21,7 @@ func (p *Plugin) makeRequest(adapter string, endpoint string, values url.Values)
 	req := common.HTTPRequest{
 		Method: "POST",
 		URL:    endpoint,
-		Body:   values.Encode(),
+		Body:   []byte(values.Encode()),
 		Header: header,
 	}
 	uuid := utils.GenerateUUID()
