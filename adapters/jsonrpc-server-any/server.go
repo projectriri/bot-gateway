@@ -26,7 +26,7 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 	if !args.Producer && !args.Consumer {
 		*reply = ChannelInitResponse{
 			UUID: uuid,
-			Code: 204,
+			Code: 10042,
 		}
 	}
 	ch := &Channel{
@@ -42,7 +42,7 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 	b.channelPool[uuid] = ch
 	*reply = ChannelInitResponse{
 		UUID: uuid,
-		Code: 201,
+		Code: 10001,
 	}
 	return
 }
@@ -52,7 +52,7 @@ func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse
 	ch, ok := b.channelPool[args.UUID]
 	if !ok {
 		*reply = ChannelProduceResponse{
-			Code: 404,
+			Code: 10044,
 		}
 		return
 	}
@@ -60,14 +60,14 @@ func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse
 	b.renewChannel(ch)
 	if ch.P == nil {
 		*reply = ChannelProduceResponse{
-			Code: 418,
+			Code: 10048,
 		}
 		log.Warnf("[jsonrpc-server-any] sending packet for channel %v 418", ch.UUID)
 		return
 	}
 	ch.P.Produce(args.Packet)
 	*reply = ChannelProduceResponse{
-		Code: 202,
+		Code: 10002,
 	}
 	log.Debugf("[jsonrpc-server-any] sending packet for channel %v 202", ch.UUID)
 	return
@@ -78,7 +78,7 @@ func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeRe
 	ch, ok := b.channelPool[args.UUID]
 	if !ok {
 		*reply = ChannelConsumeResponse{
-			Code: 404,
+			Code: 10044,
 		}
 		return
 	}
@@ -92,7 +92,7 @@ func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeRe
 		select {
 		case <-t.C:
 			*reply = ChannelConsumeResponse{
-				Code: 204,
+				Code: 10004,
 			}
 			log.Infof("[jsonrpc-server-any] timeout")
 			return
@@ -113,7 +113,7 @@ func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeRe
 			}
 			log.Debugf("[jsonrpc-server-any] %v", packets)
 			*reply = ChannelConsumeResponse{
-				Code:    200,
+				Code:    10000,
 				Packets: packets,
 			}
 			return

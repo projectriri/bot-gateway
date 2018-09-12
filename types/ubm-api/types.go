@@ -11,20 +11,20 @@ type UBM struct {
 }
 
 type Message struct {
-	ID              string    `json:"id,omitempty"`
-	From            *User     `json:"from,omitempty"`
-	Chat            *Chat     `json:"chat,omitempty"`
-	Self            *User     `json:"self,omitempty"`
-	IsMessageToMe   bool      `json:"is_message_to_me"`
-	CID             *CID      `json:"cid,omitempty"`
-	Type            string    `json:"type"`
-	ReplyID         string    `json:"reply_id,omitempty"`
-	EditID          string    `json:"edit_id,omitempty"`
-	DeleteID        string    `json:"delete_id,omitempty"`
-	RichText        *RichText `json:"rich_text,omitempty"`
-	Sticker         *Sticker  `json:"sticker,omitempty"`
-	Record          *Record   `json:"record,omitempty"`
-	Location        *Location `json:"location,omitempty"`
+	ID            string    `json:"id,omitempty"`
+	From          *User     `json:"from,omitempty"`
+	Chat          *Chat     `json:"chat,omitempty"`
+	Self          *User     `json:"self,omitempty"`
+	IsMessageToMe bool      `json:"is_message_to_me"`
+	CID           *CID      `json:"cid,omitempty"`
+	Type          string    `json:"type"`
+	ReplyID       string    `json:"reply_id,omitempty"`
+	EditID        string    `json:"edit_id,omitempty"`
+	DeleteID      string    `json:"delete_id,omitempty"`
+	RichText      *RichText `json:"rich_text,omitempty"`
+	Sticker       *Sticker  `json:"sticker,omitempty"`
+	Record        *Record   `json:"record,omitempty"`
+	Location      *Location `json:"location,omitempty"`
 }
 
 type CID struct {
