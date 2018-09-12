@@ -16,15 +16,11 @@ type Message struct {
 	Chat            *Chat     `json:"chat,omitempty"`
 	Self            *User     `json:"self,omitempty"`
 	IsMessageToMe   bool      `json:"is_message_to_me"`
-	UID             *UID      `json:"uid,omitempty"`
 	CID             *CID      `json:"cid,omitempty"`
 	Type            string    `json:"type"`
 	ReplyID         string    `json:"reply_id,omitempty"`
 	EditID          string    `json:"edit_id,omitempty"`
 	DeleteID        string    `json:"delete_id,omitempty"`
-	ForwardFromChat *Chat     `json:"forward_from_chat,omitempty"`
-	ForwardID       string    `json:"forward_id,omitempty"`
-	ForwardFrom     *User     `json:"forward_from"`
 	RichText        *RichText `json:"rich_text,omitempty"`
 	Sticker         *Sticker  `json:"sticker,omitempty"`
 	Record          *Record   `json:"record,omitempty"`

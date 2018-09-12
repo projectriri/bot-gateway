@@ -4,3 +4,6 @@ bot-gateway
 lib/
 config.toml
 conf.d/
+test/
+node_modules/
+

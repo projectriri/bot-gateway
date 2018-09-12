@@ -177,13 +177,6 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 		if data.Message.ReplyID != "" {
 			v["reply_to_message_id"] = data.Message.ReplyID
 		}
-		if data.Message.ForwardID != "" {
-			v["from_chat_id"] = data.Message.ForwardFromChat.CID.ChatID
-			v["message_id"] = data.Message.ForwardID
-			p.Body, _ = json.Marshal(newMessageRequest("forwardMessage", v))
-			result = append(result, p)
-			break
-		}
 		if data.Message.EditID != "" && data.Message.RichText != nil {
 			v["message_id"] = data.Message.EditID
 			var text string
