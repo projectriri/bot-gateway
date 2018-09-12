@@ -41,7 +41,7 @@
 | from | [User](#user) | 消息来自的用户（仅用于收到的消息）|
 | chat | [Chat](#chat) | 会话（仅用于收到的消息）|
 | self | [User](#user) | 自己的用户（仅用于收到的消息）|
-| cid | [Chat](#chat) | 会话 CID（仅用于发出的消息）|
+| cid | [CID](#cid) | 会话 CID（仅用于发出的消息）|
 | is_message_to_me | bool | 是否 at 或回复我（仅用于收到的消息）|
 | reply_id | string | 回复的消息 ID |
 | edit_id | string | 编辑的消息 ID |

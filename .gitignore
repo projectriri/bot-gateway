@@ -6,4 +6,4 @@ config.toml
 conf.d/
 test/
 node_modules/
-
+docs/.vuepress/dist
