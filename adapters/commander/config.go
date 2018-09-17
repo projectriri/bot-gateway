@@ -3,6 +3,7 @@ package main
 var config = Config{}
 
 type Config struct {
-	AdaptorName string `toml:"adaptor_name"`
-	ChannelUUID string `toml:"channel_uuid"`
+	AdaptorName   string `toml:"adaptor_name"`
+	ChannelUUID   string `toml:"channel_uuid"`
+	CommandPrefix string `toml:"command_prefix"`
 }

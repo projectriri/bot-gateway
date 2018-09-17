@@ -5,6 +5,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
+	"github.com/projectriri/bot-gateway/types/cmd"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
@@ -76,29 +77,37 @@ func (p *Plugin) Start() {
 			log.Errorf("[commander] message %v has an incorrect body type %v", packet.Head.UUID, err)
 		}
 		log.Warnf("%s\n", string(packet.Body))
-		ubm := ubm_api.UBM{
-			Type: "message",
-			Message: &ubm_api.Message{
-				CID:      &req.Message.Chat.CID,
-				Type:     req.Message.Type,
-				ReplyID:  req.Message.ID,
-				RichText: req.Message.RichText,
-				Location: req.Message.Location,
-				Sticker:  req.Message.Sticker,
-				Record:   req.Message.Record,
-			},
-		}
-		b, _ := json.Marshal(ubm)
-		if req.Message != nil {
+		if req.Type == "message" && req.Message != nil {
+			if req.Message.Type != "rich_text" || req.Message.RichText == nil {
+				continue
+			}
+			slices := make([][]ubm_api.RichTextElement, 0)
+
+			// TODO: Deal with command prefix
+
+			// TODO: Process this Message
+			for _, elem := range *req.Message.RichText {
+				if elem.Type == "text" {
+
+				}
+			}
+
+			c := cmd.Command{
+				Cmd:  slices[0],
+				// TODO: CmdStr
+				Args: slices[1:],
+				// TODO: ArgsTxt
+				// TODO: ArgsStr
+			}
+
+			b, _ := json.Marshal(c)
 			pc.Produce(types.Packet{
 				Head: types.Head{
-					From:        config.AdaptorName,
-					UUID:        utils.GenerateUUID(),
-					To:          packet.Head.From,
-					ReplyToUUID: packet.Head.UUID,
+					From: config.AdaptorName,
+					UUID: utils.GenerateUUID(),
 					Format: types.Format{
-						API:      "ubm-api",
-						Method:   "send",
+						API:      "cmd",
+						Method:   "cmd",
 						Version:  "1.0",
 						Protocol: "",
 					},
@@ -106,6 +115,7 @@ func (p *Plugin) Start() {
 				Body: b,
 			})
 		}
+
 	}
 }
 
