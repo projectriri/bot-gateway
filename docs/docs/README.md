@@ -10,6 +10,32 @@
 你的机器人可以分为多个程序，使用不同的语言编写，
 而无须定义不同程序之间的调用协议：它们可以统一接入网关来实现通信。
 
+## 与其他解决方案对比
+
+### [Bot-SDK](https://github.com/projectriri/bot-sdk)
+
+Bot-SDK 是另一个跨聊天平台的 Bot 解决方案。小恶魔网关与 Bot-SDK 相比：
+
++ Bot-SDK 的接口在 SDK 上层封装，其本身的开发成本相比小恶魔网关更低。
++ Bot-SDK 使用时可以直接调用 SDK 的相关实例和方法，使用起来更方便。
++ 要使用 Bot-SDK，用户必须使用 Go 语言开发应用。而小恶魔网关是基于协议的，
+用户可以使用任何语言开发。得益于可扩展的插件系统，小恶魔网关能够支持 RPC、HTTP、WebSocket 等多种通信协议。
++ 小恶魔网关在允许用户用一套 API 服务多个聊天平台的同时，还有路由功能。
+即当你有多个 Bot 应用程序时，他们可以接入网关，使用共同的聊天平台账号。
+而使用 Bot-SDK 你要为每个应用分配一组聊天平台账号。同时借助小恶魔网关你也可以实现 Bot 应用程序之间的通信。
+
+### [Telegram Bot Gateway](https://gitlab.com/FiveYellowMice/telegram-bot-gateway)
+
+Telegram Bot Gateway 是专门针对 Telegram Bot API 的多个 Bot 使用同一账号的解决方案。
+小恶魔网关与 Telegram Bot Gateway 相比：
+
++ Telegram Bot Gateway 是专门针对 Telegram 多个 Bot 使用同一账号的应用情景设计的：
+例如当用户使用的命令多个 Bot 都能够响应时，可以弹出键盘询问用户想要发送给哪个 Bot；
+而小恶魔网关虽然具备消息路由功能，却并不是为了让多个互不相关的 Bot 使用同一账号设计的。
+小恶魔网关设计上是为了使 Bot 应用程序之间能够紧密联系和配合，共同提供作为 1 个 Bot 的功能。
++ 小恶魔网关在消息路由之外还具备同时服务多个聊天平台，以及进行 API 转换的功能。
++ 由于 Telegram Bot Gateway 设计上可以作为一个透明代理，小恶魔网关可以在 Telegram Bot Gateway 下运行。
+
 ## 下载安装
 
 ### 下载二进制程序
