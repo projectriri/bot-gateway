@@ -81,7 +81,6 @@ func (p *CommanderPlugin) Start() {
 		if err != nil {
 			log.Errorf("[commander] message %v has an incorrect body type %v", packet.Head.UUID, err)
 		}
-		log.Warnf("%s\n", string(packet.Body))
 		if req.Type == "message" && req.Message != nil {
 			if req.Message.Type != "rich_text" || req.Message.RichText == nil {
 				continue
@@ -209,12 +208,41 @@ func (p *CommanderPlugin) Start() {
 				buffer = make([]rune, 0)
 			}
 
-			c := cmd.Command{
-				Cmd: parsedCommand[0],
-				// TODO: CmdStr
-				Args: parsedCommand[1:],
-				// TODO: ArgsTxt
-				// TODO: ArgsStr
+			// compose response according to config.ResponseMode in bit mask
+			c := cmd.Command{}
+			if p.config.ResponseMode&RESPONSE_CMD != 0 {
+				c.Cmd = parsedCommand[0]
+			}
+			if p.config.ResponseMode&RESPONSE_CMDSTR != 0 {
+				for _, elem := range parsedCommand[0] {
+					if elem.Type == "text" {
+						c.CmdStr += elem.Text
+					}
+				}
+			}
+			if p.config.ResponseMode&RESPONSE_ARGS != 0 {
+				c.Args = parsedCommand[1:]
+			}
+			if p.config.ResponseMode&RESPONSE_ARGSTXT != 0 ||
+				p.config.ResponseMode&RESPONSE_ARGSSTR != 0 {
+				tmpArgsTxt := make([]string, 0)
+				for _, aCmd := range parsedCommand[1:] {
+					tmp := ""
+					for _, elem := range aCmd {
+						if elem.Type == "text" {
+							tmp += elem.Text
+						}
+					}
+					if len(tmp) != 0 {
+						tmpArgsTxt = append(tmpArgsTxt, tmp)
+					}
+				}
+				if p.config.ResponseMode&RESPONSE_ARGSTXT != 0 {
+					c.ArgsTxt = tmpArgsTxt
+				}
+				if p.config.ResponseMode&RESPONSE_ARGSSTR != 0 {
+					c.ArgsStr = strings.Join(tmpArgsTxt, " ")
+				}
 			}
 
 			b, _ := json.Marshal(c)

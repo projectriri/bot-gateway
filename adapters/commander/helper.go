@@ -2,7 +2,14 @@ package main
 
 import "unicode"
 
-const ESCAPE_CHAR = '\\'
+const (
+	ESCAPE_CHAR            = '\\'
+	RESPONSE_CMD     uint8 = 1 << 0
+	RESPONSE_CMDSTR  uint8 = 1 << 1
+	RESPONSE_ARGS    uint8 = 1 << 2
+	RESPONSE_ARGSTXT uint8 = 1 << 3
+	RESPONSE_ARGSSTR uint8 = 1 << 4
+)
 
 func (p *CommanderPlugin) isWhiteChar(r rune) bool {
 	return unicode.IsSpace(r)
