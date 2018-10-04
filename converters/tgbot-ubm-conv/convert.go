@@ -105,21 +105,20 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 					URL:      plugin.getFileURL(update.Message.Voice.FileID, packet.Head.From),
 					FileSize: update.Message.Voice.FileSize,
 				}
-			} else if update.Message.Photo != nil {
+			} else if update.Message.Photo != nil && len(*update.Message.Photo) > 0 {
 				ubm.Message.Type = "rich_text"
 				richText := make(ubm_api.RichText, 0)
-				for _, photo := range *update.Message.Photo {
-					richText = append(richText, ubm_api.RichTextElement{
-						Type: "image",
-						Image: &ubm_api.Image{
-							Width:    photo.Width,
-							Height:   photo.Height,
-							FileID:   photo.FileID,
-							URL:      plugin.getFileURL(photo.FileID, packet.Head.From),
-							FileSize: photo.FileSize,
-						},
-					})
-				}
+				photo := (*update.Message.Photo)[len(*update.Message.Photo)-1]
+				richText = append(richText, ubm_api.RichTextElement{
+					Type: "image",
+					Image: &ubm_api.Image{
+						Width:    photo.Width,
+						Height:   photo.Height,
+						FileID:   photo.FileID,
+						URL:      plugin.getFileURL(photo.FileID, packet.Head.From),
+						FileSize: photo.FileSize,
+					},
+				})
 				if update.Message.Caption != "" {
 					if self != nil && strings.Contains(update.Message.Caption, "@"+self.UID.Username) {
 						ubm.Message.IsMessageToMe = true
@@ -129,6 +128,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 						Text: update.Message.Caption,
 					})
 				}
+				ubm.Message.RichText = &richText
 			} else if update.Message.Text != "" {
 				if self != nil && strings.Contains(update.Message.Text, "@"+self.UID.Username) {
 					ubm.Message.IsMessageToMe = true
