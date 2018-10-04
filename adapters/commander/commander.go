@@ -122,9 +122,6 @@ func (p *CommanderPlugin) Start() {
 			// Process this command
 			parsedCommand := make([][]ubm_api.RichTextElement, 1)
 			parsedCommand[0] = make([]ubm_api.RichTextElement, 0)
-			if len(richTexts) == 1 && len(richTexts[0].Text) == 0 {
-				continue
-			}
 			// Process rich text array
 			lastEscape := false
 			lastWhiteChar := false
@@ -137,13 +134,13 @@ func (p *CommanderPlugin) Start() {
 					// Text needs to be parsed
 					for _, r := range elem.Text {
 						// state operations
-						if r == ESCAPE_CHAR {
-							lastEscape = true
-							continue
-						}
 						if lastEscape {
 							lastEscape = false
 							buffer = append(buffer, r)
+							continue
+						}
+						if r == ESCAPE_CHAR {
+							lastEscape = true
 							continue
 						}
 						if lastWhiteChar {
