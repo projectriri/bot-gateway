@@ -9,6 +9,7 @@ import (
 	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
 var (
@@ -18,7 +19,10 @@ var (
 	GitTag        string
 )
 
-type Plugin struct{}
+type CommanderPlugin struct {
+	config           Config
+	allowEmptyPrefix bool
+}
 
 var manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
@@ -36,21 +40,22 @@ var manifest = types.Manifest{
 	},
 }
 
-func (p *Plugin) GetManifest() types.Manifest {
+func (p *CommanderPlugin) GetManifest() types.Manifest {
 	return manifest
 }
 
-func (p *Plugin) Init(filename string, configPath string) {
+func (p *CommanderPlugin) Init(filename string, configPath string) {
 	// load toml config
-	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &config)
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
 	if err != nil {
 		panic(err)
 	}
+	p.allowEmptyPrefix = p.checkAllowEmptyPrefix()
 }
 
-func (p *Plugin) Start() {
-	log.Infof("[commander] registering consumer channel %v", config.ChannelUUID)
-	cc := router.RegisterConsumerChannel(config.ChannelUUID, []router.RoutingRule{
+func (p *CommanderPlugin) Start() {
+	log.Infof("[commander] registering consumer channel %v", p.config.ChannelUUID)
+	cc := router.RegisterConsumerChannel(p.config.ChannelUUID, []router.RoutingRule{
 		{
 			From: ".*",
 			To:   ".*",
@@ -65,8 +70,8 @@ func (p *Plugin) Start() {
 	})
 	defer cc.Close()
 	log.Infof("[commander] registered consumer channel %v", cc.UUID)
-	log.Infof("[commander] registering producer channel %v", config.ChannelUUID)
-	pc := router.RegisterProducerChannel(config.ChannelUUID, false)
+	log.Infof("[commander] registering producer channel %v", p.config.ChannelUUID)
+	pc := router.RegisterProducerChannel(p.config.ChannelUUID, false)
 	defer pc.Close()
 	log.Infof("[commander] registered producer channel %v", pc.UUID)
 	for {
@@ -81,21 +86,136 @@ func (p *Plugin) Start() {
 			if req.Message.Type != "rich_text" || req.Message.RichText == nil {
 				continue
 			}
-			slices := make([][]ubm_api.RichTextElement, 0)
 
-			// TODO: Deal with command prefix
-
-			// TODO: Process this Message
-			for _, elem := range *req.Message.RichText {
-				if elem.Type == "text" {
-
+			richTexts := *req.Message.RichText
+			// Trim all leading white characters
+			for i := 0; i < len(richTexts) && richTexts[i].Type == "text"; i++ {
+				richTexts[i].Text = strings.TrimLeftFunc(richTexts[i].Text, p.isWhiteChar)
+				if len(richTexts[i].Text) == 0 {
+					richTexts = richTexts[1:]
+					i--
+				} else {
+					break
+				}
+			}
+			if len(richTexts) == 0 {
+				continue
+			}
+			if richTexts[0].Type == "text" {
+				// If the first rich text element is text, trim the command prefix
+				if pfx, ok := p.checkPrefix(richTexts[0].Text); !ok {
+					continue
+				} else {
+					if richTexts[0].Text == pfx {
+						richTexts = richTexts[1:]
+					} else {
+						richTexts[0].Text = richTexts[0].Text[len(pfx):]
+					}
+				}
+			} else {
+				// else check allowEmptyPrefix
+				if !p.allowEmptyPrefix {
+					continue
 				}
 			}
 
+			// Process this command
+			parsedCommand := make([][]ubm_api.RichTextElement, 1)
+			parsedCommand[0] = make([]ubm_api.RichTextElement, 0)
+			if len(richTexts) == 1 && len(richTexts[0].Text) == 0 {
+				continue
+			}
+			// Process rich text array
+			lastEscape := false
+			lastWhiteChar := false
+			inQuote := false
+			var lastQuoteChar rune
+			buffer := make([]rune, 0)
+			nowP := 0
+			for _, elem := range richTexts {
+				if elem.Type == "text" {
+					// Text needs to be parsed
+					for _, r := range elem.Text {
+						// state operations
+						if r == ESCAPE_CHAR {
+							lastEscape = true
+							continue
+						}
+						if lastEscape {
+							lastEscape = false
+							buffer = append(buffer, r)
+							continue
+						}
+						if lastWhiteChar {
+							if p.isWhiteChar(r) {
+								continue
+							} else {
+								lastWhiteChar = false
+							}
+						}
+						if inQuote {
+							if r == lastQuoteChar {
+								// end of quote
+								inQuote = false
+							} else {
+								buffer = append(buffer, r)
+							}
+							continue
+						}
+						// state transfer
+						if p.isWhiteChar(r) {
+							lastWhiteChar = true
+							// append and clear buffer
+							if len(buffer) > 0 {
+								parsedCommand[nowP] = append(parsedCommand[nowP],
+									ubm_api.RichTextElement{
+										Type: "text",
+										Text: string(buffer),
+									})
+								buffer = make([]rune, 0)
+							}
+							// append parsedCommand
+							parsedCommand = append(parsedCommand, make([]ubm_api.RichTextElement, 0))
+							nowP++
+						} else if p.isQuoteChar(r) {
+							inQuote = true
+							lastQuoteChar = r
+						} else {
+							// normal char
+							buffer = append(buffer, r)
+						}
+					}
+				} else {
+					// Other type of message, append buffer
+					if len(buffer) > 0 {
+						parsedCommand[nowP] = append(parsedCommand[nowP],
+							ubm_api.RichTextElement{
+								Type: "text",
+								Text: string(buffer),
+							})
+						buffer = make([]rune, 0)
+					}
+					// and append cur elem to the end
+					parsedCommand[nowP] = append(parsedCommand[nowP], elem)
+					// and clear some states
+					lastEscape = false
+					lastWhiteChar = false
+				}
+			}
+			// Append buffer in the end
+			if len(buffer) > 0 {
+				parsedCommand[nowP] = append(parsedCommand[nowP],
+					ubm_api.RichTextElement{
+						Type: "text",
+						Text: string(buffer),
+					})
+				buffer = make([]rune, 0)
+			}
+
 			c := cmd.Command{
-				Cmd:  slices[0],
+				Cmd: parsedCommand[0],
 				// TODO: CmdStr
-				Args: slices[1:],
+				Args: parsedCommand[1:],
 				// TODO: ArgsTxt
 				// TODO: ArgsStr
 			}
@@ -103,7 +223,7 @@ func (p *Plugin) Start() {
 			b, _ := json.Marshal(c)
 			pc.Produce(types.Packet{
 				Head: types.Head{
-					From: config.AdaptorName,
+					From: p.config.AdaptorName,
 					UUID: utils.GenerateUUID(),
 					Format: types.Format{
 						API:      "cmd",
@@ -119,4 +239,4 @@ func (p *Plugin) Start() {
 	}
 }
 
-var PluginInstance types.Adapter = &Plugin{}
+var PluginInstance types.Adapter = &CommanderPlugin{}
