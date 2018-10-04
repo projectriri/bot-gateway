@@ -1,4 +1,3 @@
-adaptor_name = "Commander"
 channel_uuid = ""
-command_prefix = ["/", ".", "。"]
+command_prefix = ["/"]
 response_mode = 31

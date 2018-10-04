@@ -159,3 +159,54 @@
 | 10042 | 建立频道时 producer 和 consumer 都是 false |
 | 10044 | 要发往/接收的频道不存在 |
 | 10048 | 要发往的频道不是一个生产者 |
+
+## commander
+
+这个插件接收 *ubm-api* 格式的包，将符合命令格式要求的消息解析为命令，并送回到网关中。
+
+**配置文件格式**
+
+| 配置项名称 | 默认配置文件中的值 | 说明 |
+| --- | --- | --- |
+| command_prefix | ["/"] | 命令前缀，是一个字符串数组。 |
+| response_mode | 31 | 用于配置解析后的命令包含哪些内容。 |
+| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID |
+
+命令解析器工作时，对于一条图文消息，会首先在 *command_prefix* 中从前向后依次匹配。
+如果一条消息的前缀匹配 *command_prefix* 中的元素，它会被当作一条命令，同时命令前缀会被删除。
+
+:::tip
+空的 *command_prefix* 数组或者数组中包含空字符串将导致所有图文消息被当作命令。
+:::
+
+**响应模式**
+
+| 位 | 5 | 4 | 3 | 2 | 1 |
+| --- | --- | --- | --- | --- | --- |
+| 名称 | args_str | args_txt | args | cmd_str | cmd |
+
+*response_mode* 是一个范围在 0~31 的整数，它的各位代表启用 [CMD](/docs/Types.html#cmd) 中的各项。
+如果某位设置为 1 那么插件生产的命令报文中则会有此项。
+例如设置 *response_mode* 为 26，即 11010，则表示启用 args_str、args_txt、cmd_str 三项。
+
+**命令和命令参数**
+
+命令和命令参数之间以 [Unicode 空白字符](https://golang.org/pkg/unicode/#IsSpace) 分隔。
+使用引号（`'` 或 `"`）引起来的内容不会被断开。
+转义字符 `\` 后面所接的字符会直接作为命令或命令参数的内容，失去其特殊含义（如空格、引号、`\` 本身等）。
+
+这是一个[消费者](/docs/Concept.html#消费者)，它接受的[包](/docs/Concept.html#包)的头为
+
+| from | to | format.api | format.version | format.method | format.protocol |
+| --- | --- | --- | --- | --- | --- |
+| .* | .* | ubm-api | 1.0 | receive | |
+
+它接受的[包](/docs/Concept.html#包)的体的类型为 [UBM](/docs/Types.html#ubm)。
+
+这是一个[生产者](/docs/Concept.html#生产者)，它生产的[包](/docs/Concept.html#包)的头为
+
+| from | to | format.api | format.version | format.method | format.protocol |
+| --- | --- | --- | --- | --- | --- |
+| *接受的包的 from* | *接受的包的 to* | cmd | 1.0 | cmd |  |
+
+它生产的[包](/docs/Concept.html#包)的体的类型为 [CMD](/docs/Types.html#cmd)。

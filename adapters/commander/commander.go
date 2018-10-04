@@ -248,7 +248,8 @@ func (p *CommanderPlugin) Start() {
 			b, _ := json.Marshal(c)
 			pc.Produce(types.Packet{
 				Head: types.Head{
-					From: p.config.AdaptorName,
+					From: packet.Head.From,
+					To:   packet.Head.To,
 					UUID: utils.GenerateUUID(),
 					Format: types.Format{
 						API:      "cmd",

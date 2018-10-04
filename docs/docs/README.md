@@ -98,3 +98,4 @@ Telegram Bot Gateway 是专门针对 Telegram Bot API 的多个 Bot 使用同一
 | [http-client-tgbot](/docs/Plugins.html#http-client-tgbot) | 客户型 | 调用 Telegram Bot API 发送消息 |
 | [jsonrpc-server-any](/docs/Plugins.html#jsonrpc-server-any) | 服务型 | 提供 JSON RPC 服务 |
 | [tgbot-ubm-conv](/docs/Plugins.html#tgbot-ubm-conv) | 自耦型 | 将消息在 [Telegram-Bot-API](/docs/Formats.html) 和 [UBM-API](/docs/Formats.html) 两种格式之间转换 |
+| [commander](/docs/Plugins.html#commander) | 自耦型 | 命令解析器 |

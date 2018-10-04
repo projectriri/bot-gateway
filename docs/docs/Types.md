@@ -15,6 +15,18 @@
 | header | { [key: string]: string[] } | HTTP Headers |
 | body | byte[] | HTTP Body |
 
+## CMD
+
+解析后的命令。各字段都是可选字段，是否存在取决于插件的[配置](/docs/Plugins.html#commander)。
+
+| 字段名 | 数据类型 | 说明 |
+| --- | --- | --- |
+| cmd | [RichTextElement](#richtextelement)[] | 命令：由一组图文消息段组成 |
+| cmd_str | string | 命令：纯字符串，去除了其他媒体（如图片、At 等）以后的命令 |
+| args | [RichTextElement](#richtextelement)[][] | 命令参数：有多个命令参数，每个命令参数由一组图文消息段组成 |
+| args_txt | string[] | 命令参数：多个命令参数，每个命令参数都是去除了其他媒体（如图片、At 等）以后的纯字符串 |
+| args_str | string | 命令参数字符串：由 *args_txt* 以空格分割组成个一个字符串 |
+
 ## UBM-API
 
 通用机器人消息 API。

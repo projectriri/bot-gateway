@@ -7,3 +7,4 @@
 | telegram-bot-api | latest | apiresponse | http | [APIResponse](/docs/Other.html#apiresponse) |
 | ubm-api | 1.0 | receive | | [UBM](/docs/Types.html#ubm) |
 | ubm-api | 1.0 | send | | [UBM](/docs/Types.html#ubm) |
+| cmd | 1.0 | cmd | | [CMD](/docs/Types.html#cmd) |
