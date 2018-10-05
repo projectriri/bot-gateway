@@ -16,7 +16,7 @@ func (p *CommanderPlugin) isWhiteChar(r rune) bool {
 }
 
 func (p *CommanderPlugin) isQuoteChar(r rune) bool {
-	return unicode.Is(unicode.Quotation_Mark, r)
+	return r == '\'' || r == '"' || r == '`'
 }
 
 func (p *CommanderPlugin) checkPrefix(text string) (prefix string, containPrefix bool) {
