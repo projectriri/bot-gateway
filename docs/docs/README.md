@@ -51,7 +51,7 @@ Telegram Bot Gateway 是专门针对 Telegram Bot API 的多个 Bot 使用同一
 `lib` 目录下，将插件配置文件放置在 `conf.d` 目录下
 :::
 
-### 从源码编译安装
+### 从源代码编译
 
 ::: warning
 请使用 go >= 1.10
@@ -73,6 +73,17 @@ Telegram Bot Gateway 是专门针对 Telegram Bot API 的多个 Bot 使用同一
 | log_level | info | 日志等级，可选 debug、info、warn、error、fatal |
 | plugin_dir | lib | 插件加载的目录 |
 | plugin_conf_dir | conf.d | 插件配置文件加载的目录 |
+| enable_little_daemon | true | 是否启用小恶魔 |
+| little_daemon_name | LittleDaemon | 小恶魔在网关中的适配器名称 |
+| little_daemon_channel_uuid | | 小恶魔用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
+
+“小恶魔”是用来报告网关状态的内置机器人。
+如果小恶魔被启用，当网关收到命令 `ping` 或 `status` 时，会报告网关当前状态。
+启用小恶魔你需要在程序运行目录放置 `locale.yml`，程序源码中包含一个该文件的[示例](https://github.com/projectriri/bot-gateway/blob/master/locale.yml)。
+
+:::tip
+要让小恶魔正常工作你必须启用插件 [commander](/docs/Plugins.html#commander)，并根据需要正确配置命令前缀。
+:::
 
 ### 插件配置文件
 
