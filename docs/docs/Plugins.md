@@ -17,7 +17,7 @@
 | adaptor_name | Telegram | 适配器名称：如果你开了两个这个插件（如你用两个功能完全相同机器人账号进行负载均衡），可以通过适配器名称来区分 |
 | timeout | 60 | [长轮询超时时间](https://core.telegram.org/bots/api#getupdates) |
 | limit | 100 | [长轮询单次拉取的消息上限](https://core.telegram.org/bots/api#getupdates) |
-| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID
+| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空
 
 这是一个[生产者](/docs/Concept.html#生产者)，它生产的[包](/docs/Concept.html#包)的头为
 
@@ -67,7 +67,7 @@
 | adaptor_name | TGBot-UBM-Converter | 适配器名称 |
 | fetch_file | true | 是否拉取 [file_path](https://core.telegram.org/bots/api#file) 作为 URL |
 | fetch_file_timeout | 5s | 拉取 [file_path](https://core.telegram.org/bots/api#file) 的最长等待时间 |
-| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID |
+| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
 
 **支持转换的格式**
 
@@ -170,7 +170,7 @@
 | --- | --- | --- |
 | command_prefix | ["/"] | 命令前缀，是一个字符串数组。 |
 | response_mode | 31 | 用于配置解析后的命令包含哪些内容。 |
-| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID |
+| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
 
 命令解析器工作时，对于一条图文消息，会首先在 *command_prefix* 中从前向后依次匹配。
 如果一条消息的前缀匹配 *command_prefix* 中的元素，它会被当作一条命令，同时命令前缀会被删除。

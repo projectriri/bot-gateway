@@ -10,10 +10,12 @@ import (
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	log "github.com/sirupsen/logrus"
+	"time"
 )
 
 var adaptors = make([]types.Adapter, 0)
 var converters = make([]types.Converter, 0)
+var startTime time.Time
 
 func main() {
 
@@ -41,6 +43,12 @@ func main() {
 	// init router
 	router.Init(routerCfg)
 
+	if config.EnableLittleDaemon {
+		InitLittleDaemon()
+	}
+
+	startTime = time.Now().Local()
+
 	// load plugins
 	ps, err := ioutil.ReadDir(config.PluginDir)
 	if err != nil {
@@ -53,8 +61,13 @@ func main() {
 		}
 	}
 
+	if config.EnableLittleDaemon {
+		go StartLittleDaemon()
+	}
+
 	// start router
 	router.Start(converters)
+
 }
 
 func loadPlugin(path string) {

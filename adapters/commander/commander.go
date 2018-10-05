@@ -244,6 +244,7 @@ func (p *CommanderPlugin) Start() {
 					c.ArgsStr = strings.Join(tmpArgsTxt, " ")
 				}
 			}
+			c.Message = *req.Message
 
 			b, _ := json.Marshal(c)
 			pc.Produce(types.Packet{

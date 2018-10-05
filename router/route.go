@@ -19,6 +19,8 @@ func processPacket(pkt *Packet) {
 		log.Warnf("[router] pkt with invalid uuid, dropped: %+v BODY: %s", pkt.Head, string(pkt.Body))
 		return
 	}
+
+	inCnt++
 	log.Debugf("[router] pkt: %+v", pkt.Head)
 	log.Debugf("[router] pkt: %s BODY: %s", pkt.Head.UUID, string(pkt.Body))
 
@@ -110,6 +112,7 @@ func processPacket(pkt *Packet) {
 }
 
 func pushPacket(cc *ConsumerChannel, result []Packet) {
+	outCnt++
 	for _, p := range result {
 		log.Debugf("[route] pushing converted: %+v", string(p.Body))
 		select {

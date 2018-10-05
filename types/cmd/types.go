@@ -8,4 +8,5 @@ type Command struct {
 	Args    [][]ubm_api.RichTextElement `json:"args,omitempty"`
 	ArgsTxt []string                    `json:"args_txt,omitempty"`
 	ArgsStr string                      `json:"args_str,omitempty"`
+	Message ubm_api.Message             `json:"message"`
 }
