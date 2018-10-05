@@ -45,5 +45,14 @@ module.exports = {
         },
         repo: 'projectriri/bot-gateway',
         editLinks: true,
+    },
+    configureWebpack: (config, isServer) => {
+        config.module.rules.push({
+            test: /\.(webp)$/,
+            loader: 'url-loader',
+            options: {
+                limit: 8192
+            }
+        })
     }
 }

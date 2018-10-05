@@ -6,11 +6,5 @@ actionLink: /docs/
 footer: MIT Licensed | Copyright © 2018 Project Riri Staff
 ---
 
-[![Bot-Father](https://core.telegram.org/file/811140327/1/zlN4goPTupk/9ff2f2f01c4bd1b013)](https://core.telegram.org/bots)
-
-<style>
-  img {
-    max-width: 128px;
-    max-height: 128px;
-  }
-</style>
+[![Telegram-Bot-API](./img/telegram-bot-api.webp)](https://core.telegram.org/bots)
+[![CoolQ-HTTP-API](./img/cq-http-api.webp)](https://cqhttp.cc)
