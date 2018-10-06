@@ -57,7 +57,7 @@
 | --- | --- | --- |
 | from | string | 来自 |
 | to | string | 发往 |
-| format | [Format](#格式)[] | 格式 |
+| formats | [Format](#格式)[] | 格式 |
 
 ::: tip
 其中 `from` 和 `to` 字段都可以使用正则表达式
