@@ -33,7 +33,7 @@ class Client:
             "jsonrpc": "2.0",
             "id": self.id
         }
-        self.id += 1
+        self.id = (self.id + 1) % 65536
         # send request
         try:
             req = json.dumps(request)
