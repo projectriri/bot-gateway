@@ -92,7 +92,7 @@ func StartLittleDaemon() {
 							Text: str,
 						},
 					},
-					CID: &req.Message.Chat.CID,
+					CID:     &req.Message.Chat.CID,
 					ReplyID: req.Message.ID,
 				},
 			}

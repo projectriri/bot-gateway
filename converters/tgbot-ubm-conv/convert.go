@@ -8,6 +8,7 @@ import (
 	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"strconv"
 	"strings"
+	"unicode/utf16"
 )
 
 func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to types.Format) (bool, []types.Packet) {
@@ -130,16 +131,82 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				}
 				ubm.Message.RichText = &richText
 			} else if update.Message.Text != "" {
-				if self != nil && strings.Contains(update.Message.Text, "@"+self.UID.Username) {
-					ubm.Message.IsMessageToMe = true
-				}
+				r := []rune(update.Message.Text)
+				u16 := utf16.Encode(r)
+				cur := 0
+				tmp := ""
 				ubm.Message.Type = "rich_text"
-				ubm.Message.RichText = &ubm_api.RichText{
-					{
-						Type: "text",
-						Text: update.Message.Text,
-					},
+				ubm.Message.RichText = &ubm_api.RichText{}
+				push := func() {
+					if len(tmp) > 0 {
+						*ubm.Message.RichText = append(*ubm.Message.RichText, ubm_api.RichTextElement{
+							Type: "text",
+							Text: tmp,
+						})
+						tmp = ""
+					}
 				}
+				if update.Message.Entities != nil {
+					for _, entity := range *update.Message.Entities {
+						cat := func() {
+							if entity.Offset > cur {
+								tmp += string(utf16.Decode(u16[cur:entity.Offset]))
+							}
+						}
+						switch entity.Type {
+						case "bot_command":
+							cat()
+							botCommand := string(utf16.Decode(u16[entity.Offset : entity.Offset+entity.Length]))
+							if self != nil && len(botCommand) > len("@"+self.UID.Username) &&
+								botCommand[len(botCommand)-len("@"+self.UID.Username):] == "@"+self.UID.Username {
+								botCommand = botCommand[:len(botCommand)-len("@"+self.UID.Username)]
+								ubm.Message.IsMessageToMe = true
+							}
+							tmp += botCommand
+							cur = entity.Offset + entity.Length
+						case "mention":
+							cat()
+							push()
+							mention := string(utf16.Decode(u16[entity.Offset : entity.Offset+entity.Length]))
+							*ubm.Message.RichText = append(*ubm.Message.RichText, ubm_api.RichTextElement{
+								Type: "at",
+								At: &ubm_api.At{
+									DisplayName: mention,
+									UID:ubm_api.UID{
+										Messenger: packet.Head.From,
+										Username: mention[1:],
+									},
+								},
+							})
+							if self != nil && mention == "@" + self.UID.Username {
+								ubm.Message.IsMessageToMe = true
+							}
+							cur = entity.Offset + entity.Length
+						case "text_mention":
+							cat()
+							push()
+							mention := string(utf16.Decode(u16[entity.Offset : entity.Offset+entity.Length]))
+							*ubm.Message.RichText = append(*ubm.Message.RichText, ubm_api.RichTextElement{
+								Type: "at",
+								At: &ubm_api.At{
+									DisplayName: mention,
+									UID:ubm_api.UID{
+										Messenger: packet.Head.From,
+										ID: strconv.Itoa(entity.User.ID),
+									},
+								},
+							})
+							if self != nil && strconv.Itoa(entity.User.ID) == self.UID.ID {
+								ubm.Message.IsMessageToMe = true
+							}
+							cur = entity.Offset + entity.Length
+						}
+					}
+				}
+				if len(update.Message.Text) > cur {
+					tmp += string(utf16.Decode(u16[cur:]))
+				}
+				push()
 			}
 			b, _ := json.Marshal(ubm)
 			p := types.Packet{
