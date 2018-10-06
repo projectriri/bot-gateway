@@ -1,5 +1,6 @@
 github.com/projectriri/bot-gateway/adapters/longpolling-client-tgbot
 github.com/projectriri/bot-gateway/adapters/http-client-tgbot
+github.com/projectriri/bot-gateway/adapters/websocket-client-cqhttp
 github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any
 github.com/projectriri/bot-gateway/adapters/commander
 github.com/projectriri/bot-gateway/converters/tgbot-ubm-conv
