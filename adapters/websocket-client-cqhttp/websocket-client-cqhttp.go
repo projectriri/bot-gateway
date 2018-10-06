@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
+	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -79,7 +80,7 @@ func (p *Plugin) Start() {
 	var err error
 	header := http.Header{}
 	header.Add("Authorization", fmt.Sprintf("Token %s", p.config.AccessToken))
-	// Dial /api ws
+	// Dial /api/ ws
 	p.apiClient, _, err = websocket.DefaultDialer.Dial(
 		p.config.CQHTTPWebSocketAddr+"/api/",
 		header,
@@ -90,7 +91,7 @@ func (p *Plugin) Start() {
 		log.Infof("[websocket-client-cqhttp] dial cqhttp api websocket success")
 	}
 	defer p.apiClient.Close()
-	// Dial /event ws
+	// Dial /event/ ws
 	p.eventClient, _, err = websocket.DefaultDialer.Dial(
 		p.config.CQHTTPWebSocketAddr+"/event/",
 		header,
@@ -102,15 +103,69 @@ func (p *Plugin) Start() {
 	}
 	defer p.eventClient.Close()
 
-	// Main event loop
-	for {
-		_, msg, err := p.eventClient.ReadMessage()
-		if err != nil {
-			log.Errorf("[websocket-client-cqhttp] failed to read message (%v)", err)
-		} else {
+	// Start main event update loop
+	go func() {
+		for {
+			_, msg, err := p.eventClient.ReadMessage()
+			if err != nil {
+				log.Errorf("[websocket-client-cqhttp] failed to read event (%v)", err)
+				continue
+			}
 			log.Debugf("[websocket-client-cqhttp] receiving event %s", string(msg))
+			pc.Produce(types.Packet{
+				Head: types.Head{
+					From: p.config.AdaptorName,
+					To:   "",
+					UUID: utils.GenerateUUID(),
+					Format: types.Format{
+						API:      "coolq-http-api",
+						Version:  "latest",
+						Method:   "event",
+						Protocol: "websocket",
+					},
+				},
+				Body: msg,
+			})
 		}
-	}
+	}()
+
+	// Start main api request loop
+	go func() {
+		for {
+			// send api request
+			apiRequestPkt := cc.Consume()
+			err := p.apiClient.WriteMessage(websocket.TextMessage, apiRequestPkt.Body)
+			if err != nil {
+				log.Errorf("[websocket-client-cqhttp] failed to send apirequest (%v)", err)
+				continue
+			}
+			// get api response
+			_, msg, err := p.apiClient.ReadMessage()
+			if err != nil {
+				log.Errorf("[websocket-client-cqhttp] failed to read apiresponse (%v)", err)
+				continue
+			}
+			log.Debugf("[websocket-client-cqhttp] receiving apiresponse %s", string(msg))
+			pc.Produce(types.Packet{
+				Head: types.Head{
+					From:        p.config.AdaptorName,
+					To:          apiRequestPkt.Head.From,
+					UUID:        utils.GenerateUUID(),
+					ReplyToUUID: apiRequestPkt.Head.UUID,
+					Format: types.Format{
+						API:      "coolq-http-api",
+						Version:  "latest",
+						Method:   "apiresponse",
+						Protocol: "websocket",
+					},
+				},
+				Body: msg,
+			})
+		}
+	}()
+
+	// lock the main thread
+	<-make(chan bool)
 }
 
 var PluginInstance types.Adapter = &Plugin{}
