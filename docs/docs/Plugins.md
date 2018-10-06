@@ -66,7 +66,7 @@
 | telegram_adaptors | Telegram | 转换的包可能来自的适配器名（正则表达式） |
 | adaptor_name | TGBot-UBM-Converter | 适配器名称 |
 | fetch_file | true | 是否拉取 [file_path](https://core.telegram.org/bots/api#file) 作为 URL |
-| fetch_file_timeout | 5s | 拉取 [file_path](https://core.telegram.org/bots/api#file) 的最长等待时间 |
+| api_response_timeout | 5s | 拉取 [file_path](https://core.telegram.org/bots/api#file) 和 [self](https://core.telegram.org/bots/api#getme) 的最长等待时间 |
 | channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
 
 **支持转换的格式**

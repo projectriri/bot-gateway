@@ -172,13 +172,13 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 								Type: "at",
 								At: &ubm_api.At{
 									DisplayName: mention,
-									UID:ubm_api.UID{
+									UID: ubm_api.UID{
 										Messenger: packet.Head.From,
-										Username: mention[1:],
+										Username:  mention[1:],
 									},
 								},
 							})
-							if self != nil && mention == "@" + self.UID.Username {
+							if self != nil && mention == "@"+self.UID.Username {
 								ubm.Message.IsMessageToMe = true
 							}
 							cur = entity.Offset + entity.Length
@@ -190,9 +190,9 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 								Type: "at",
 								At: &ubm_api.At{
 									DisplayName: mention,
-									UID:ubm_api.UID{
+									UID: ubm_api.UID{
 										Messenger: packet.Head.From,
-										ID: strconv.Itoa(entity.User.ID),
+										ID:        strconv.Itoa(entity.User.ID),
 									},
 								},
 							})

@@ -54,14 +54,12 @@ func (p *Plugin) Init(filename string, configPath string) {
 	if err != nil {
 		panic(err)
 	}
-	if p.config.FetchFile {
-		p.pendingRequests = make(map[string]chan types.Packet)
-		p.mux = sync.Mutex{}
-		p.timeout, err = time.ParseDuration(p.config.FetchFileTimeout)
-		if err != nil {
-			log.Error("[tgbot-ubm-conv] fail to parse fetch file timeout", err)
-			p.timeout = time.Minute * 5
-		}
+	p.pendingRequests = make(map[string]chan types.Packet)
+	p.mux = sync.Mutex{}
+	p.timeout, err = time.ParseDuration(p.config.APIResponseTimeout)
+	if err != nil {
+		log.Error("[tgbot-ubm-conv] fail to parse timeout", err)
+		p.timeout = time.Minute * 5
 	}
 	p.me = make(map[string]*ubm_api.User)
 }
@@ -121,9 +119,6 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 }
 
 func (p *Plugin) Start() {
-	if !p.config.FetchFile {
-		return
-	}
 	log.Infof("[tgbot-ubm-conv] registering consumer channel %v", p.config.ChannelUUID)
 	p.cc = router.RegisterConsumerChannel(p.config.ChannelUUID, []router.RoutingRule{
 		{
