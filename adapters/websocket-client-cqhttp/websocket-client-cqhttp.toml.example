@@ -1,4 +1,5 @@
 adaptor_name = "QQ"
 channel_uuid = ""
-access_token = ""
+cqhttp_access_token = ""
 cqhttp_websocket_addr = "ws://localhost:6700"
+cqhttp_version = "latest"

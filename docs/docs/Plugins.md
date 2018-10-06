@@ -7,7 +7,7 @@
 ## longpolling-client-tgbot
 
 这个插件通过[长轮询](https://core.telegram.org/bots/api#getupdates)从 [Telegram Bot API](https://core.telegram.org/bots/api)
-拉取 [更新](https://core.telegram.org/bots/api#update)，将更新送入网关中。
+拉取[更新](https://core.telegram.org/bots/api#update)，将更新送入网关中。
 
 **配置文件格式**
 
@@ -29,7 +29,7 @@
 
 ## http-client-tgbot
 
-这个插件用于请求[Telegram Bot API](https://core.telegram.org/bots/api)。
+这个插件用于请求 [Telegram Bot API](https://core.telegram.org/bots/api)。
 
 **配置文件格式**
 
@@ -55,6 +55,45 @@
 
 它生产的[包](/docs/Concept.html#包)的体的类型为 [APIResponse](/docs/Other.html#apiresponse)。
 
+## websocket-client-cqhttp
+
+这个插件与 [CoolQ HTTP API](https://cqhttp.cc) 建立正向 WebSocket 连接，
+接收事件上报和进行 API 请求。
+
+**配置文件格式**
+
+| 配置项名称 | 默认配置文件中的值 | 说明 |
+| --- | --- | --- |
+| adaptor_name | QQ | 适配器名称：如果你开了两个这个插件（如你用两个功能完全相同机器人账号进行负载均衡），可以通过适配器名称来区分 |
+| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID |
+| cqhttp_access_token | | CoolQ HTTP API 的 [access_token](https://cqhttp.cc/docs/4.4/#/Configuration) |
+| cqhttp_websocket_addr | ws://localhost:6700 | CoolQ HTTP API 正向 WebSocket 地址 |
+| cqhttp_version | latest | CoolQ HTTP API 版本 |
+
+这是一个[消费者](/docs/Concept.html#消费者)，它接受的[包](/docs/Concept.html#包)的头为
+
+| from | to | format.api | format.version | format.method | format.protocol |
+| --- | --- | --- | --- | --- | --- |
+| .* | *adaptor_name* | coolq-http-api | latest | apirequest | websocket |
+
+它接受的[包](/docs/Concept.html#包)的体的类型为 [APIRequest](https://cqhttp.cc/docs/4.4/#/WebSocketAPI?id=api-%E6%8E%A5%E5%8F%A3)。
+
+这是一个[生产者](/docs/Concept.html#生产者)，它生产的[包](/docs/Concept.html#包)的头为
+
+| from | to | format.api | format.version | format.method | format.protocol |
+| --- | --- | --- | --- | --- | --- |
+| *adaptor_name* | | coolq-http-api | latest | event | websocket |
+
+它生产的[包](/docs/Concept.html#包)的体的类型为 [Update](https://cqhttp.cc/docs/4.4/#/Post?id=%E4%B8%8A%E6%8A%A5%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F)。
+
+这是一个[生产者](/docs/Concept.html#生产者)，它生产的[包](/docs/Concept.html#包)的头为
+
+| from | to | format.api | format.version | format.method | format.protocol |
+| --- | --- | --- | --- | --- | --- |
+| *adaptor_name* | *回复的包的 from* | coolq-http-api | latest | apiresponse | websocket |
+
+它生产的[包](/docs/Concept.html#包)的体的类型为 [APIResponse](https://cqhttp.cc/docs/4.4/#/API?id=%E5%93%8D%E5%BA%94%E8%AF%B4%E6%98%8E)。
+
 ## tgbot-ubm-conv
 
 这个插件能够将包在 *telegram-bot-api* 格式和 *ubm-api* 格式之间转换。
@@ -75,6 +114,26 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | telegram-bot-api | latest | update | http | ubm-api | 1.0 | receive |（不限）|
 | ubm-api | 1.0 | send |（不限）| telegram-bot-api | latest | apirequest | http |
+
+## cqhttp-ubm-conv
+
+这个插件能够将包在 *coolq-http-api* 格式和 *ubm-api* 格式之间转换。
+
+**配置文件格式**
+
+| 配置项名称 | 默认配置文件中的值 | 说明 |
+| --- | --- | --- |
+| qq_adaptors | QQ | 转换的包可能来自的适配器名（正则表达式） |
+| adaptor_name | CQHTTP-UBM-Converter | 适配器名称 |
+| api_response_timeout | 5s | 拉取 [self](https://cqhttp.cc/docs/4.4/#/API?id=get_login_info-%E8%8E%B7%E5%8F%96%E7%99%BB%E5%BD%95%E5%8F%B7%E4%BF%A1%E6%81%AF) 的最长等待时间 |
+| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
+
+**支持转换的格式**
+
+| from.api | from.version | from.method | from.protocol | to.api | to.version | to.method | to.protocol |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| coolq-http-api | >=3 | event | websocket | ubm-api | 1.0 | receive |（不限）|
+| ubm-api | 1.0 | send |（不限）| coolq-http-api | >=3 | apirequest | websocket |
 
 ::: tip
 头中定义的格式与体中数据结构的关系可以通过查询[格式对照表](/docs/Formats.html)找到。

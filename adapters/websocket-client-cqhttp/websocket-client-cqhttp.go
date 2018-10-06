@@ -61,7 +61,7 @@ func (p *Plugin) Start() {
 			Formats: []types.Format{
 				{
 					API:      "coolq-http-api",
-					Version:  "latest",
+					Version:  p.config.CQHTTPVersion,
 					Method:   "apirequest",
 					Protocol: "websocket",
 				},
@@ -79,7 +79,7 @@ func (p *Plugin) Start() {
 	log.Infof("[websocket-client-cqhttp] dialing cqhttp-websocket server")
 	var err error
 	header := http.Header{}
-	header.Add("Authorization", fmt.Sprintf("Token %s", p.config.AccessToken))
+	header.Add("Authorization", fmt.Sprintf("Token %s", p.config.CQHTTPAccessToken))
 	// Dial /api/ ws
 	p.apiClient, _, err = websocket.DefaultDialer.Dial(
 		p.config.CQHTTPWebSocketAddr+"/api/",
@@ -119,7 +119,7 @@ func (p *Plugin) Start() {
 					UUID: utils.GenerateUUID(),
 					Format: types.Format{
 						API:      "coolq-http-api",
-						Version:  "latest",
+						Version:  p.config.CQHTTPVersion,
 						Method:   "event",
 						Protocol: "websocket",
 					},
@@ -154,7 +154,7 @@ func (p *Plugin) Start() {
 					ReplyToUUID: apiRequestPkt.Head.UUID,
 					Format: types.Format{
 						API:      "coolq-http-api",
-						Version:  "latest",
+						Version:  p.config.CQHTTPVersion,
 						Method:   "apiresponse",
 						Protocol: "websocket",
 					},

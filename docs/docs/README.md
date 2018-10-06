@@ -107,6 +107,8 @@ Telegram Bot Gateway 是专门针对 Telegram Bot API 的多个 Bot 使用同一
 | --- | --- | --- |
 | [longpolling-client-tgbot](/docs/Plugins.html#longpolling-client-tgbot) | 客户型 | 从 Telegram Bot API 以长轮询形式拉取更新 |
 | [http-client-tgbot](/docs/Plugins.html#http-client-tgbot) | 客户型 | 调用 Telegram Bot API 发送消息 |
+| [websocket-client-cqhttp](/docs/Plugins.html#websocket-client-cqhttp) | 客户型 | 从 CoolQ HTTP API 正向 WebSocket 连接上接收事件上报和 API 调用 |
 | [jsonrpc-server-any](/docs/Plugins.html#jsonrpc-server-any) | 服务型 | 提供 JSON RPC 服务 |
 | [tgbot-ubm-conv](/docs/Plugins.html#tgbot-ubm-conv) | 自耦型 | 将消息在 [Telegram-Bot-API](/docs/Formats.html) 和 [UBM-API](/docs/Formats.html) 两种格式之间转换 |
+| [cqhttp-ubm-conv](/docs/Plugins.html#cqhttp-ubm-conv) | 自耦型 | 将消息在 [CoolQ-HTTP-API](/docs/Formats.html) 和 [UBM-API](/docs/Formats.html) 两种格式之间转换 |
 | [commander](/docs/Plugins.html#commander) | 自耦型 | 命令解析器 |
