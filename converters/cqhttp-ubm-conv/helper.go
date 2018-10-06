@@ -11,8 +11,12 @@ import (
 	"time"
 )
 
-func (p *Plugin) makeRequest(to string, data []byte) []byte {
+func (p *Plugin) makeRequest(to string, action string, params map[string]interface{}) []byte {
 	// construct api request packet
+	request := make(map[string]interface{})
+	request["action"] = action
+	request["params"] = params
+	body, _ := json.Marshal(request)
 	pkt := types.Packet{
 		Head: types.Head{
 			UUID: utils.GenerateUUID(),
@@ -25,7 +29,7 @@ func (p *Plugin) makeRequest(to string, data []byte) []byte {
 				Protocol: "websocket",
 			},
 		},
-		Body: data,
+		Body: body,
 	}
 
 	// make channel for api response
@@ -74,7 +78,7 @@ func (p *Plugin) getMe(adapter string) *ubm_api.User {
 	}
 
 	// cache miss, make request
-	if res := p.makeRequest(adapter, []byte(`{"action": "get_login_info"}`)); res != nil {
+	if res := p.makeRequest(adapter, "get_login_info", nil); res != nil {
 		qqUser := qqbotapi.User{}
 		if err := json.Unmarshal(res, &qqUser); err != nil {
 			log.Errorf("[cqhttp-ubm-conv] fail to parse get_login_info json")
