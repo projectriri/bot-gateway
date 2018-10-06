@@ -75,7 +75,7 @@ func (p *Plugin) getFileURL(fileid string, adapter string) string {
 
 func (p *Plugin) getMe(adapter string) *ubm_api.User {
 	me, ok := p.me[adapter]
-	if ok && p.me != nil {
+	if ok && me != nil {
 		return me
 	}
 	v := url.Values{}

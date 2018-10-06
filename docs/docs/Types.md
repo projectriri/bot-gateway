@@ -42,6 +42,7 @@
 | notice | [Notice](#notice) | 系统消息：如加群通知等（消息类型是 notice 时需要，仅用于收到的消息） |
 | response | [Response](#response) | 响应消息：发出 Message 时的发送结果，或发出 Action 时的响应数据（消息类型是 response 时需要，仅用于收到的消息） |
 | action | [Action](#action) | 操作消息：退群等非聊天请求（消息类型是 action 时需要，仅用于发出的消息） |
+| self | [User](#user) | 自己的用户（仅用于收到的消息）|
 
 ### Message
 
@@ -52,7 +53,6 @@
 | id | string | 消息 ID，只在当前会话中唯一（仅用于收到的消息）|
 | from | [User](#user) | 消息来自的用户（仅用于收到的消息）|
 | chat | [Chat](#chat) | 会话（仅用于收到的消息）|
-| self | [User](#user) | 自己的用户（仅用于收到的消息）|
 | cid | [CID](#cid) | 会话 CID（仅用于发出的消息）|
 | is_message_to_me | bool | 是否 at 或回复我（仅用于收到的消息）|
 | reply_id | string | 回复的消息 ID |
@@ -61,7 +61,7 @@
 | type | string | 消息类型 |
 | rich_text | [RichTextElement](#richtextelement)[] | 图文（消息类型是 rich_text 时需要）|
 | sticker | [Sticker](#sticker) | 贴纸（消息类型是 sticker 时需要）|
-| record | [Record](#record) | 语音（消息类型是 record 时需要） |
+| voice | [Voice](#voice) | 语音（消息类型是 voice 时需要） |
 | location | [Location](#location) | 位置（消息类型是 location 时需要）|
 
 ### CID
@@ -157,7 +157,7 @@ file_id 字段。接收到的 url 不一定可以直接下载，因为可能需�
 | pack_id | string | 贴纸包 ID，有些平台不存在 |
 | image | [Image](#image) | 图片 |
 
-### Record
+### Voice
 
 语音。
 

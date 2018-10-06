@@ -8,13 +8,13 @@ type UBM struct {
 	Notice   *Notice   `json:"notice,omitempty"`
 	Response *Response `json:"response,omitempty"`
 	Action   *Action   `json:"action,omitempty"`
+	Self     *User     `json:"self,omitempty"`
 }
 
 type Message struct {
 	ID            string    `json:"id,omitempty"`
 	From          *User     `json:"from,omitempty"`
 	Chat          *Chat     `json:"chat,omitempty"`
-	Self          *User     `json:"self,omitempty"`
 	IsMessageToMe bool      `json:"is_message_to_me"`
 	CID           *CID      `json:"cid,omitempty"`
 	Type          string    `json:"type"`
@@ -23,7 +23,7 @@ type Message struct {
 	DeleteID      string    `json:"delete_id,omitempty"`
 	RichText      *RichText `json:"rich_text,omitempty"`
 	Sticker       *Sticker  `json:"sticker,omitempty"`
-	Record        *Record   `json:"record,omitempty"`
+	Voice         *Voice    `json:"voice,omitempty"`
 	Location      *Location `json:"location,omitempty"`
 }
 
@@ -91,7 +91,7 @@ type Sticker struct {
 	Image  *Image `json:"image"`
 }
 
-type Record struct {
+type Voice struct {
 	Format   string `json:"format,omitempty"`
 	Duration int    `json:"duration,omitempty"`
 	Data     []byte `json:"data,omitempty"`

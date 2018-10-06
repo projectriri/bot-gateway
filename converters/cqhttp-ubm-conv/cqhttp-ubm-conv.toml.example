@@ -1,0 +1,4 @@
+qq_adaptors = "QQ"
+adaptor_name = "CQHTTP-UBM-Converter"
+channel_uuid = ""
+api_response_timeout = "5s"

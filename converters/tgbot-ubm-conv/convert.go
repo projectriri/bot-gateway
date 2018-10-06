@@ -36,6 +36,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 			self := plugin.getMe(packet.Head.From)
 			ubm := ubm_api.UBM{
 				Type: "message",
+				Self: self,
 				Message: &ubm_api.Message{
 					ID: strconv.Itoa(update.Message.MessageID),
 					From: &ubm_api.User{
@@ -62,7 +63,6 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 							ChatType:  getTelegramChatType(update.Message.Chat),
 						},
 					},
-					Self: self,
 				},
 			}
 			if update.Message.ReplyToMessage != nil {
@@ -90,7 +90,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				}
 			} else if update.Message.Audio != nil {
 				ubm.Message.Type = "record"
-				ubm.Message.Record = &ubm_api.Record{
+				ubm.Message.Voice = &ubm_api.Voice{
 					Format:   update.Message.Audio.MimeType,
 					Duration: update.Message.Audio.Duration,
 					FileID:   update.Message.Audio.FileID,
@@ -99,7 +99,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				}
 			} else if update.Message.Voice != nil {
 				ubm.Message.Type = "record"
-				ubm.Message.Record = &ubm_api.Record{
+				ubm.Message.Voice = &ubm_api.Voice{
 					Format:   update.Message.Voice.MimeType,
 					Duration: update.Message.Voice.Duration,
 					FileID:   update.Message.Voice.FileID,
@@ -263,18 +263,18 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 		}
 		switch data.Message.Type {
 		case "record":
-			if data.Message.Record == nil {
+			if data.Message.Voice == nil {
 				return false, nil
 			}
-			if data.Message.Record.URL != "" {
-				v["voice"] = data.Message.Record.URL
+			if data.Message.Voice.URL != "" {
+				v["voice"] = data.Message.Voice.URL
 				p.Body, _ = json.Marshal(newMessageRequest("sendVoice", v))
 				result = append(result, p)
 				break
 			}
-			if data.Message.Record.Data != nil {
+			if data.Message.Voice.Data != nil {
 				p.Body, _ = json.Marshal(newFileRequest("sendVoice", v, map[string][]byte{
-					"voice": data.Message.Record.Data,
+					"voice": data.Message.Voice.Data,
 				}))
 				result = append(result, p)
 				break
