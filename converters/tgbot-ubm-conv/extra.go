@@ -28,7 +28,7 @@ func (p *Plugin) makeRequest(adapter string, endpoint string, values url.Values)
 	b, _ := json.Marshal(req)
 	packet := types.Packet{
 		Head: types.Head{
-			From: p.config.AdaptorName,
+			From: p.config.AdapterName,
 			To:   adapter,
 			UUID: uuid,
 			Format: types.Format{

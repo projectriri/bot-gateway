@@ -1,9 +1,9 @@
-package main
+package example
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/client"
+	client "github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/client/golang"
 	"github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/jsonrpc-any"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
@@ -95,7 +95,7 @@ func main() {
 
 			// Send message in format ubm-api
 
-			file, err := os.Open("projectriri.jpg")
+			file, err := os.Open("../../projectriri.jpg")
 			if err != nil {
 				fmt.Println(err)
 			}

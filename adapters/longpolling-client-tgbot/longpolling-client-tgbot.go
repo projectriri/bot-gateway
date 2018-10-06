@@ -66,7 +66,7 @@ func (p *Plugin) Start() {
 			log.Debug("[longpolling-client-tgbot] producing packet")
 			pc.Produce(types.Packet{
 				Head: types.Head{
-					From: p.config.AdaptorName,
+					From: p.config.AdapterName,
 					UUID: utils.GenerateUUID(),
 					Format: types.Format{
 						API:      "telegram-bot-api",

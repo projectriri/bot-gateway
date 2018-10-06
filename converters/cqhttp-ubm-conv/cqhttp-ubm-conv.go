@@ -123,8 +123,8 @@ func (p *Plugin) Start() {
 	log.Infof("[cqhttp-ubm-conv] registering consumer channel %v", p.config.ChannelUUID)
 	p.cc = router.RegisterConsumerChannel(p.config.ChannelUUID, []router.RoutingRule{
 		{
-			From: p.config.QQAdaptors,
-			To:   p.config.AdaptorName,
+			From: p.config.QQAdapters,
+			To:   p.config.AdapterName,
 			Formats: []types.Format{
 				{
 					API:      "coolq-http-api",

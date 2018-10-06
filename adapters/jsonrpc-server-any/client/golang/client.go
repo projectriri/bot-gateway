@@ -1,4 +1,4 @@
-package client
+package jsonrpc_sdk
 
 import (
 	. "github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/jsonrpc-any"

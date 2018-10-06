@@ -14,7 +14,7 @@
 | 配置项名称 | 默认配置文件中的值 | 说明 |
 | --- | --- | --- |
 | token |（必填）| [Telegram Bot Token](https://core.telegram.org/bots/api#authorizing-your-bot) |
-| adaptor_name | Telegram | 适配器名称：如果你开了两个这个插件（如你用两个功能完全相同机器人账号进行负载均衡），可以通过适配器名称来区分 |
+| adapter_name | Telegram | 适配器名称：如果你开了两个这个插件（如你用两个功能完全相同机器人账号进行负载均衡），可以通过适配器名称来区分 |
 | timeout | 60 | [长轮询超时时间](https://core.telegram.org/bots/api#getupdates) |
 | limit | 100 | [长轮询单次拉取的消息上限](https://core.telegram.org/bots/api#getupdates) |
 | channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空
@@ -23,7 +23,7 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| *adaptor_name* | | telegram-bot-api | latest | update | http |
+| *adapter_name* | | telegram-bot-api | latest | update | http |
 
 它生产的[包](/docs/Concept.html#包)的体的类型为 [APIResponse](/docs/Other.html#apiresponse)，其中 Result 为 [Update](https://core.telegram.org/bots/api#update)[]
 
@@ -36,14 +36,14 @@
 | 配置项名称 | 默认配置文件中的值 | 说明 |
 | --- | --- | --- |
 | token |（必填）| [Telegram Bot Token](https://core.telegram.org/bots/api#authorizing-your-bot) |
-| adaptor_name | Telegram | 适配器名称：如果你开了两个这个插件（如你用两个功能完全相同机器人账号进行负载均衡），可以通过适配器名称来区分 |
+| adapter_name | Telegram | 适配器名称：如果你开了两个这个插件（如你用两个功能完全相同机器人账号进行负载均衡），可以通过适配器名称来区分 |
 | channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID
 
 这是一个[消费者](/docs/Concept.html#消费者)，它接受的[包](/docs/Concept.html#包)的头为
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| .* | *adaptor_name* | telegram-bot-api | latest | apirequest | http |
+| .* | *adapter_name* | telegram-bot-api | latest | apirequest | http |
 
 它接受的[包](/docs/Concept.html#包)的体的类型为 [HTTPRequest](/docs/Types.html#httprequest)。
 
@@ -51,7 +51,7 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| *adaptor_name* | *回复的包的 from* | telegram-bot-api | latest | apiresponse | http |
+| *adapter_name* | *回复的包的 from* | telegram-bot-api | latest | apiresponse | http |
 
 它生产的[包](/docs/Concept.html#包)的体的类型为 [APIResponse](/docs/Other.html#apiresponse)。
 
@@ -64,7 +64,7 @@
 
 | 配置项名称 | 默认配置文件中的值 | 说明 |
 | --- | --- | --- |
-| adaptor_name | QQ | 适配器名称：如果你开了两个这个插件（如你用两个功能完全相同机器人账号进行负载均衡），可以通过适配器名称来区分 |
+| adapter_name | QQ | 适配器名称：如果你开了两个这个插件（如你用两个功能完全相同机器人账号进行负载均衡），可以通过适配器名称来区分 |
 | channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID |
 | cqhttp_access_token | | CoolQ HTTP API 的 [access_token](https://cqhttp.cc/docs/4.4/#/Configuration) |
 | cqhttp_websocket_addr | ws://localhost:6700 | CoolQ HTTP API 正向 WebSocket 地址 |
@@ -74,7 +74,7 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| .* | *adaptor_name* | coolq-http-api | latest | apirequest | websocket |
+| .* | *adapter_name* | coolq-http-api | latest | apirequest | websocket |
 
 它接受的[包](/docs/Concept.html#包)的体的类型为 [APIRequest](https://cqhttp.cc/docs/4.4/#/WebSocketAPI?id=api-%E6%8E%A5%E5%8F%A3)。
 
@@ -82,7 +82,7 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| *adaptor_name* | | coolq-http-api | latest | event | websocket |
+| *adapter_name* | | coolq-http-api | latest | event | websocket |
 
 它生产的[包](/docs/Concept.html#包)的体的类型为 [Update](https://cqhttp.cc/docs/4.4/#/Post?id=%E4%B8%8A%E6%8A%A5%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F)。
 
@@ -90,7 +90,7 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| *adaptor_name* | *回复的包的 from* | coolq-http-api | latest | apiresponse | websocket |
+| *adapter_name* | *回复的包的 from* | coolq-http-api | latest | apiresponse | websocket |
 
 它生产的[包](/docs/Concept.html#包)的体的类型为 [APIResponse](https://cqhttp.cc/docs/4.4/#/API?id=%E5%93%8D%E5%BA%94%E8%AF%B4%E6%98%8E)。
 
@@ -102,8 +102,8 @@
 
 | 配置项名称 | 默认配置文件中的值 | 说明 |
 | --- | --- | --- |
-| telegram_adaptors | Telegram | 转换的包可能来自的适配器名（正则表达式） |
-| adaptor_name | TGBot-UBM-Converter | 适配器名称 |
+| telegram_adapters | Telegram | 转换的包可能来自的适配器名（正则表达式） |
+| adapter_name | TGBot-UBM-Converter | 适配器名称 |
 | fetch_file | true | 是否拉取 [file_path](https://core.telegram.org/bots/api#file) 作为 URL |
 | api_response_timeout | 5s | 拉取 [file_path](https://core.telegram.org/bots/api#file) 和 [self](https://core.telegram.org/bots/api#getme) 的最长等待时间 |
 | channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
@@ -123,8 +123,8 @@
 
 | 配置项名称 | 默认配置文件中的值 | 说明 |
 | --- | --- | --- |
-| qq_adaptors | QQ | 转换的包可能来自的适配器名（正则表达式） |
-| adaptor_name | CQHTTP-UBM-Converter | 适配器名称 |
+| qq_adapters | QQ | 转换的包可能来自的适配器名（正则表达式） |
+| adapter_name | CQHTTP-UBM-Converter | 适配器名称 |
 | api_response_timeout | 5s | 拉取 [self](https://cqhttp.cc/docs/4.4/#/API?id=get_login_info-%E8%8E%B7%E5%8F%96%E7%99%BB%E5%BD%95%E5%8F%B7%E4%BF%A1%E6%81%AF) 的最长等待时间 |
 | channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
 

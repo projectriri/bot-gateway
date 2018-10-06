@@ -141,5 +141,5 @@ func formatDuration(duration time.Duration) string {
 }
 
 func getPluginCount() int {
-	return len(adaptors)
+	return len(adapters)
 }

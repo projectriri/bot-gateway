@@ -20,7 +20,7 @@ func (p *Plugin) makeRequest(to string, action string, params map[string]interfa
 	pkt := types.Packet{
 		Head: types.Head{
 			UUID: utils.GenerateUUID(),
-			From: p.config.AdaptorName,
+			From: p.config.AdapterName,
 			To:   to,
 			Format: types.Format{
 				API:      "coolq-http-api",

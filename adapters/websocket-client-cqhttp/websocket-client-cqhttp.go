@@ -57,7 +57,7 @@ func (p *Plugin) Start() {
 	cc := router.RegisterConsumerChannel(p.config.ChannelUUID, []router.RoutingRule{
 		{
 			From: ".*",
-			To:   p.config.AdaptorName,
+			To:   p.config.AdapterName,
 			Formats: []types.Format{
 				{
 					API:      "coolq-http-api",
@@ -114,7 +114,7 @@ func (p *Plugin) Start() {
 			log.Debugf("[websocket-client-cqhttp] receiving event %s", string(msg))
 			pc.Produce(types.Packet{
 				Head: types.Head{
-					From: p.config.AdaptorName,
+					From: p.config.AdapterName,
 					To:   "",
 					UUID: utils.GenerateUUID(),
 					Format: types.Format{
@@ -148,7 +148,7 @@ func (p *Plugin) Start() {
 			log.Debugf("[websocket-client-cqhttp] receiving apiresponse %s", string(msg))
 			pc.Produce(types.Packet{
 				Head: types.Head{
-					From:        p.config.AdaptorName,
+					From:        p.config.AdapterName,
 					To:          apiRequestPkt.Head.From,
 					UUID:        utils.GenerateUUID(),
 					ReplyToUUID: apiRequestPkt.Head.UUID,

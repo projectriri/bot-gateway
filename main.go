@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var adaptors = make([]types.Adapter, 0)
+var adapters = make([]types.Adapter, 0)
 var converters = make([]types.Converter, 0)
 var startTime time.Time
 
@@ -95,7 +95,7 @@ func loadPlugin(path string) {
 		adp.Init(filename, config.PluginConfDir)
 		log.Infof("starting adapter types %v", filename)
 		go adp.Start()
-		adaptors = append(adaptors, adp)
+		adapters = append(adapters, adp)
 	case *types.Converter:
 		cov := *x
 		converters = append(converters, cov)
@@ -103,7 +103,7 @@ func loadPlugin(path string) {
 		cov.Init(filename, config.PluginConfDir)
 		log.Infof("starting adapter types %v", filename)
 		go cov.Start()
-		adaptors = append(adaptors, cov)
+		adapters = append(adapters, cov)
 	default:
 		log.Errorf("types %v neither implements an adapter or a converter")
 	}

@@ -122,8 +122,8 @@ func (p *Plugin) Start() {
 	log.Infof("[tgbot-ubm-conv] registering consumer channel %v", p.config.ChannelUUID)
 	p.cc = router.RegisterConsumerChannel(p.config.ChannelUUID, []router.RoutingRule{
 		{
-			From: p.config.TelegramAdaptors,
-			To:   p.config.AdaptorName,
+			From: p.config.TelegramAdapters,
+			To:   p.config.AdapterName,
 			Formats: []types.Format{
 				{
 					API:      "telegram-bot-api",

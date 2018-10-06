@@ -57,7 +57,7 @@ func (p *Plugin) Start() {
 	cc := router.RegisterConsumerChannel(p.config.ChannelUUID, []router.RoutingRule{
 		{
 			From: ".*",
-			To:   p.config.AdaptorName,
+			To:   p.config.AdapterName,
 			Formats: []types.Format{
 				{
 					API:      "telegram-bot-api",
@@ -94,7 +94,7 @@ func (p *Plugin) Start() {
 		}
 		pc.Produce(types.Packet{
 			Head: types.Head{
-				From:        p.config.AdaptorName,
+				From:        p.config.AdapterName,
 				To:          packet.Head.From,
 				UUID:        utils.GenerateUUID(),
 				ReplyToUUID: packet.Head.UUID,

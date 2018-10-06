@@ -72,19 +72,19 @@ func (p *Plugin) convertQQEventWSToUbmReceive(packet types.Packet, to types.Form
 			FirstName:   update.Message.From.NickName,
 			LastName:    "",
 			UID: ubm_api.UID{
-				Messenger: p.config.AdaptorName,
+				Messenger: packet.Head.From,
 				ID:        strconv.FormatInt(update.Message.From.ID, 10),
 				Username:  "",
 			},
 			PrivateChat: ubm_api.CID{
-				Messenger: p.config.AdaptorName,
+				Messenger: packet.Head.From,
 				ChatID:    strconv.FormatInt(update.Message.From.ID, 10),
 				ChatType:  "private",
 			},
 		},
 		Chat: &ubm_api.Chat{
 			CID: ubm_api.CID{
-				Messenger: p.config.AdaptorName,
+				Messenger: packet.Head.From,
 				ChatID:    strconv.FormatInt(update.Message.Chat.ID, 10),
 				ChatType:  update.Message.Chat.Type,
 			},
