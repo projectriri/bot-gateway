@@ -69,7 +69,7 @@ func processPacket(pkt *Packet) {
 
 				if converting, ok := processingMap[f]; ok && converting != nil {
 					ch := make(chan []Packet)
-					converting = append(converting, ch)
+					processingMap[f] = append(processingMap[f], ch)
 					mux.Unlock()
 					result := <-ch
 					if result != nil {
