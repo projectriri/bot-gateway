@@ -10,15 +10,44 @@ import (
 )
 
 type Broker struct {
+	Server      *Server
+	channelPool map[string]*Channel
+	expChan     chan bool
+}
+
+type Server struct {
 	channelPool     map[string]*Channel
 	gcInterval      time.Duration
 	channelLifeTime time.Duration
 }
 
-func (b *Broker) init(gci time.Duration, clt time.Duration) {
+func (s *Server) init(gci time.Duration, clt time.Duration) {
+	s.channelPool = make(map[string]*Channel)
+	s.gcInterval = gci
+	s.channelLifeTime = clt
+}
+
+func (b *Broker) init(s *Server) {
+	b.Server = s
 	b.channelPool = make(map[string]*Channel)
-	b.gcInterval = gci
-	b.channelLifeTime = clt
+	b.expChan = make(chan bool)
+	go func() {
+		for {
+			select {
+			case <-b.expChan:
+				return
+			case <-time.After(b.Server.channelLifeTime):
+				for _, ch := range b.channelPool {
+					b.Server.renewChannel(ch)
+				}
+			}
+		}
+	}()
+}
+
+func (b *Broker) close() {
+	b.expChan <- false
+	close(b.expChan)
 }
 
 func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitResponse) (err error) {
@@ -38,8 +67,9 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 	if args.Consumer {
 		ch.C = router.RegisterConsumerChannel(uuid, args.Accept)
 	}
-	b.renewChannel(ch)
+	b.Server.renewChannel(ch)
 	b.channelPool[uuid] = ch
+	b.Server.channelPool[uuid] = ch
 	*reply = ChannelInitResponse{
 		UUID: uuid,
 		Code: 10001,
@@ -49,7 +79,7 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 
 func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse) (err error) {
 	log.Debugf("[jsonrpc-server-any] preparing to send packet")
-	ch, ok := b.channelPool[args.UUID]
+	ch, ok := b.Server.channelPool[args.UUID]
 	if !ok {
 		*reply = ChannelProduceResponse{
 			Code: 10044,
@@ -57,7 +87,6 @@ func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse
 		return
 	}
 	log.Debugf("[jsonrpc-server-any] sending packet for channel %v", ch.UUID)
-	b.renewChannel(ch)
 	if ch.P == nil {
 		*reply = ChannelProduceResponse{
 			Code: 10048,
@@ -75,17 +104,23 @@ func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse
 
 func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeResponse) (err error) {
 	log.Debugf("[jsonrpc-server-any] preparing to get updates")
-	ch, ok := b.channelPool[args.UUID]
+	ch, ok := b.Server.channelPool[args.UUID]
 	if !ok {
 		*reply = ChannelConsumeResponse{
 			Code: 10044,
 		}
 		return
 	}
-	b.renewChannel(ch)
 	log.Infof("[jsonrpc-server-any] preparing updates for channel %v", ch.UUID)
 	if args.Limit <= 0 || args.Limit > 100 {
 		args.Limit = 100
+	}
+	args.Timeout, err = time.ParseDuration(args.TimeoutStr)
+	if err != nil {
+		*reply = ChannelConsumeResponse{
+			Code: 10040,
+		}
+		return
 	}
 	t := time.NewTimer(args.Timeout)
 	for {

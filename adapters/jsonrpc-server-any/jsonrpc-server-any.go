@@ -20,7 +20,7 @@ var (
 
 type Plugin struct {
 	config Config
-	b      *Broker
+	s      *Server
 }
 
 var manifest = types.Manifest{
@@ -60,26 +60,31 @@ func (p *Plugin) Init(filename string, configPath string) {
 		log.Error("[jsonrpc-server-any] fail to parse channel life time", err)
 		clt = time.Hour
 	}
-	b := new(Broker)
-	b.init(gci, clt)
-	p.b = b
+	s := new(Server)
+	s.init(gci, clt)
+	p.s = s
 }
 
 func (p *Plugin) Start() {
-	server := rpc.NewServer()
-	server.Register(p.b)
 	l, e := net.Listen("tcp", ":"+strconv.Itoa(p.config.Port))
 	if e != nil {
 		log.Fatalf("[jsonrpc-server-any] listen error: %v", e)
 	}
 	log.Infof("[jsonrpc-server-any] listening jsonrpc at port %v", p.config.Port)
-	go p.b.garbageCollection()
+	go p.s.garbageCollection()
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			log.Fatal(err)
 		}
-		go server.ServeCodec(jsonrpc.NewServerCodec(conn))
+		go func(c net.Conn) {
+			server := rpc.NewServer()
+			b := new(Broker)
+			b.init(p.s)
+			server.Register(b)
+			server.ServeCodec(jsonrpc.NewServerCodec(c))
+			b.close()
+		}(conn)
 	}
 }
 

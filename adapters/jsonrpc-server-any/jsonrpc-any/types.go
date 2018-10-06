@@ -28,9 +28,10 @@ type ChannelInitResponse struct {
 }
 
 type ChannelConsumeRequest struct {
-	UUID    string        `json:"uuid"`
-	Timeout time.Duration `json:"timeout"`
-	Limit   int           `json:"limit"`
+	UUID       string        `json:"uuid"`
+	Timeout    time.Duration `json:"-"`
+	TimeoutStr string        `json:"timeout"`
+	Limit      int           `json:"limit"`
 }
 
 type ChannelConsumeResponse struct {

@@ -127,11 +127,11 @@ func (c *Client) InitChannel(key string) (msg string, err error) {
 }
 
 func (c *Client) GetUpdates() (packets []types.Packet, err error) {
-	packets, err = c.GetChannelUpdates(c.UUID, c.Timeout, c.Limit)
+	packets, err = c.GetChannelUpdates(c.UUID, c.Timeout.String(), c.Limit)
 	return
 }
 
-func (c *Client) GetChannelUpdates(uuid string, timeout time.Duration, limit int) (packets []types.Packet, err error) {
+func (c *Client) GetChannelUpdates(uuid string, timeout string, limit int) (packets []types.Packet, err error) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Errorf("[RiriSDK-GetUpdates] error: %v", err)
@@ -141,9 +141,9 @@ func (c *Client) GetChannelUpdates(uuid string, timeout time.Duration, limit int
 	}()
 	log.Debugf("[RiriSDK-GetUpdates] Preparing updates")
 	args := &ChannelConsumeRequest{
-		UUID:    uuid,
-		Timeout: timeout,
-		Limit:   limit,
+		UUID:       uuid,
+		TimeoutStr: timeout,
+		Limit:      limit,
 	}
 	reply := ChannelConsumeResponse{}
 	err = c.r.Call("Broker.GetUpdates", args, &reply)

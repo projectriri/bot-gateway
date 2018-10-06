@@ -6,18 +6,18 @@ import (
 	"time"
 )
 
-func (b *Broker) getExpireTime() time.Time {
-	return time.Now().Local().Add(b.channelLifeTime)
+func (s *Server) getExpireTime() time.Time {
+	return time.Now().Local().Add(s.channelLifeTime)
 }
 
-func (b *Broker) renewChannel(ch *Channel) {
-	ch.ExpireTime = b.getExpireTime()
+func (s *Server) renewChannel(ch *Channel) {
+	ch.ExpireTime = s.getExpireTime()
 	log.Debugf("[jsonrpc-server-any] renewed channel %v to %v", ch.UUID, ch.ExpireTime)
 }
 
-func (b *Broker) collectExpiredChannel() {
-	lb := len(b.channelPool)
-	for k, v := range b.channelPool {
+func (s *Server) collectExpiredChannel() {
+	lb := len(s.channelPool)
+	for k, v := range s.channelPool {
 		if v.ExpireTime.Before(time.Now()) {
 			log.Warnf("[jsonrpc-server-any] [GC]: channel %v expired at %v", v.UUID, v.ExpireTime)
 			if v.P != nil {
@@ -26,16 +26,16 @@ func (b *Broker) collectExpiredChannel() {
 			if v.C != nil {
 				v.C.Close()
 			}
-			delete(b.channelPool, k)
+			delete(s.channelPool, k)
 		}
 	}
-	lc := len(b.channelPool)
+	lc := len(s.channelPool)
 	log.Debugf("[jsonrpc-server-any] [GC]: channel %v -> %v", lb, lc)
 }
 
-func (b *Broker) garbageCollection() {
+func (s *Server) garbageCollection() {
 	for {
-		<-time.After(b.gcInterval)
-		b.collectExpiredChannel()
+		<-time.After(s.gcInterval)
+		s.collectExpiredChannel()
 	}
 }
