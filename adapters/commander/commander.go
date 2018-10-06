@@ -86,7 +86,10 @@ func (p *CommanderPlugin) Start() {
 				continue
 			}
 
-			richTexts := *req.Message.RichText
+			// deep copy richTexts
+			var richTexts ubm_api.RichText
+			t, _ := json.Marshal(*req.Message.RichText)
+			json.Unmarshal(t, &richTexts)
 			// Trim all leading white characters
 			for i := 0; i < len(richTexts) && richTexts[i].Type == "text"; i++ {
 				richTexts[i].Text = strings.TrimLeftFunc(richTexts[i].Text, p.isWhiteChar)
@@ -244,7 +247,7 @@ func (p *CommanderPlugin) Start() {
 					c.ArgsStr = strings.Join(tmpArgsTxt, " ")
 				}
 			}
-			c.Message = *req.Message
+			c.Message = req.Message
 
 			b, _ := json.Marshal(c)
 			pc.Produce(types.Packet{

@@ -146,7 +146,6 @@ func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeRe
 					break More
 				}
 			}
-			log.Debugf("[jsonrpc-server-any] %v", packets)
 			*reply = ChannelConsumeResponse{
 				Code:    10000,
 				Packets: packets,
