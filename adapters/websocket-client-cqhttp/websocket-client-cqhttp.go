@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"github.com/gorilla/websocket"
+	"golang.org/x/net/websocket"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
-	"net/http"
+	"encoding/json"
 )
 
 var (
@@ -78,13 +78,13 @@ func (p *Plugin) Start() {
 
 	log.Infof("[websocket-client-cqhttp] dialing cqhttp-websocket server")
 	var err error
-	header := http.Header{}
-	header.Add("Authorization", fmt.Sprintf("Token %s", p.config.CQHTTPAccessToken))
 	// Dial /api/ ws
-	p.apiClient, _, err = websocket.DefaultDialer.Dial(
-		p.config.CQHTTPWebSocketAddr+"/api/",
-		header,
-	)
+	apiConfig, err := websocket.NewConfig(p.config.CQHTTPWebSocketAddr+"/api/", "http://localhost/")
+	if err != nil {
+		log.Fatalf("[websocket-client-cqhttp] invalid websocket address %v", err)
+	}
+	apiConfig.Header.Add("Authorization", fmt.Sprintf("Token %s", p.config.CQHTTPAccessToken))
+	p.apiClient, err = websocket.DialConfig(apiConfig)
 	if err != nil {
 		log.Errorf("[websocket-client-cqhttp] failed to dial cqhttp api websocket (%v)", err)
 	} else {
@@ -92,10 +92,12 @@ func (p *Plugin) Start() {
 	}
 	defer p.apiClient.Close()
 	// Dial /event/ ws
-	p.eventClient, _, err = websocket.DefaultDialer.Dial(
-		p.config.CQHTTPWebSocketAddr+"/event/",
-		header,
-	)
+	eventConfig, err := websocket.NewConfig(p.config.CQHTTPWebSocketAddr+"/event/", "http://localhost/")
+	if err != nil {
+		log.Fatalf("[websocket-client-cqhttp] invalid websocket address %v", err)
+	}
+	eventConfig.Header.Add("Authorization", fmt.Sprintf("Token %s", p.config.CQHTTPAccessToken))
+	p.eventClient, err = websocket.DialConfig(eventConfig)
 	if err != nil {
 		log.Errorf("[websocket-client-cqhttp] failed to dial cqhttp event websocket (%v)", err)
 	} else {
@@ -106,8 +108,8 @@ func (p *Plugin) Start() {
 	// Start main event update loop
 	go func() {
 		for {
-			_, msg, err := p.eventClient.ReadMessage()
-			if err != nil {
+			msg := json.RawMessage{}
+			if err := websocket.JSON.Receive(p.eventClient, &msg); err != nil {
 				log.Errorf("[websocket-client-cqhttp] failed to read event (%v)", err)
 				continue
 			}
@@ -134,14 +136,14 @@ func (p *Plugin) Start() {
 		for {
 			// send api request
 			apiRequestPkt := cc.Consume()
-			err := p.apiClient.WriteMessage(websocket.TextMessage, apiRequestPkt.Body)
+			err := websocket.JSON.Send(p.apiClient, apiRequestPkt.Body)
 			if err != nil {
 				log.Errorf("[websocket-client-cqhttp] failed to send apirequest (%v)", err)
 				continue
 			}
 			// get api response
-			_, msg, err := p.apiClient.ReadMessage()
-			if err != nil {
+			msg := json.RawMessage{}
+			if err := websocket.JSON.Receive(p.apiClient, &msg); err != nil {
 				log.Errorf("[websocket-client-cqhttp] failed to read apiresponse (%v)", err)
 				continue
 			}
