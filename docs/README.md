@@ -8,3 +8,13 @@ footer: MIT Licensed | Copyright © 2018 Project Riri Staff
 
 [![Telegram-Bot-API](./img/telegram-bot-api.webp)](https://core.telegram.org/bots)
 [![CoolQ-HTTP-API](./img/cq-http-api.webp)](https://cqhttp.cc)
+
+<style>
+  .content.custom p {
+    text-align: center;
+    margin: 40px 0;
+  }
+  .content.custom a img {
+    width: 120px;
+  }
+</style>

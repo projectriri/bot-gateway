@@ -74,7 +74,7 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| .* | *adapter_name* | coolq-http-api | latest | apirequest | websocket |
+| .* | *adapter_name* | coolq-http-api | *cqhttp_version* | apirequest | websocket |
 
 它接受的[包](/docs/Concept.html#包)的体的类型为 [APIRequest](https://cqhttp.cc/docs/4.4/#/WebSocketAPI?id=api-%E6%8E%A5%E5%8F%A3)。
 
@@ -82,7 +82,7 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| *adapter_name* | | coolq-http-api | latest | event | websocket |
+| *adapter_name* | | coolq-http-api | *cqhttp_version* | event | websocket |
 
 它生产的[包](/docs/Concept.html#包)的体的类型为 [Update](https://cqhttp.cc/docs/4.4/#/Post?id=%E4%B8%8A%E6%8A%A5%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F)。
 
@@ -90,7 +90,7 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| *adapter_name* | *回复的包的 from* | coolq-http-api | latest | apiresponse | websocket |
+| *adapter_name* | *回复的包的 from* | coolq-http-api | *cqhttp_version* | apiresponse | websocket |
 
 它生产的[包](/docs/Concept.html#包)的体的类型为 [APIResponse](https://cqhttp.cc/docs/4.4/#/API?id=%E5%93%8D%E5%BA%94%E8%AF%B4%E6%98%8E)。
 
