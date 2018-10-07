@@ -89,7 +89,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 					Longitude: update.Message.Location.Longitude,
 				}
 			} else if update.Message.Audio != nil {
-				ubm.Message.Type = "record"
+				ubm.Message.Type = "voice"
 				ubm.Message.Voice = &ubm_api.Voice{
 					Format:   update.Message.Audio.MimeType,
 					Duration: update.Message.Audio.Duration,
@@ -98,7 +98,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 					FileSize: update.Message.Audio.FileSize,
 				}
 			} else if update.Message.Voice != nil {
-				ubm.Message.Type = "record"
+				ubm.Message.Type = "voice"
 				ubm.Message.Voice = &ubm_api.Voice{
 					Format:   update.Message.Voice.MimeType,
 					Duration: update.Message.Voice.Duration,
@@ -262,7 +262,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 			break
 		}
 		switch data.Message.Type {
-		case "record":
+		case "voice":
 			if data.Message.Voice == nil {
 				return false, nil
 			}
