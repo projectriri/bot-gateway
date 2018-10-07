@@ -137,7 +137,7 @@ func (p *Plugin) convertQQEventWSToUbmReceive(packet types.Packet, to types.Form
 					},
 				})
 				// check is_message_to_me
-				if media.QQ == "all" || media.QQ == ubm.Self.UID.ID {
+				if ubm.Self != nil && (media.QQ == "all" || media.QQ == ubm.Self.UID.ID) {
 					ubm.Message.IsMessageToMe = true
 				}
 			case *cqcode.Image:
