@@ -43,7 +43,7 @@ func main() {
 				},
 				{
 					API:      "telegram-bot-api",
-					Version:  "latest",
+					Version:  "4.1",
 					Protocol: "http",
 					Method:   "update",
 				},
@@ -81,7 +81,7 @@ func main() {
 					To:   "Telegram",
 					Format: types.Format{
 						API:      "telegram-bot-api",
-						Version:  "latest",
+						Version:  "4.1",
 						Protocol: "http",
 						Method:   "apirequest",
 					},

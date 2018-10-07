@@ -5,6 +5,7 @@ import (
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
+	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"sync"
@@ -47,6 +48,11 @@ var manifest = types.Manifest{
 func (p *Plugin) GetManifest() types.Manifest {
 	return manifest
 }
+
+// Telegram constants
+const (
+	APIVersion = "4.1"
+)
 
 func (p *Plugin) Init(filename string, configPath string) {
 	// load toml config
@@ -91,7 +97,8 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 	log.Debugf("[tgbot-ubm-conv] try convert pkt %v", packet.Head.UUID)
 
 	from := packet.Head.Format
-	if strings.ToLower(from.API) == "telegram-bot-api" && strings.ToLower(to.API) == "ubm-api" {
+	if strings.ToLower(from.API) == "telegram-bot-api" && strings.ToLower(to.API) == "ubm-api" &&
+		utils.CheckIfVersionSatisfy(from.Version, ">=3") && utils.CheckIfVersionSatisfy(UBMAPIVersion, to.Version) {
 		if strings.ToLower(from.Method) == "update" && strings.ToLower(to.Method) == "receive" {
 			switch strings.ToLower(from.Protocol) {
 			case "http":
@@ -102,11 +109,12 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 		if strings.ToLower(from.Method) == "apiresponse" && strings.ToLower(to.Method) == "response" {
 			switch strings.ToLower(from.Protocol) {
 			case "http":
-
+				// TODO
 			}
 		}
 	}
-	if strings.ToLower(from.API) == "ubm-api" && strings.ToLower(to.API) == "telegram-bot-api" {
+	if strings.ToLower(from.API) == "ubm-api" && strings.ToLower(to.API) == "telegram-bot-api" &&
+		from.Version == "1.0" && utils.CheckIfVersionSatisfy(TelegramBotAPIVersion, to.Version) {
 		if strings.ToLower(from.Method) == "send" && strings.ToLower(to.Method) == "apirequest" {
 			switch strings.ToLower(to.Protocol) {
 			case "http":
@@ -127,7 +135,7 @@ func (p *Plugin) Start() {
 			Formats: []types.Format{
 				{
 					API:      "telegram-bot-api",
-					Version:  "latest",
+					Version:  ">=3",
 					Method:   "apiresponse",
 					Protocol: "http",
 				},

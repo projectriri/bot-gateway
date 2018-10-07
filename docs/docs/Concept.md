@@ -36,7 +36,7 @@
 | 字段名 | 数据类型 | 说明 |
 | --- | --- | --- |
 | api | string | API |
-| version | string | 版本 |
+| version | string | 版本，格式必须遵循 [Semantic Versioning](https://semver.org/) |
 | method | string | 方法 |
 | protocol | string | 协议 |
 
@@ -57,7 +57,7 @@
 | --- | --- | --- |
 | from | string | 来自 |
 | to | string | 发往 |
-| formats | [Format](#格式)[] | 格式 |
+| formats | [Format](#格式)[] | 格式，其中的版本字段为版本约束字符串。[Semantic Versioning 标准](https://semver.org/) [尚未](https://jubianchi.github.io/semver-check/)制定版本约束规范，程序目前使用的实现是 [semver](https://github.com/Masterminds/semver) |
 
 ::: tip
 其中 `from` 和 `to` 字段都可以使用正则表达式

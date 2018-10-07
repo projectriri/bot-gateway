@@ -5,6 +5,7 @@ import (
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
+	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"sync"
@@ -92,7 +93,8 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 	log.Debugf("[cqhttp-ubm-conv] trying convert pkt %v", packet.Head.UUID)
 
 	from := packet.Head.Format
-	if strings.ToLower(from.API) == "coolq-http-api" && strings.ToLower(to.API) == "ubm-api" {
+	if strings.ToLower(from.API) == "coolq-http-api" && strings.ToLower(to.API) == "ubm-api" &&
+		utils.CheckIfVersionSatisfy(from.Version, ">=3") && utils.CheckIfVersionSatisfy(UBMAPIVersion, to.Version) {
 		if strings.ToLower(from.Method) == "event" && strings.ToLower(to.Method) == "receive" {
 			switch strings.ToLower(from.Protocol) {
 			case "websocket":
@@ -107,7 +109,8 @@ func (p *Plugin) Convert(packet types.Packet, to types.Format) (bool, []types.Pa
 			}
 		}
 	}
-	if strings.ToLower(from.API) == "ubm-api" && strings.ToLower(to.API) == "coolq-http-api" {
+	if strings.ToLower(from.API) == "ubm-api" && strings.ToLower(to.API) == "coolq-http-api" &&
+		from.Version == "1.0" && utils.CheckIfVersionSatisfy(CQHTTPVersion, to.Version) {
 		if strings.ToLower(from.Method) == "send" && strings.ToLower(to.Method) == "apirequest" {
 			switch strings.ToLower(to.Protocol) {
 			case "websocket":

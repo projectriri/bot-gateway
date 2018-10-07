@@ -60,7 +60,7 @@ func processPacket(pkt *Packet) {
 					return
 				}
 
-				if pkt.Head.Format.String() == f {
+				if utils.CheckIfFormatSatisfy(pkt.Head.Format, format) {
 					processedMap[f] = []Packet{*pkt}
 					pushPacket(cc, processedMap[f])
 					mux.Unlock()

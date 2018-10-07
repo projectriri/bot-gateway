@@ -1,5 +1,10 @@
 package main
 
+const (
+	UBMAPIVersion         = "1.0"
+	TelegramBotAPIVersion = "4.1"
+)
+
 type Config struct {
 	TelegramAdapters   string `toml:"telegram_adapters"`
 	AdapterName        string `toml:"adapter_name"`

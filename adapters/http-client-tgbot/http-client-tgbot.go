@@ -61,7 +61,7 @@ func (p *Plugin) Start() {
 			Formats: []types.Format{
 				{
 					API:      "telegram-bot-api",
-					Version:  "latest",
+					Version:  ">=3",
 					Method:   "apirequest",
 					Protocol: "http",
 				},
@@ -100,7 +100,7 @@ func (p *Plugin) Start() {
 				ReplyToUUID: packet.Head.UUID,
 				Format: types.Format{
 					API:      "telegram-bot-api",
-					Version:  "latest",
+					Version:  APIVersion,
 					Method:   "apiresponse",
 					Protocol: "http",
 				},

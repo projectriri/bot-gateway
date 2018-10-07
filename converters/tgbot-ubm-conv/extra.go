@@ -33,7 +33,7 @@ func (p *Plugin) makeRequest(adapter string, endpoint string, values url.Values)
 			UUID: uuid,
 			Format: types.Format{
 				API:      "telegram-bot-api",
-				Version:  "latest",
+				Version:  APIVersion,
 				Protocol: "http",
 				Method:   "apirequest",
 			},

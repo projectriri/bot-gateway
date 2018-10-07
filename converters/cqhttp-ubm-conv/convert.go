@@ -165,6 +165,7 @@ func (p *Plugin) convertQQEventWSToUbmReceive(packet types.Packet, to types.Form
 	packets := make([]types.Packet, 1)
 	packets[0].Head = packet.Head
 	packets[0].Head.Format = to
+	packets[0].Head.Format.Version = UBMAPIVersion
 	packets[0].Body, _ = json.Marshal(ubm)
 
 	return true, packets
@@ -391,6 +392,7 @@ func (p *Plugin) convertUbmSendToQQApiRequestWS(packet types.Packet, to types.Fo
 	packets := make([]types.Packet, 1)
 	packets[0].Head = packet.Head
 	packets[0].Head.Format = to
+	packets[0].Head.Format.Version = CQHTTPVersion
 	packets[0].Body = data
 
 	return true, packets

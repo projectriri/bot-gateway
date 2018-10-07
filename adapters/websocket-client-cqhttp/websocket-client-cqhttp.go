@@ -20,9 +20,9 @@ var (
 )
 
 type Plugin struct {
-	apiClient      *websocket.Conn
-	eventClient    *websocket.Conn
-	config         Config
+	apiClient   *websocket.Conn
+	eventClient *websocket.Conn
+	config      Config
 }
 
 var manifest = types.Manifest{
@@ -66,7 +66,7 @@ func (p *Plugin) Start() {
 			Formats: []types.Format{
 				{
 					API:      "coolq-http-api",
-					Version:  p.config.CQHTTPVersion,
+					Version:  ">=3",
 					Method:   "apirequest",
 					Protocol: "websocket",
 				},

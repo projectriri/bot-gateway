@@ -70,7 +70,7 @@ func (p *Plugin) Start() {
 					UUID: utils.GenerateUUID(),
 					Format: types.Format{
 						API:      "telegram-bot-api",
-						Version:  "latest",
+						Version:  APIVersion,
 						Method:   "update",
 						Protocol: "http",
 					},

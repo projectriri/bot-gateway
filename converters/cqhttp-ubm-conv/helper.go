@@ -24,7 +24,7 @@ func (p *Plugin) makeRequest(to string, action string, params map[string]interfa
 			To:   to,
 			Format: types.Format{
 				API:      "coolq-http-api",
-				Version:  "latest",
+				Version:  p.config.CQHTTPVersion,
 				Method:   "apirequest",
 				Protocol: "websocket",
 			},

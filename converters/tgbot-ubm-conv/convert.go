@@ -214,6 +214,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				Body: b,
 			}
 			p.Head.Format = to
+			p.Head.Format.Version = UBMAPIVersion
 			result = append(result, p)
 		}
 	}
@@ -231,6 +232,7 @@ func (plugin *Plugin) convertUbmSendToTgApiRequestHttp(packet types.Packet, to t
 		Head: packet.Head,
 	}
 	p.Head.Format = to
+	p.Head.Format.Version = TelegramBotAPIVersion
 
 	result := make([]types.Packet, 0)
 
