@@ -128,7 +128,7 @@ func (p *Plugin) Start() {
 			Formats: []types.Format{
 				{
 					API:      "coolq-http-api",
-					Version:  "latest",
+					Version:  ">=3",
 					Method:   "apiresponse",
 					Protocol: "websocket",
 				},

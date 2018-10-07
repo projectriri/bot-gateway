@@ -1,14 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"golang.org/x/net/websocket"
+	"github.com/catsworld/qq-bot-api"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
-	"encoding/json"
+	"golang.org/x/net/websocket"
 )
 
 var (
@@ -19,9 +20,9 @@ var (
 )
 
 type Plugin struct {
-	apiClient   *websocket.Conn
-	eventClient *websocket.Conn
-	config      Config
+	apiClient      *websocket.Conn
+	eventClient    *websocket.Conn
+	config         Config
 }
 
 var manifest = types.Manifest{
@@ -48,6 +49,10 @@ func (p *Plugin) Init(filename string, configPath string) {
 	// load toml config
 	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
 	if err != nil {
+		panic(err)
+	}
+	if err != nil {
+		log.Errorf("[cqhttp-ubm-conv] failed to parse api_response_timeout, please check config file")
 		panic(err)
 	}
 }
@@ -131,29 +136,38 @@ func (p *Plugin) Start() {
 		}
 	}()
 
-	// Start main api request loop
 	go func() {
 		for {
-			// send api request
-			apiRequestPkt := cc.Consume()
-			err := websocket.JSON.Send(p.apiClient, apiRequestPkt.Body)
-			if err != nil {
-				log.Errorf("[websocket-client-cqhttp] failed to send apirequest (%v)", err)
-				continue
-			}
 			// get api response
 			msg := json.RawMessage{}
 			if err := websocket.JSON.Receive(p.apiClient, &msg); err != nil {
 				log.Errorf("[websocket-client-cqhttp] failed to read apiresponse (%v)", err)
 				continue
 			}
+			apiResp := qqbotapi.APIResponse{}
+			err := json.Unmarshal(msg, &apiResp)
+			if err != nil {
+				log.Errorf("[websocket-client-cqhttp] failed to parse apiresponse (%v)", err)
+				continue
+			}
+			e, ok := apiResp.Echo.(string)
+			if !ok {
+				log.Errorf("[websocket-client-cqhttp] bad echo %v", apiResp)
+				continue
+			}
+
+			if len(e) < 36 || !utils.ValidateUUID(e[:36]) {
+				log.Errorf("[websocket-client-cqhttp] bad echo %v", apiResp)
+				continue
+			}
+
 			log.Debugf("[websocket-client-cqhttp] receiving apiresponse %s", string(msg))
 			pc.Produce(types.Packet{
 				Head: types.Head{
 					From:        p.config.AdapterName,
-					To:          apiRequestPkt.Head.From,
+					To:          e[36:],
 					UUID:        utils.GenerateUUID(),
-					ReplyToUUID: apiRequestPkt.Head.UUID,
+					ReplyToUUID: e[:36],
 					Format: types.Format{
 						API:      "coolq-http-api",
 						Version:  p.config.CQHTTPVersion,
@@ -163,6 +177,27 @@ func (p *Plugin) Start() {
 				},
 				Body: msg,
 			})
+		}
+	}()
+
+	// Start main api request loop
+	go func() {
+		for {
+			// send api request
+			apiRequestPkt := cc.Consume()
+			apiReq := qqbotapi.WebSocketRequest{}
+			err := json.Unmarshal(apiRequestPkt.Body, &apiReq)
+			if err != nil {
+				log.Errorf("[websocket-client-cqhttp] failed to parse apirequest (%v)", err)
+				continue
+			}
+
+			apiReq.Echo = apiRequestPkt.Head.UUID + apiRequestPkt.Head.From
+			err = websocket.JSON.Send(p.apiClient, apiReq)
+			if err != nil {
+				log.Errorf("[websocket-client-cqhttp] failed to send apirequest (%v)", err)
+				continue
+			}
 		}
 	}()
 

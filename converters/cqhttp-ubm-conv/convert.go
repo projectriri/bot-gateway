@@ -28,35 +28,37 @@ func (p *Plugin) convertQQEventWSToUbmReceive(packet types.Packet, to types.Form
 		return false, nil
 	}
 
-	// fill in cq update.message.from
-	switch update.Message.Chat.Type {
-	case "group":
-		res := p.makeRequest(
-			packet.Head.From,
-			"get_group_member_info",
-			map[string]interface{}{
-				"group_id": update.Message.Chat.ID,
-				"user_id":  update.Message.From.ID,
-			},
-		)
-		if res != nil {
-			user := qqbotapi.User{}
-			if err := json.Unmarshal(res, &user); err == nil {
-				update.Message.From = &user
+	if update.Sender == nil {
+		// fill in cq update.message.from
+		switch update.Message.Chat.Type {
+		case "group":
+			res := p.makeRequest(
+				packet.Head.From,
+				"get_group_member_info",
+				map[string]interface{}{
+					"group_id": update.Message.Chat.ID,
+					"user_id":  update.Message.From.ID,
+				},
+			)
+			if res != nil {
+				user := qqbotapi.User{}
+				if err := json.Unmarshal(res, &user); err == nil {
+					update.Message.From = &user
+				}
 			}
-		}
-	default:
-		res := p.makeRequest(
-			packet.Head.From,
-			"get_stranger_info",
-			map[string]interface{}{
-				"user_id": update.Message.From.ID,
-			},
-		)
-		if res != nil {
-			user := qqbotapi.User{}
-			if err := json.Unmarshal(res, &user); err == nil {
-				update.Message.From = &user
+		default:
+			res := p.makeRequest(
+				packet.Head.From,
+				"get_stranger_info",
+				map[string]interface{}{
+					"user_id": update.Message.From.ID,
+				},
+			)
+			if res != nil {
+				user := qqbotapi.User{}
+				if err := json.Unmarshal(res, &user); err == nil {
+					update.Message.From = &user
+				}
 			}
 		}
 	}
@@ -379,9 +381,9 @@ func (p *Plugin) convertUbmSendToQQApiRequestWS(packet types.Packet, to types.Fo
 		}
 		params["message"] = message.CQString()
 		// params["auto_escape"] = false
-		wsRequest := make(map[string]interface{})
-		wsRequest["action"] = "send_msg"
-		wsRequest["params"] = params
+		wsRequest := qqbotapi.WebSocketRequest{}
+		wsRequest.Action = "send_msg"
+		wsRequest.Params = params
 		data, _ = json.Marshal(wsRequest)
 	}
 

@@ -10,7 +10,7 @@ import (
 )
 
 type Broker struct {
-	Server      *Server
+	server      *Server
 	channelPool map[string]*Channel
 	expChan     chan bool
 }
@@ -28,7 +28,7 @@ func (s *Server) init(gci time.Duration, clt time.Duration) {
 }
 
 func (b *Broker) init(s *Server) {
-	b.Server = s
+	b.server = s
 	b.channelPool = make(map[string]*Channel)
 	b.expChan = make(chan bool)
 	go func() {
@@ -36,9 +36,9 @@ func (b *Broker) init(s *Server) {
 			select {
 			case <-b.expChan:
 				return
-			case <-time.After(b.Server.channelLifeTime):
+			case <-time.After(b.server.channelLifeTime):
 				for _, ch := range b.channelPool {
-					b.Server.renewChannel(ch)
+					b.server.renewChannel(ch)
 				}
 			}
 		}
@@ -67,9 +67,9 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 	if args.Consumer {
 		ch.C = router.RegisterConsumerChannel(uuid, args.Accept)
 	}
-	b.Server.renewChannel(ch)
+	b.server.renewChannel(ch)
 	b.channelPool[uuid] = ch
-	b.Server.channelPool[uuid] = ch
+	b.server.channelPool[uuid] = ch
 	*reply = ChannelInitResponse{
 		UUID: uuid,
 		Code: 10001,
@@ -79,7 +79,7 @@ func (b *Broker) InitChannel(args *ChannelInitRequest, reply *ChannelInitRespons
 
 func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse) (err error) {
 	log.Debugf("[jsonrpc-server-any] preparing to send packet")
-	ch, ok := b.Server.channelPool[args.UUID]
+	ch, ok := b.server.channelPool[args.UUID]
 	if !ok {
 		*reply = ChannelProduceResponse{
 			Code: 10044,
@@ -104,7 +104,7 @@ func (b *Broker) Send(args *ChannelProduceRequest, reply *ChannelProduceResponse
 
 func (b *Broker) GetUpdates(args *ChannelConsumeRequest, reply *ChannelConsumeResponse) (err error) {
 	log.Debugf("[jsonrpc-server-any] preparing to get updates")
-	ch, ok := b.Server.channelPool[args.UUID]
+	ch, ok := b.server.channelPool[args.UUID]
 	if !ok {
 		*reply = ChannelConsumeResponse{
 			Code: 10044,
