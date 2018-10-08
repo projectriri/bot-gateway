@@ -17,7 +17,7 @@
 
 ## CMD
 
-解析后的命令。各字段都是可选字段，是否存在取决于插件的[配置](/docs/Plugins.html#commander)。
+解析后的命令。下表中前五个字段都是可选字段，是否存在取决于插件的[配置](/docs/Plugins.html#commander)。
 
 | 字段名 | 数据类型 | 说明 |
 | --- | --- | --- |
@@ -26,6 +26,8 @@
 | args | [RichTextElement](#richtextelement)[][] | 命令参数：有多个命令参数，每个命令参数由一组图文消息段组成 |
 | args_txt | string[] | 命令参数：多个命令参数，每个命令参数都是去除了其他媒体（如图片、At 等）以后的纯字符串 |
 | args_str | string | 命令参数字符串：由 *args_txt* 以空格分割组成个一个字符串 |
+| cmd_prefix | string | 命令前缀 |
+| message | [Message](#message) | 命令对应的消息 |
 
 ## UBM-API
 

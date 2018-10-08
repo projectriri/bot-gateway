@@ -36,7 +36,7 @@
 | 字段名 | 数据类型 | 说明 |
 | --- | --- | --- |
 | api | string | API |
-| version | string | 版本，格式必须遵循 [Semantic Versioning](https://semver.org/) |
+| version | string | 版本，必须遵循 [Semantic Versioning](https://semver.org/) |
 | method | string | 方法 |
 | protocol | string | 协议 |
 
@@ -55,13 +55,9 @@
 
 | 字段名 | 数据类型 | 说明 |
 | --- | --- | --- |
-| from | string | 来自 |
-| to | string | 发往 |
-| formats | [Format](#格式)[] | 格式，其中的版本字段为版本约束字符串。[Semantic Versioning 标准](https://semver.org/) [尚未](https://jubianchi.github.io/semver-check/)制定版本约束规范，程序目前使用的实现是 [semver](https://github.com/Masterminds/semver) |
-
-::: tip
-其中 `from` 和 `to` 字段都可以使用正则表达式
-:::
+| from | string | 来自，可以使用正则表达式 |
+| to | string | 发往，可以使用正则表达式 |
+| formats | [Format](#格式)[] | 格式，其中的版本字段为版本约束字符串。[Semantic Versioning 标准](https://semver.org/)尚未制定版本约束规范，程序目前使用的实现是 [semver](https://github.com/Masterminds/semver) |
 
 ## 适配器
 
@@ -103,6 +99,6 @@ type Converter interface {
 
 **转换器**也常常同时实现了**适配器**，
 因为在转换格式时有时需要填充某些内容，而填充这些内容所需要的信息已知包并没有提供
-（例如：[UBM-API]() 中的是否 At 我字段通常需要知道自己的 ID），
+（例如：[UBM-API](/docs/Types.html#ubm-api) 中的 is_message_to_me 字段需要知道自己的 ID），
 此时需要额外的请求（向路由器发出和接收包）来获得这些信息。
 

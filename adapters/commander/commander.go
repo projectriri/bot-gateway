@@ -103,9 +103,13 @@ func (p *CommanderPlugin) Start() {
 			if len(richTexts) == 0 {
 				continue
 			}
+
+			pfx := ""
 			if richTexts[0].Type == "text" {
 				// If the first rich text element is text, trim the command prefix
-				if pfx, ok := p.checkPrefix(richTexts[0].Text); !ok {
+				var ok bool
+				pfx, ok = p.checkPrefix(richTexts[0].Text)
+				if !ok {
 					continue
 				} else {
 					if richTexts[0].Text == pfx {
@@ -213,6 +217,7 @@ func (p *CommanderPlugin) Start() {
 
 			// compose response according to config.ResponseMode in bit mask
 			c := cmd.Command{}
+			c.CmdPrefix = pfx
 			if p.config.ResponseMode&RESPONSE_CMD != 0 {
 				c.Cmd = parsedCommand[0]
 			}

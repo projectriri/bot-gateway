@@ -5,10 +5,11 @@ import (
 )
 
 type Command struct {
-	Cmd     []ubm_api.RichTextElement   `json:"cmd,omitempty"`
-	CmdStr  string                      `json:"cmd_str,omitempty"`
-	Args    [][]ubm_api.RichTextElement `json:"args,omitempty"`
-	ArgsTxt []string                    `json:"args_txt,omitempty"`
-	ArgsStr string                      `json:"args_str,omitempty"`
-	Message *ubm_api.Message            `json:"message"`
+	Cmd       []ubm_api.RichTextElement   `json:"cmd,omitempty"`
+	CmdStr    string                      `json:"cmd_str,omitempty"`
+	Args      [][]ubm_api.RichTextElement `json:"args,omitempty"`
+	ArgsTxt   []string                    `json:"args_txt,omitempty"`
+	ArgsStr   string                      `json:"args_str,omitempty"`
+	CmdPrefix string                      `json:"cmd_prefix"`
+	Message   *ubm_api.Message            `json:"message"`
 }
