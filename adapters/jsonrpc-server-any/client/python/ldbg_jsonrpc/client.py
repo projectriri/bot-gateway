@@ -54,7 +54,6 @@ class Client:
                 logging.error("failed to invoke method {} with params {}, error: timeout".format(method, params))
                 return None, False
             if not data:
-                logging.warning('hey')
                 break
             response += data
             if data == b'\n':
