@@ -30,7 +30,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				update.Message = update.EditedMessage
 			} else if update.EditedChannelPost != nil {
 				update.Message = update.EditedChannelPost
-			} else if update.EditedMessage != nil {
+			} else if update.ChannelPost != nil {
 				update.Message = update.ChannelPost
 			}
 			self := plugin.getMe(packet.Head.From)
@@ -39,30 +39,47 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				Self: self,
 				Message: &ubm_api.Message{
 					ID: strconv.Itoa(update.Message.MessageID),
-					From: &ubm_api.User{
-						DisplayName: update.Message.From.FirstName,
-						FirstName:   update.Message.From.FirstName,
-						LastName:    update.Message.From.LastName,
-						UID: ubm_api.UID{
-							Messenger: packet.Head.From,
-							ID:        strconv.Itoa(update.Message.From.ID),
-							Username:  update.Message.From.UserName,
-						},
-						PrivateChat: ubm_api.CID{
-							Messenger: packet.Head.From,
-							ChatID:    strconv.Itoa(update.Message.From.ID),
-							ChatType:  "private",
-						},
+				},
+			}
+			if update.ChannelPost != nil || update.EditedChannelPost != nil {
+				ubm.Message.From = &ubm_api.User{
+					DisplayName: update.Message.Chat.Title,
+					FirstName:   update.Message.Chat.Title,
+					UID: ubm_api.UID{
+						Messenger: packet.Head.From,
+						ID:        strconv.FormatInt(update.Message.Chat.ID, 10),
+						Username:  update.Message.Chat.UserName,
 					},
-					Chat: &ubm_api.Chat{
-						Title:       update.Message.Chat.Title,
-						Description: update.Message.Chat.Description,
-						CID: ubm_api.CID{
-							Messenger: packet.Head.From,
-							ChatID:    strconv.FormatInt(update.Message.Chat.ID, 10),
-							ChatType:  getTelegramChatType(update.Message.Chat),
-						},
+					PrivateChat: ubm_api.CID{
+						Messenger: packet.Head.From,
+						ChatID:    strconv.FormatInt(update.Message.Chat.ID, 10),
+						ChatType:  "channel",
 					},
+				}
+			} else {
+				ubm.Message.From = &ubm_api.User{
+					DisplayName: update.Message.From.FirstName,
+					FirstName:   update.Message.From.FirstName,
+					LastName:    update.Message.From.LastName,
+					UID: ubm_api.UID{
+						Messenger: packet.Head.From,
+						ID:        strconv.Itoa(update.Message.From.ID),
+						Username:  update.Message.From.UserName,
+					},
+					PrivateChat: ubm_api.CID{
+						Messenger: packet.Head.From,
+						ChatID:    strconv.Itoa(update.Message.From.ID),
+						ChatType:  "private",
+					},
+				}
+			}
+			ubm.Message.Chat = &ubm_api.Chat{
+				Title:       update.Message.Chat.Title,
+				Description: update.Message.Chat.Description,
+				CID: ubm_api.CID{
+					Messenger: packet.Head.From,
+					ChatID:    strconv.FormatInt(update.Message.Chat.ID, 10),
+					ChatType:  getTelegramChatType(update.Message.Chat),
 				},
 			}
 			if update.Message.ReplyToMessage != nil {
