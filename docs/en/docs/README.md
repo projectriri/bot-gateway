@@ -2,13 +2,13 @@
 
 ## Introduction
 
-A bot developer, with the use of The Little Daemon Gateway,
+A bot developer, with the use of the Little Daemon Bot Gateway,
 will get emancipated from supporting various Instant Messaging platforms
 and be able to concentrate on the application,
-thanks to the ability of The Little Daemon Gateway
+thanks to the ability of The Little Daemon Bot Gateway
 to convert different API of different IM platforms into an unified API.
 
-Meanwhile, The Little Daemon Gateway is blessed with a feature that
+Meanwhile, the Little Daemon Bot Gateway is blessed with a feature that
 it can route messages reliably, which means that you may divide your
 bot into different parts, written in different kind of languages.
 No need to worry about how the programs communicate with each other,

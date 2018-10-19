@@ -221,6 +221,13 @@
 | 10044 | 要发往/接收的频道不存在 |
 | 10048 | 要发往的频道不是一个生产者 |
 
+### 客户端 SDK
+
+| 语言 | 包管理器 | SDK 名称 | 示例代码 |
+| --- | --- | --- | --- |
+| Go | go | [github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/client/golang](https://github.com/projectriri/bot-gateway/tree/master/adapters/jsonrpc-server-any/client/golang) | [main.go](https://github.com/projectriri/bot-gateway/blob/master/adapters/jsonrpc-server-any/client/golang/example/main.go) |
+| Python | pip3 | [ldbg-jsonrpc](https://github.com/projectriri/bot-gateway/tree/master/adapters/jsonrpc-server-any/client/python) | [main.py](https://github.com/projectriri/bot-gateway/blob/master/adapters/jsonrpc-server-any/client/python/main.py) |
+
 ## commander
 
 这个插件接收 *ubm-api* 格式的包，将符合命令格式要求的消息解析为命令，并送回到网关中。

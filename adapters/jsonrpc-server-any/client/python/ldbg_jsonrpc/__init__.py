@@ -6,7 +6,8 @@
 # @Desc  : Description goes here
 
 """
-Python3 client SDK for Little Daemon Bot Gateway jsonrpc-server-any (https://projectriri.github.io/bot-gateway/)
+Python3 Client SDK for Little Daemon Bot Gateway
+[jsonrpc-server-any](https://projectriri.github.io/bot-gateway/docs/Plugins.html#jsonrpc-server-any) Plugin.
 """
 
 from . import client

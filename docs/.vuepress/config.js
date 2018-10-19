@@ -1,5 +1,5 @@
 module.exports = {
-    title: 'Bot-Gateway',
+    title: 'Little Daemon Bot Gateway',
     description: 'The one and only one Bot API you need!',
     base: '/bot-gateway/',
     locales: {
@@ -7,12 +7,12 @@ module.exports = {
         // As a special case, the default locale can use '/' as its path.
         '/': {
             lang: 'zh-CN',
-            title: '小恶魔机器人网关',
+            title: '小恶魔机器人网关（LDBG）',
             description: '用同一套代码服务多个平台的机器人',
         },
         '/en/': {
             lang: 'en',
-            title: 'Bot-Gateway',
+            title: 'Little Daemon Bot Gateway (LDBG)',
             description: 'The one and only one Bot API you need!',
         }
     },
