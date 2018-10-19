@@ -8,3 +8,7 @@ Python3 Client SDK for Little Daemon Bot Gateway
 ```
 pip3 install ldbg-jsonrpc
 ```
+
+## Usage
+
+Checkout [this](https://github.com/projectriri/bot-gateway/blob/master/adapters/jsonrpc-server-any/client/python/main.py) example.

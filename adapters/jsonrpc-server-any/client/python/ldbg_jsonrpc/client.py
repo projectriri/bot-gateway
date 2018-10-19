@@ -11,20 +11,14 @@ import json
 
 
 class Client:
-    def __init__(self, host: str, port: int, buffer_size: int = 1024):
+    def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.buffer_size = buffer_size
         self.id = 0
 
     @staticmethod
     def _to_rpc_method(method: str):
-        """
-
-        :param method:
-        :return:
-        """
         return "Broker." + method.title().replace("_", "")
 
     def __getattr__(self, item):
@@ -41,7 +35,6 @@ class Client:
         request = {
             "method": method,
             "params": [params],
-            "jsonrpc": "2.0",
             "id": self.id
         }
         self.id = (self.id + 1) % 65536
@@ -53,24 +46,21 @@ class Client:
             logging.error("failed to invoke method {} with params {}, error: {}".format(method, params, e))
             return None, False
 
-        response_list = []
+        response = bytes()
         while True:
             try:
-                data = self._socket.recv(self.buffer_size)
+                data = self._socket.recv(1)
             except socket.timeout:
                 logging.error("failed to invoke method {} with params {}, error: timeout".format(method, params))
                 return None, False
             if not data:
                 logging.warning('hey')
                 break
-            response_list.append(str(data, encoding="utf-8"))
-            if len(data) < self.buffer_size:
-                logging.warning('j')
-                logging.debug(data)
-                logging.warning('k')
+            response += data
+            if data == b'\n':
                 break
 
-        rst = ''.join(response_list)
+        rst = str(response, encoding="utf-8")
         logging.debug("invoke response: {}".format(rst))
         rst = json.loads(rst)
         return rst["result"], True

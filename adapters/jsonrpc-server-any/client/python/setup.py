@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ldbg-jsonrpc",
-    version="0.1.0",
+    version="1.0.0",
     author="Project Riri Staff",
     author_email="lijiahao99131@gmail.com",
     description="Python3 Client SDK for Little Daemon Bot Gateway "

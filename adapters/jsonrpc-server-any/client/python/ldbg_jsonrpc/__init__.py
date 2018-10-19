@@ -13,4 +13,4 @@ Python3 Client SDK for Little Daemon Bot Gateway
 from . import client
 
 __author__ = 'Bittersweet(https://github.com/zhouziqunzzq)'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
