@@ -90,13 +90,15 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 			if update.Message.Sticker != nil {
 				ubm.Message.Type = "sticker"
 				ubm.Message.Sticker = &ubm_api.Sticker{
-					ID: update.Message.Sticker.FileID,
+					Messenger: packet.Head.From,
+					ID:        update.Message.Sticker.FileID,
 					Image: &ubm_api.Image{
-						Width:    update.Message.Sticker.Width,
-						Height:   update.Message.Sticker.Height,
-						FileID:   update.Message.Sticker.FileID,
-						URL:      plugin.getFileURL(update.Message.Sticker.FileID, packet.Head.From),
-						FileSize: update.Message.Sticker.FileSize,
+						Messenger: packet.Head.From,
+						Width:     update.Message.Sticker.Width,
+						Height:    update.Message.Sticker.Height,
+						FileID:    update.Message.Sticker.FileID,
+						URL:       plugin.getFileURL(update.Message.Sticker.FileID, packet.Head.From),
+						FileSize:  update.Message.Sticker.FileSize,
 					},
 				}
 			} else if update.Message.Location != nil {
@@ -108,20 +110,22 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 			} else if update.Message.Audio != nil {
 				ubm.Message.Type = "voice"
 				ubm.Message.Voice = &ubm_api.Voice{
-					Format:   update.Message.Audio.MimeType,
-					Duration: update.Message.Audio.Duration,
-					FileID:   update.Message.Audio.FileID,
-					URL:      plugin.getFileURL(update.Message.Audio.FileID, packet.Head.From),
-					FileSize: update.Message.Audio.FileSize,
+					Messenger: packet.Head.From,
+					Format:    update.Message.Audio.MimeType,
+					Duration:  update.Message.Audio.Duration,
+					FileID:    update.Message.Audio.FileID,
+					URL:       plugin.getFileURL(update.Message.Audio.FileID, packet.Head.From),
+					FileSize:  update.Message.Audio.FileSize,
 				}
 			} else if update.Message.Voice != nil {
 				ubm.Message.Type = "voice"
 				ubm.Message.Voice = &ubm_api.Voice{
-					Format:   update.Message.Voice.MimeType,
-					Duration: update.Message.Voice.Duration,
-					FileID:   update.Message.Voice.FileID,
-					URL:      plugin.getFileURL(update.Message.Voice.FileID, packet.Head.From),
-					FileSize: update.Message.Voice.FileSize,
+					Messenger: packet.Head.From,
+					Format:    update.Message.Voice.MimeType,
+					Duration:  update.Message.Voice.Duration,
+					FileID:    update.Message.Voice.FileID,
+					URL:       plugin.getFileURL(update.Message.Voice.FileID, packet.Head.From),
+					FileSize:  update.Message.Voice.FileSize,
 				}
 			} else if update.Message.Photo != nil && len(*update.Message.Photo) > 0 {
 				ubm.Message.Type = "rich_text"
@@ -130,11 +134,12 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 				richText = append(richText, ubm_api.RichTextElement{
 					Type: "image",
 					Image: &ubm_api.Image{
-						Width:    photo.Width,
-						Height:   photo.Height,
-						FileID:   photo.FileID,
-						URL:      plugin.getFileURL(photo.FileID, packet.Head.From),
-						FileSize: photo.FileSize,
+						Messenger: packet.Head.From,
+						Width:     photo.Width,
+						Height:    photo.Height,
+						FileID:    photo.FileID,
+						URL:       plugin.getFileURL(photo.FileID, packet.Head.From),
+						FileSize:  photo.FileSize,
 					},
 				})
 				if update.Message.Caption != "" {

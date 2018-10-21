@@ -61,7 +61,6 @@ func (p *Plugin) Init(filename string, configPath string) {
 		log.Errorf("[cqhttp-ubm-conv] failed to parse api_response_timeout, please check config file")
 		panic(err)
 	}
-	p.mux = sync.Mutex{}
 	p.me = make(map[string]*ubm_api.User)
 	p.reqChannelPool = make(map[string]chan types.Packet)
 }

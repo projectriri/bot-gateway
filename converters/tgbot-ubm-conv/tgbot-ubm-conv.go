@@ -61,7 +61,6 @@ func (p *Plugin) Init(filename string, configPath string) {
 		panic(err)
 	}
 	p.pendingRequests = make(map[string]chan types.Packet)
-	p.mux = sync.Mutex{}
 	p.timeout, err = time.ParseDuration(p.config.APIResponseTimeout)
 	if err != nil {
 		log.Error("[tgbot-ubm-conv] fail to parse timeout", err)

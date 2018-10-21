@@ -76,28 +76,31 @@ type At struct {
 }
 
 type Image struct {
-	Format   string `json:"format,omitempty"`
-	Width    int    `json:"width,omitempty"`
-	Height   int    `json:"height,omitempty"`
-	Data     []byte `json:"data,omitempty"`
-	URL      string `json:"url,omitempty"`
-	FileID   string `json:"file_id,omitempty"`
-	FileSize int    `json:"file_size,omitempty"`
+	Messenger string `json:"messenger,omitempty"`
+	Format    string `json:"format,omitempty"`
+	Width     int    `json:"width,omitempty"`
+	Height    int    `json:"height,omitempty"`
+	Data      []byte `json:"data,omitempty"`
+	URL       string `json:"url,omitempty"`
+	FileID    string `json:"file_id,omitempty"`
+	FileSize  int    `json:"file_size,omitempty"`
 }
 
 type Sticker struct {
-	ID     string `json:"id"`
-	PackID string `json:"pack_id"`
-	Image  *Image `json:"image"`
+	Messenger string `json:"messenger,omitempty"`
+	ID        string `json:"id"`
+	PackID    string `json:"pack_id"`
+	Image     *Image `json:"image"`
 }
 
 type Voice struct {
-	Format   string `json:"format,omitempty"`
-	Duration int    `json:"duration,omitempty"`
-	Data     []byte `json:"data,omitempty"`
-	URL      string `json:"url,omitempty"`
-	FileID   string `json:"file_id,omitempty"`
-	FileSize int    `json:"file_size,omitempty"`
+	Messenger string `json:"messenger,omitempty"`
+	Format    string `json:"format,omitempty"`
+	Duration  int    `json:"duration,omitempty"`
+	Data      []byte `json:"data,omitempty"`
+	URL       string `json:"url,omitempty"`
+	FileID    string `json:"file_id,omitempty"`
+	FileSize  int    `json:"file_size,omitempty"`
 }
 
 type Location struct {

@@ -101,8 +101,9 @@ func (p *Plugin) convertQQEventWSToUbmReceive(packet types.Packet, to types.Form
 		case *cqcode.Record:
 			ubm.Message.Type = "voice"
 			ubm.Message.Voice = &ubm_api.Voice{
-				URL:    media.URL,
-				FileID: media.FileID,
+				Messenger: packet.Head.From,
+				URL:       media.URL,
+				FileID:    media.FileID,
 			}
 			ubmHandleFinishFlag = true
 		case *cqcode.Location:
@@ -144,8 +145,9 @@ func (p *Plugin) convertQQEventWSToUbmReceive(packet types.Packet, to types.Form
 				richTexts = append(richTexts, ubm_api.RichTextElement{
 					Type: "image",
 					Image: &ubm_api.Image{
-						FileID: media.FileID,
-						URL:    media.URL,
+						Messenger: packet.Head.From,
+						FileID:    media.FileID,
+						URL:       media.URL,
 					},
 				})
 			}

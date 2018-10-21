@@ -140,6 +140,7 @@ file_id 字段。接收到的 url 不一定可以直接下载，因为可能需�
 
 | 字段名 | 数据类型 | 说明 |
 | --- | --- | --- |
+| messenger | string | 平台（仅用于收到的消息） |
 | format | string |（可选）图片格式 |
 | width | int |（可选）图片宽度 |
 | height | int |（可选）图片高度 |
@@ -155,6 +156,7 @@ file_id 字段。接收到的 url 不一定可以直接下载，因为可能需�
 
 | 字段名 | 数据类型 | 说明 |
 | --- | --- | --- |
+| messenger | string | 平台（仅用于收到的消息） |
 | id | string | 贴纸 ID，有些平台是唯一的，有些平台取决于贴纸包 ID |
 | pack_id | string | 贴纸包 ID，有些平台不存在 |
 | image | [Image](#image) | 图片 |
@@ -171,6 +173,7 @@ file_id 字段。接收到的 url 不一定可以直接下载，因为可能需�
 
 | 字段名 | 数据类型 | 说明 |
 | --- | --- | --- |
+| messenger | string | 平台（仅用于收到的消息） |
 | format | string |（可选）音频格式 |
 | duration | int |（可选）音频时长 |
 | data | byte[] | 音频 |
