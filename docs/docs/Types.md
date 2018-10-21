@@ -40,6 +40,7 @@
 | 字段名 | 数据类型 | 说明 |
 | --- | --- | --- |
 | type | string | 消息类型 |
+| date | int64 | UNIX 时间戳 |
 | message | [Message](#message) | 聊天消息（消息类型是 message 时需要） |
 | notice | [Notice](#notice) | 系统消息：如加群通知等（消息类型是 notice 时需要，仅用于收到的消息） |
 | response | [Response](#response) | 响应消息：发出 Message 时的发送结果，或发出 Action 时的响应数据（消息类型是 response 时需要，仅用于收到的消息） |

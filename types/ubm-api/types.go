@@ -4,6 +4,7 @@ import "fmt"
 
 type UBM struct {
 	Type     string    `json:"type"`
+	Date     int64     `json:"date"`
 	Message  *Message  `json:"message,omitempty"`
 	Notice   *Notice   `json:"notice,omitempty"`
 	Response *Response `json:"response,omitempty"`

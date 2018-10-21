@@ -66,6 +66,7 @@ func (p *Plugin) convertQQEventWSToUbmReceive(packet types.Packet, to types.Form
 	// convert to UBM
 	ubm := ubm_api.UBM{}
 	ubm.Type = update.PostType
+	ubm.Date = update.Time
 	ubm.Self = p.getMe(packet.Head.From)
 	ubm.Message = &ubm_api.Message{
 		ID: strconv.FormatInt(update.Message.MessageID, 10),

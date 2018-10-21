@@ -36,6 +36,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 			self := plugin.getMe(packet.Head.From)
 			ubm := ubm_api.UBM{
 				Type: "message",
+				Date: int64(update.Message.Date),
 				Self: self,
 				Message: &ubm_api.Message{
 					ID: strconv.Itoa(update.Message.MessageID),
