@@ -6,6 +6,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/projectriri/bot-gateway/types"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 	"unicode/utf16"
@@ -230,6 +231,12 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 					tmp += string(utf16.Decode(u16[cur:]))
 				}
 				push()
+			} else {
+				// notice or something we cannot handle
+				b, _ := json.Marshal(update.Message)
+				log.Warnf("[tgbot-ubm-conv] cannot convert message from tgbot to ubm: " +
+					"%s", string(b))
+				continue
 			}
 			b, _ := json.Marshal(ubm)
 			p := types.Packet{
