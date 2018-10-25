@@ -1,0 +1,110 @@
+syntax = "proto3";
+package ubmapi;
+
+message UBM {
+  string type = 1;
+  oneof content {
+    Message message = 2;
+  }
+  User self = 3;
+  int64 date = 4;
+}
+
+message Message {
+  string id = 1;
+  User from = 2;
+  Chat chat = 3;
+  CID cid = 4;
+  bool is_message_to_me = 5;
+  oneof to_id {
+    string reply_id = 6;
+    string edit_id = 7;
+    string delete_id = 8;
+  }
+  string type = 9;
+  oneof content {
+    RichText rich_text = 10;
+    Sticker sticker = 11;
+    Voice voice = 12;
+    Location location = 13;
+  }
+}
+
+message CID {
+  string messenger = 1;
+  string chat_id = 2;
+  string chat_type = 3;
+}
+
+message Chat {
+  CID cid = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message UID {
+  string messenger = 1;
+  string id = 2;
+  string username = 3;
+}
+
+message User {
+  UID uid = 1;
+  string display_name = 2;
+  string first_name = 3;
+  string last_name = 4;
+  CID private_chat = 5;
+}
+
+message RichText {
+  repeated RichTextElement elements = 1;
+}
+
+message RichTextElement {
+  string type = 1;
+  oneof content {
+    string text = 2;
+    At at = 3;
+    Image image = 4;
+  }
+}
+
+message At {
+  UID uid = 1;
+  string display_name = 2;
+}
+
+message Image {
+  string messenger = 1;
+  string format = 2;
+  int32 width = 3;
+  int32 height = 4;
+  bytes data = 5;
+  string url = 6;
+  string file_id = 7;
+  int32 file_size = 8;
+}
+
+message Sticker {
+  string messenger = 1;
+  string id = 2;
+  string pack_id = 3;
+  Image image = 4;
+}
+
+message Voice {
+  string messenger = 1;
+  string format = 2;
+  int32 duration = 3;
+  bytes data = 4;
+  string url = 5;
+  string file_id = 6;
+  int32 file_size = 7;
+}
+
+message Location {
+  string content = 1;
+  double latitude = 2;
+  double longitude = 3;
+  string title = 4;
+}

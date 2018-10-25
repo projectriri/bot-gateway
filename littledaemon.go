@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
-	"github.com/projectriri/bot-gateway/types/cmd"
+	"github.com/projectriri/bot-gateway/types/command"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
@@ -47,9 +47,9 @@ func StartLittleDaemon() {
 			To:   ".*",
 			Formats: []types.Format{
 				{
-					API:     "cmd",
+					API:     "command",
 					Version: "1.0",
-					Method:  "cmd",
+					Method:  "command",
 				},
 			},
 		},
@@ -62,7 +62,7 @@ func StartLittleDaemon() {
 	log.Infof("[littledaemon] registered producer channel %v", pc.UUID)
 	for {
 		packet := cc.Consume()
-		req := cmd.Command{}
+		req := command.Command{}
 		err := json.Unmarshal(packet.Body, &req)
 		if err != nil {
 			log.Errorf("[littledaemon] message %v has an incorrect body type %v", packet.Head.UUID, err)

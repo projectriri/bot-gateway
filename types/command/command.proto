@@ -1,0 +1,14 @@
+syntax = "proto3";
+package command;
+
+import "types/ubm-api/ubmapi.proto";
+
+message Command {
+  ubmapi.RichText cmd = 1;
+  string cmd_str = 2;
+  repeated ubmapi.RichText args = 3;
+  repeated string args_txt = 4;
+  string args_str = 5;
+  string cmd_prefix = 6;
+  ubmapi.Message message = 7;
+}

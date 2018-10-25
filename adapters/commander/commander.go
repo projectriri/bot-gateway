@@ -5,7 +5,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/projectriri/bot-gateway/router"
 	"github.com/projectriri/bot-gateway/types"
-	"github.com/projectriri/bot-gateway/types/cmd"
+	"github.com/projectriri/bot-gateway/types/command"
 	"github.com/projectriri/bot-gateway/types/ubm-api"
 	"github.com/projectriri/bot-gateway/utils"
 	log "github.com/sirupsen/logrus"
@@ -216,7 +216,7 @@ func (p *CommanderPlugin) Start() {
 			}
 
 			// compose response according to config.ResponseMode in bit mask
-			c := cmd.Command{}
+			c := command.Command{}
 			c.CmdPrefix = pfx
 			if p.config.ResponseMode&RESPONSE_CMD != 0 {
 				c.Cmd = parsedCommand[0]
@@ -261,8 +261,8 @@ func (p *CommanderPlugin) Start() {
 					To:   packet.Head.To,
 					UUID: utils.GenerateUUID(),
 					Format: types.Format{
-						API:      "cmd",
-						Method:   "cmd",
+						API:      "command",
+						Method:   "command",
 						Version:  "1.0",
 						Protocol: "",
 					},
