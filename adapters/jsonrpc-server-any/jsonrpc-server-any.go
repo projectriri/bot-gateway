@@ -25,11 +25,12 @@ type Plugin struct {
 
 var manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
-		Name:    "jsonrpc-server-any",
-		Author:  "Project Riri Staff",
-		Version: "v0.1",
-		License: "MIT",
-		URL:     "https://github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any",
+		Name:        "jsonrpc-server-any",
+		Author:      "Project Riri Staff",
+		Version:     "v0.1",
+		License:     "MIT",
+		URL:         "https://github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any",
+		Description: "TCP Based JSON RPC Server Adapter.",
 	},
 	BuildInfo: types.BuildInfo{
 		BuildTag:      BuildTag,

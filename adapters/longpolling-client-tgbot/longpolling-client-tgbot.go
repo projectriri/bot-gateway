@@ -25,11 +25,12 @@ type Plugin struct {
 
 var manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
-		Name:    "longpolling-client-tgbot",
-		Author:  "Project Riri Staff",
-		Version: "v0.1",
-		License: "MIT",
-		URL:     "https://github.com/projectriri/bot-gateway/adapters/longpolling-client-tgbot",
+		Name:        "longpolling-client-tgbot",
+		Author:      "Project Riri Staff",
+		Version:     "v0.1",
+		License:     "MIT",
+		URL:         "https://github.com/projectriri/bot-gateway/adapters/longpolling-client-tgbot",
+		Description: "Long Polling Client Adapter for Telegram Bot API.",
 	},
 	BuildInfo: types.BuildInfo{
 		BuildTag:      BuildTag,

@@ -234,7 +234,7 @@ func (plugin *Plugin) convertTgUpdateHttpToUbmReceive(packet types.Packet, to ty
 			} else {
 				// notice or something we cannot handle
 				b, _ := json.Marshal(update.Message)
-				log.Warnf("[tgbot-ubm-conv] cannot convert message from tgbot to ubm: " +
+				log.Warnf("[tgbot-ubm-conv] cannot convert message from tgbot to ubm: "+
 					"%s", string(b))
 				continue
 			}

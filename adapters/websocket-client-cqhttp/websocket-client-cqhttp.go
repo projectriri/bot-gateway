@@ -27,11 +27,12 @@ type Plugin struct {
 
 var manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
-		Name:    "websocket-client-cqhttp",
-		Author:  "Project Riri Staff",
-		Version: "v0.1",
-		License: "MIT",
-		URL:     "https://github.com/projectriri/bot-gateway/adapters/websocket-client-cqhttp",
+		Name:        "websocket-client-cqhttp",
+		Author:      "Project Riri Staff",
+		Version:     "v0.1",
+		License:     "MIT",
+		URL:         "https://github.com/projectriri/bot-gateway/adapters/websocket-client-cqhttp",
+		Description: "WebSocket Client Adapter for CoolQ HTTP API.",
 	},
 	BuildInfo: types.BuildInfo{
 		BuildTag:      BuildTag,

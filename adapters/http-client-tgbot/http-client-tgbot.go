@@ -26,11 +26,12 @@ type Plugin struct {
 
 var manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
-		Name:    "http-client-tgbot",
-		Author:  "Project Riri Staff",
-		Version: "v0.1",
-		License: "MIT",
-		URL:     "https://github.com/projectriri/bot-gateway/adapters/http-client-tgbot",
+		Name:        "http-client-tgbot",
+		Author:      "Project Riri Staff",
+		Version:     "v0.1",
+		License:     "MIT",
+		URL:         "https://github.com/projectriri/bot-gateway/adapters/http-client-tgbot",
+		Description: "HTTP Client Adapter for Telegram Bot API.",
 	},
 	BuildInfo: types.BuildInfo{
 		BuildTag:      BuildTag,

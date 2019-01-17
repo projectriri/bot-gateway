@@ -1,11 +1,12 @@
 package types
 
 type BasicInfo struct {
-	Name    string
-	Version string
-	Author  string
-	License string
-	URL     string
+	Name        string
+	Version     string
+	Author      string
+	License     string
+	URL         string
+	Description string
 }
 
 type BuildInfo struct {
