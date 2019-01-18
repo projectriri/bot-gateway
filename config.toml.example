@@ -2,6 +2,3 @@ buffer_size = 65536
 log_level = "debug"
 plugin_dir = "lib"
 plugin_conf_dir = "conf.d"
-enable_little_daemon = true
-little_daemon_name = "LittleDaemon"
-little_daemon_channel_uuid = ""
