@@ -25,7 +25,7 @@ type Plugin struct {
 	config      Config
 }
 
-var manifest = types.Manifest{
+var Manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
 		Name:        "websocket-client-cqhttp",
 		Author:      "Project Riri Staff",
@@ -43,19 +43,25 @@ var manifest = types.Manifest{
 }
 
 func (p *Plugin) GetManifest() types.Manifest {
-	return manifest
+	return Manifest
 }
 
-func (p *Plugin) Init(filename string, configPath string) {
+func Init(filename string, configPath string) []types.Adapter {
 	// load toml config
-	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
+	configMap := make(map[string]Config)
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &configMap)
 	if err != nil {
 		panic(err)
 	}
-	if err != nil {
-		log.Errorf("[cqhttp-ubm-conv] failed to parse api_response_timeout, please check config file")
-		panic(err)
+	pluginInstances := make([]types.Adapter, 0)
+	for adapterName, config := range configMap {
+		plugin := Plugin{
+			config: config,
+		}
+		plugin.config.AdapterName = adapterName
+		pluginInstances = append(pluginInstances, &plugin)
 	}
+	return pluginInstances
 }
 
 func (p *Plugin) Start() {
@@ -205,5 +211,3 @@ func (p *Plugin) Start() {
 	// lock the main thread
 	<-make(chan bool)
 }
-
-var PluginInstance types.Adapter = &Plugin{}

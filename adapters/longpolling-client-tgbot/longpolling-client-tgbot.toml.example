@@ -1,5 +1,5 @@
+[Telegram]
 token = "00000000:XXXXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXX"
-adapter_name = "Telegram"
 timeout = 60
 limit = 100
 channel_uuid = ""

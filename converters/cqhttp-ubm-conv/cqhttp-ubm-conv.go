@@ -29,7 +29,7 @@ type Plugin struct {
 	timeout        time.Duration
 }
 
-var manifest = types.Manifest{
+var Manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
 		Name:        "cqhttp-ubm-conv",
 		Author:      "Project Riri Staff",
@@ -47,23 +47,32 @@ var manifest = types.Manifest{
 }
 
 func (p *Plugin) GetManifest() types.Manifest {
-	return manifest
+	return Manifest
 }
 
-func (p *Plugin) Init(filename string, configPath string) {
+func Init(filename string, configPath string) []types.Converter {
 	// load toml config
-	var err error
-	_, err = toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
+	configMap := make(map[string]Config)
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &configMap)
 	if err != nil {
 		panic(err)
 	}
-	p.timeout, err = time.ParseDuration(p.config.APIResponseTimeout)
-	if err != nil {
-		log.Errorf("[cqhttp-ubm-conv] failed to parse api_response_timeout, please check config file")
-		panic(err)
+	pluginInstances := make([]types.Converter, 0)
+	for adapterName, config := range configMap {
+		plugin := Plugin{
+			config: config,
+		}
+		plugin.config.AdapterName = adapterName
+		plugin.timeout, err = time.ParseDuration(plugin.config.APIResponseTimeout)
+		if err != nil {
+			log.Errorf("[cqhttp-ubm-conv] failed to parse api_response_timeout, please check config file")
+			panic(err)
+		}
+		plugin.me = make(map[string]*ubm_api.User)
+		plugin.reqChannelPool = make(map[string]chan types.Packet)
+		pluginInstances = append(pluginInstances, &plugin)
 	}
-	p.me = make(map[string]*ubm_api.User)
-	p.reqChannelPool = make(map[string]chan types.Packet)
+	return pluginInstances
 }
 
 func (p *Plugin) IsConvertible(from types.Format, to types.Format) bool {
@@ -155,5 +164,3 @@ func (p *Plugin) Start() {
 		p.mux.Unlock()
 	}
 }
-
-var PluginInstance types.Converter = &Plugin{}

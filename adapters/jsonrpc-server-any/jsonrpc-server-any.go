@@ -23,7 +23,7 @@ type Plugin struct {
 	s      *Server
 }
 
-var manifest = types.Manifest{
+var Manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
 		Name:        "jsonrpc-server-any",
 		Author:      "Project Riri Staff",
@@ -41,29 +41,34 @@ var manifest = types.Manifest{
 }
 
 func (p *Plugin) GetManifest() types.Manifest {
-	return manifest
+	return Manifest
 }
 
-func (p *Plugin) Init(filename string, configPath string) {
+func Init(filename string, configPath string) []types.Adapter {
 	// load toml config
-	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
+	var config Config
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &config)
 	if err != nil {
 		panic(err)
 	}
 	// parse config
-	gci, err := time.ParseDuration(p.config.GCInterval)
+	gci, err := time.ParseDuration(config.GCInterval)
 	if err != nil {
 		log.Error("[jsonrpc-server-any] fail to parse garbage collection interval", err)
 		gci = time.Minute * 5
 	}
-	clt, err := time.ParseDuration(p.config.ChannelLifeTime)
+	clt, err := time.ParseDuration(config.ChannelLifeTime)
 	if err != nil {
 		log.Error("[jsonrpc-server-any] fail to parse channel life time", err)
 		clt = time.Hour
 	}
+	p := Plugin{
+		config: config,
+	}
 	s := new(Server)
 	s.init(gci, clt)
 	p.s = s
+	return []types.Adapter{&p}
 }
 
 func (p *Plugin) Start() {
@@ -88,5 +93,3 @@ func (p *Plugin) Start() {
 		}(conn)
 	}
 }
-
-var PluginInstance types.Adapter = &Plugin{}

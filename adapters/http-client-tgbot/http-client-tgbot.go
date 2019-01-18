@@ -24,7 +24,7 @@ type Plugin struct {
 	config Config
 }
 
-var manifest = types.Manifest{
+var Manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
 		Name:        "http-client-tgbot",
 		Author:      "Project Riri Staff",
@@ -42,15 +42,25 @@ var manifest = types.Manifest{
 }
 
 func (p *Plugin) GetManifest() types.Manifest {
-	return manifest
+	return Manifest
 }
 
-func (p *Plugin) Init(filename string, configPath string) {
+func Init(filename string, configPath string) []types.Adapter {
 	// load toml config
-	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
+	configMap := make(map[string]Config)
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &configMap)
 	if err != nil {
 		panic(err)
 	}
+	pluginInstances := make([]types.Adapter, 0)
+	for adapterName, config := range configMap {
+		plugin := Plugin{
+			config: config,
+		}
+		plugin.config.AdapterName = adapterName
+		pluginInstances = append(pluginInstances, &plugin)
+	}
+	return pluginInstances
 }
 
 func (p *Plugin) Start() {
@@ -110,5 +120,3 @@ func (p *Plugin) Start() {
 		})
 	}
 }
-
-var PluginInstance types.Adapter = &Plugin{}

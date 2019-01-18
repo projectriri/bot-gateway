@@ -1,4 +1,4 @@
-adapter_name = "QQ"
+[QQ]
 channel_uuid = ""
 cqhttp_access_token = ""
 cqhttp_websocket_addr = "ws://localhost:6700"

@@ -2,6 +2,7 @@ package router
 
 import (
 	. "github.com/projectriri/bot-gateway/types"
+	"github.com/projectriri/bot-gateway/types/helpinfo"
 	"regexp"
 )
 
@@ -17,7 +18,8 @@ type ProducerChannel struct {
 
 type ConsumerChannel struct {
 	Channel
-	Accept []RoutingRule
+	Accept   []RoutingRule
+	HelpInfo *helpinfo.HelpInfo
 }
 
 type RoutingRule struct {

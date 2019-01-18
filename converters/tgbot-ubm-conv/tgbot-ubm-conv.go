@@ -29,7 +29,7 @@ type Plugin struct {
 	me              map[string]*ubm_api.User
 }
 
-var manifest = types.Manifest{
+var Manifest = types.Manifest{
 	BasicInfo: types.BasicInfo{
 		Name:        "tgbot-ubm-conv",
 		Author:      "Project Riri Staff",
@@ -47,7 +47,7 @@ var manifest = types.Manifest{
 }
 
 func (p *Plugin) GetManifest() types.Manifest {
-	return manifest
+	return Manifest
 }
 
 // Telegram constants
@@ -55,19 +55,29 @@ const (
 	APIVersion = "4.1"
 )
 
-func (p *Plugin) Init(filename string, configPath string) {
+func Init(filename string, configPath string) []types.Converter {
 	// load toml config
-	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &p.config)
+	configMap := make(map[string]Config)
+	_, err := toml.DecodeFile(configPath+"/"+filename+".toml", &configMap)
 	if err != nil {
 		panic(err)
 	}
-	p.pendingRequests = make(map[string]chan types.Packet)
-	p.timeout, err = time.ParseDuration(p.config.APIResponseTimeout)
-	if err != nil {
-		log.Error("[tgbot-ubm-conv] fail to parse timeout", err)
-		p.timeout = time.Minute * 5
+	pluginInstances := make([]types.Converter, 0)
+	for adapterName, config := range configMap {
+		plugin := Plugin{
+			config: config,
+		}
+		plugin.config.AdapterName = adapterName
+		plugin.pendingRequests = make(map[string]chan types.Packet)
+		plugin.timeout, err = time.ParseDuration(plugin.config.APIResponseTimeout)
+		if err != nil {
+			log.Error("[tgbot-ubm-conv] fail to parse timeout", err)
+			plugin.timeout = time.Minute * 5
+		}
+		plugin.me = make(map[string]*ubm_api.User)
+		pluginInstances = append(pluginInstances, &plugin)
 	}
-	p.me = make(map[string]*ubm_api.User)
+	return pluginInstances
 }
 
 func (p *Plugin) IsConvertible(from types.Format, to types.Format) bool {
@@ -158,5 +168,3 @@ func (p *Plugin) Start() {
 		p.mux.Unlock()
 	}
 }
-
-var PluginInstance types.Converter = &Plugin{}

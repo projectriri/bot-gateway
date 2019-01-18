@@ -1,5 +1,5 @@
+[CQHTTP-UBM-Converter]
 qq_adapters = "QQ"
-adapter_name = "CQHTTP-UBM-Converter"
 channel_uuid = ""
 api_response_timeout = "5s"
 cqhttp_version = "4.5.0"

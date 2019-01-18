@@ -78,32 +78,32 @@ func loadPlugin(path string) {
 	// load .so
 	p, err := goplugin.Open(path)
 	if err != nil {
-		log.Fatalf("failed to load types %v: open file error", path)
+		log.Fatalf("failed to load plugin %v: open file error", path)
 		return
 	}
 	// get PluginInstance
-	pi, err := p.Lookup("PluginInstance")
+	init, err := p.Lookup("Init")
 	if err != nil {
-		log.Errorf("failed to load types %v: PluginInstance not found", path)
+		log.Errorf("failed to load plugin %v: Init function not found", path)
 		return
 	}
 	// register and start types
-	switch x := pi.(type) {
-	case *types.Adapter:
-		adp := *x
-		log.Infof("initializing adapter types %v", filename)
-		adp.Init(filename, config.PluginConfDir)
-		log.Infof("starting adapter types %v", filename)
-		go adp.Start()
-		adapters = append(adapters, adp)
-	case *types.Converter:
-		cov := *x
-		converters = append(converters, cov)
-		log.Infof("initializing adapter types %v", filename)
-		cov.Init(filename, config.PluginConfDir)
-		log.Infof("starting adapter types %v", filename)
-		go cov.Start()
-		adapters = append(adapters, cov)
+	switch x := init.(type) {
+	case func(filename string, configPath string) []types.Adapter:
+		adps := x(filename, config.PluginConfDir)
+		for _, adp := range adps {
+			log.Infof("starting adapter %v", filename)
+			go adp.Start()
+			adapters = append(adapters, adp)
+		}
+	case func(filename string, configPath string) []types.Converter:
+		covs := x(filename, config.PluginConfDir)
+		for _, cov := range covs {
+			log.Infof("starting converter %v", filename)
+			go cov.Start()
+			converters = append(converters, cov)
+			adapters = append(adapters, cov)
+		}
 	default:
 		log.Errorf("types %v neither implements an adapter or a converter")
 	}
