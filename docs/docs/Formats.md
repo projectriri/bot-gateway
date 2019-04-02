@@ -10,4 +10,4 @@
 | coolq-http-api | >=3 | apiresponse | websocket | [APIResponse](https://cqhttp.cc/docs/4.4/#/API?id=%E5%93%8D%E5%BA%94%E8%AF%B4%E6%98%8E) |
 | ubm-api | 1.0 | receive | | [UBM](/docs/Types.html#ubm) |
 | ubm-api | 1.0 | send | | [UBM](/docs/Types.html#ubm) |
-| cmd | 1.0 | cmd | | [CMD](/docs/Types.html#cmd) |
+| cmd | 1.0 | cmd | [见插件文档](/docs/Plugins.html#%E8%AE%BE%E7%BD%AE%E5%91%BD%E4%BB%A4%E5%89%8D%E7%BC%80%E5%92%8C%E5%93%8D%E5%BA%94%E6%A8%A1%E5%BC%8F) | [CMD](/docs/Types.html#cmd) |

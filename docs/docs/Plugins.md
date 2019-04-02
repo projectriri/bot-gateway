@@ -228,18 +228,34 @@
 | Go | go | [github.com/projectriri/bot-gateway/adapters/jsonrpc-server-any/client/golang](https://github.com/projectriri/bot-gateway/tree/master/adapters/jsonrpc-server-any/client/golang) | [main.go](https://github.com/projectriri/bot-gateway/blob/master/adapters/jsonrpc-server-any/client/golang/example/main.go) |
 | Python | pip3 | [ldbg-jsonrpc](https://github.com/projectriri/bot-gateway/tree/master/adapters/jsonrpc-server-any/client/python) | [main.py](https://github.com/projectriri/bot-gateway/blob/master/adapters/jsonrpc-server-any/client/python/main.py) |
 
-## commander
+## yohane
 
 这个插件接收 *ubm-api* 格式的包，将符合命令格式要求的消息解析为命令，并送回到网关中。
 
-**配置文件格式**
+### 命令和命令参数
 
-| 配置项名称 | 默认配置文件中的值 | 说明 |
-| --- | --- | --- |
-| command_prefix | ["/"] | 命令前缀，是一个字符串数组。 |
-| response_mode | 31 | 用于配置解析后的命令包含哪些内容。 |
-| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
+命令和命令参数之间以 [Unicode 空白字符](https://golang.org/pkg/unicode/#IsSpace) 分隔。
+使用引号（`'` 或 `"` 或 `` ` ``）引起来的内容不会被断开。
+转义字符 `\` 后面所接的字符会直接作为命令或命令参数的内容，失去其特殊含义（如空格、引号、`\` 本身等）。
 
+### 设置命令前缀和响应模式
+
+yohane 生产的命令格式如下，
+
+```json
+{
+  "api": "cmd",
+  "version": "1.0",
+  "method":   "cmd",
+  "protocol": "{\"command_prefix\":[\"/\"],\"response_mode\":6}"
+}
+```
+
+接收方需要通过接收格式的 *protocol* 字段来设置命令前缀和响应模式，*protocol* 是一个 JSON 字符串。
+
+**命令前缀**
+
+命令前缀 *command_prefix* 是一个字符串数组。
 命令解析器工作时，对于一条图文消息，会首先在 *command_prefix* 中从前向后依次匹配。
 如果一条消息的前缀匹配 *command_prefix* 中的元素，它会被当作一条命令，同时命令前缀会被删除。
 
@@ -257,11 +273,7 @@
 如果某位设置为 1 那么插件生产的命令报文中则会有此项。
 例如设置 *response_mode* 为 26，即 11010，则表示启用 args_str、args_txt、cmd_str 三项。
 
-**命令和命令参数**
-
-命令和命令参数之间以 [Unicode 空白字符](https://golang.org/pkg/unicode/#IsSpace) 分隔。
-使用引号（`'` 或 `"` 或 `` ` ``）引起来的内容不会被断开。
-转义字符 `\` 后面所接的字符会直接作为命令或命令参数的内容，失去其特殊含义（如空格、引号、`\` 本身等）。
+### 接收和发送包说明
 
 这是一个[消费者](/docs/Concept.html#消费者)，它接受的[包](/docs/Concept.html#包)的头为
 
@@ -275,6 +287,58 @@
 
 | from | to | format.api | format.version | format.method | format.protocol |
 | --- | --- | --- | --- | --- | --- |
-| *接受的包的 from* | *接受的包的 to* | cmd | 1.0 | cmd |  |
+| *原始消息包的 from* | *原始消息包的 to* | cmd | 1.0 | cmd | *路由接收方指定的 protocol* |
 
 它生产的[包](/docs/Concept.html#包)的体的类型为 [CMD](/docs/Types.html#cmd)。
+
+### 配置文件格式
+
+| 配置项名称 | 默认配置文件中的值 | 说明 |
+| --- | --- | --- |
+| command_prefix | ["/"] | 所有可能的命令前缀，是一个字符串数组。 |
+| channel_uuid | | 插件用于注册[频道](/docs/Concept.html#频道)的 UUID，可为空 |
+| yohane_command_prefix | "!!" | 插件本身监听的命令前缀（`alias` 和 `unalias` 命令）|
+| command_alias_path | "data/command_alias.json" | 用于持久化命令别名表的文件存储位置 |
+
+### 设置命令别名
+
+:::tip
+下文都按照 *yohane_command_prefix* 为默认值来描述，如果你修改了 *yohane_command_prefix*，
+你自行替换命令前缀 `!!` 为其它。
+:::
+
+设置 `say` 为 `echo` 的别名（仅在当前聊天内生效）
+
+```
+!!alias say echo
+```
+
+设置所有匹配正则 `say` 的消息为 `echo` 的别名（仅在当前聊天内生效）
+
+```
+!!alias -e say echo
+```
+
+设置 `say` 为 `echo` 的别名（在所有聊天内生效）
+
+```
+!!alias -g say echo
+```
+
+移除当前聊天的别名 `say`
+
+```
+!!unalias say
+```
+
+移除当前聊天的正则别名 `^say`
+
+```
+!!unalias -e say
+```
+
+移除全局别名 `say`
+
+```
+!!unalias -g say
+```

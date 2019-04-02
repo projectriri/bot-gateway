@@ -38,19 +38,6 @@ Telegram Bot Gateway 是专门针对 Telegram Bot API 的多个 Bot 使用同一
 
 ## 下载安装
 
-### 下载二进制程序
-
-1. 从 [GitHub Release](https://github.com/projectriri/bot-gateway/releases)
-中下载已经编译好的程序压缩包，解压到任意目录
-2. 复制 `config.toml.example` 到 `config.toml`
-3. 删除 `lib` 目录中不需要的插件
-4. 复制 `conf.d` 目录下所有 `*.example` 文件到 `*`
-
-::: tip
-如果你只需要很少的官方插件，你也可以选择分别下载它们，然后将插件放置在
-`lib` 目录下，将插件配置文件放置在 `conf.d` 目录下
-:::
-
 ### 从源代码编译
 
 ::: warning
@@ -111,4 +98,4 @@ Telegram Bot Gateway 是专门针对 Telegram Bot API 的多个 Bot 使用同一
 | [jsonrpc-server-any](/docs/Plugins.html#jsonrpc-server-any) | 服务型 | 提供 JSON RPC 服务 |
 | [tgbot-ubm-conv](/docs/Plugins.html#tgbot-ubm-conv) | 自耦型 | 将消息在 [Telegram-Bot-API](/docs/Formats.html) 和 [UBM-API](/docs/Formats.html) 两种格式之间转换 |
 | [cqhttp-ubm-conv](/docs/Plugins.html#cqhttp-ubm-conv) | 自耦型 | 将消息在 [CoolQ-HTTP-API](/docs/Formats.html) 和 [UBM-API](/docs/Formats.html) 两种格式之间转换 |
-| [commander](/docs/Plugins.html#commander) | 自耦型 | 命令解析器 |
+| [yohane](/docs/Plugins.html#yohane) | 自耦型 | 命令解析器 |
