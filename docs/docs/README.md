@@ -69,7 +69,7 @@ Telegram Bot Gateway 是专门针对 Telegram Bot API 的多个 Bot 使用同一
 启用小恶魔你需要在程序运行目录放置 `locale.yml`，程序源码中包含一个该文件的[示例](https://github.com/projectriri/bot-gateway/blob/master/locale.yml)。
 
 :::tip
-要让小恶魔正常工作你必须启用插件 [commander](/docs/Plugins.html#commander)，并根据需要正确配置命令前缀。
+要让小恶魔正常工作你必须启用插件 [yohane](/docs/Plugins.html#yohane)，并根据需要正确配置命令前缀。
 :::
 
 ### 插件配置文件
